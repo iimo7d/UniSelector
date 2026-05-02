@@ -294,7 +294,7 @@ namespace Uni_Selector.Controllers
                 {
                     Gender = g.Key.ToString(),
                     Count = g.Count(),
-                    Percentage = (g.Count() * 100.0) / model.TotalStudents
+                    Percentage = model.TotalStudents > 0 ? (g.Count() * 100.0) / model.TotalStudents : 0
                 }).ToList();
 
                 // Province distribution
@@ -303,7 +303,7 @@ namespace Uni_Selector.Controllers
                 {
                     Province = g.Key,
                     Count = g.Count(),
-                    Percentage = (g.Count() * 100.0) / model.TotalStudents
+                    Percentage = model.TotalStudents > 0 ? (g.Count() * 100.0) / model.TotalStudents : 0
                 }).OrderByDescending(p => p.Count).ToList();
 
                 // Enrollment by level
@@ -699,6 +699,39 @@ namespace Uni_Selector.Controllers
                     {
                         csv.AppendLine($"\"{program.NameEnglish}\",\"{program.University.NameEnglish}\",\"{program.University.City}\",\"{program.Level}\",\"{program.TechnicalField}\",\"{(program.IsApprovedByBtecAuthority ? "Approved" : "Pending")}\",{_context.StudentApplications.Count(a => a.BtecProgramId == program.Id)},{_context.StudentApplications.Count(a => a.BtecProgramId == program.Id && a.Status == ApplicationStatus.Enrolled)}");
                     }
+                    break;
+
+                case ReportType.StudentStatistics:
+                    csv.AppendLine("Student Name,Email,Gender,Province,Path,BTEC Level 2,BTEC Level 3,Active");
+                    var students = await _context.Students
+                        .Include(s => s.User)
+                        .Where(s => s.Path == PathType.BTEC || s.BtecLevel2Completed || s.BtecLevel3Completed)
+                        .ToListAsync();
+                    foreach (var s in students)
+                    {
+                        csv.AppendLine($"\"{s.User?.FullName}\",\"{s.User?.Email}\",\"{s.Gender}\",\"{s.Province}\",\"{s.Path}\",\"{s.BtecLevel2Completed}\",\"{s.BtecLevel3Completed}\",\"{s.IsActive}\"");
+                    }
+                    break;
+
+                case ReportType.UniversityPerformance:
+                    csv.AppendLine("University,City,Total Programs,Active Programs,Approved Programs,Total Enrollments");
+                    var universities = await _context.Universities
+                        .Include(u => u.BtecPrograms)
+                        .ToListAsync();
+                    foreach (var uni in universities)
+                    {
+                        var totalPrograms = uni.BtecPrograms.Count;
+                        var activePrograms = uni.BtecPrograms.Count(p => p.IsActive);
+                        var approvedPrograms = uni.BtecPrograms.Count(p => p.IsApprovedByBtecAuthority);
+                        var enrollments = await _context.StudentApplications
+                            .CountAsync(a => a.BtecProgram != null && a.BtecProgram.UniversityId == uni.Id && a.Status == ApplicationStatus.Enrolled);
+                        csv.AppendLine($"\"{uni.NameEnglish}\",\"{uni.City}\",{totalPrograms},{activePrograms},{approvedPrograms},{enrollments}");
+                    }
+                    break;
+
+                default:
+                    csv.AppendLine("Report Type,Status");
+                    csv.AppendLine($"\"{reportType}\",\"No data available for this report type\"");
                     break;
             }
 

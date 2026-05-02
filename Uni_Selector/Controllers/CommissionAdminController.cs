@@ -223,6 +223,8 @@ namespace Uni_Selector.Controllers
             }
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Calculate()
         {
             try
@@ -561,11 +563,12 @@ namespace Uni_Selector.Controllers
                 _context.MonthlySettlements.Add(settlement);
                 await _context.SaveChangesAsync();
 
-                // Link commissions to settlement
+                // Link commissions to settlement (mark as Settled=true only when settlement is Closed)
+                // At this stage the settlement is still open, so only assign the settlement ID
                 foreach (var commission in commissionsToSettle)
                 {
                     commission.MonthlySettlementId = settlement.Id;
-                    commission.Settled = true;
+                    commission.Settled = false; // Will be set to true when settlement is Closed
                 }
 
                 await _context.SaveChangesAsync();
@@ -691,9 +694,19 @@ namespace Uni_Selector.Controllers
                 settlement.ClosedAt = DateTime.UtcNow;
                 settlement.ClosedByUserId = currentUser.Id;
 
+                // Now that the settlement is being closed, mark its linked commissions as fully Settled
+                var linkedCommissions = await _context.Commissions
+                    .Where(c => c.MonthlySettlementId == id && !c.Settled)
+                    .ToListAsync();
+                foreach (var c in linkedCommissions)
+                {
+                    c.Settled = true;
+                }
+
                 await _context.SaveChangesAsync();
 
-                _logger.LogInformation($"Settlement {id} closed by user {currentUser.Id}");
+                _logger.LogInformation("Settlement {SettlementId} closed by user {UserId} ({Count} commissions marked Settled)",
+                    id, currentUser.Id, linkedCommissions.Count);
                 TempData["Success"] = "Settlement closed successfully.";
                 return RedirectToAction(nameof(SettlementDetails), new { id });
             }

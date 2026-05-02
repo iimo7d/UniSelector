@@ -379,7 +379,7 @@ namespace Uni_Selector.Controllers
                         message: $"Your BTEC program '{programName}' ({level}) has been rejected. Reason: {model.RejectionReason}",
                         category: NotificationCategory.ApplicationRejected,
                         channel: NotificationChannel.InApp,
-                        actionUrl: $"/UniversityRep/BTECPrograms/{program.Id}"
+                        actionUrl: $"/UniversityRep/BTECPrograms/{program.Id}/Details"
                     );
 
                     // 📧 Email Notification

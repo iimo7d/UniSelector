@@ -539,6 +539,16 @@ namespace Uni_Selector.Controllers
                     {
                         application.RejectionReason = model.RejectionReason;
                     }
+                    // Clear approval-owned fields to avoid stale data
+                    application.ApprovalDate = null;
+                    application.AdmissionNumber = null;
+                }
+                else
+                {
+                    // For any other status (Pending, UnderReview, Enrolled, etc.)
+                    // clear both approval and rejection stale fields
+                    application.ApprovalDate = null;
+                    application.RejectionReason = null;
                     application.AdmissionNumber = null;
                 }
 

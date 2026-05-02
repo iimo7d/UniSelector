@@ -1,4 +1,4 @@
-﻿using ClosedXML.Excel;
+using ClosedXML.Excel;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -101,7 +101,7 @@ namespace Uni_Selector.Controllers
 
                 // Get role counts
                 var roleCounts = new Dictionary<string, int>();
-                var allRoles = new[] { "Student", "UniversityRepresentative", "PlatformAdmin", "BtecAuthority" };
+                var allRoles = new[] { "Student", UserRoles.UniversityRep, "PlatformAdmin", "BtecAuthority" };
                 foreach (var roleName in allRoles)
                 {
                     var usersInRole = await _userManager.GetUsersInRoleAsync(roleName);
@@ -196,7 +196,7 @@ namespace Uni_Selector.Controllers
                         viewModel.ApplicationsCount = student.Applications.Count;
                     }
                 }
-                else if (primaryRole == "UniversityRepresentative")
+                else if (primaryRole == UserRoles.UniversityRep)
                 {
                     var rep = await _context.UniversityRepresentatives
                         .Include(r => r.University)
@@ -259,7 +259,7 @@ namespace Uni_Selector.Controllers
 
                 var viewModel = new UserCreateViewModel
                 {
-                    AvailableRoles = new List<string> { "Student", "UniversityRepresentative", "PlatformAdmin", "BtecAuthority" },
+                    AvailableRoles = new List<string> { "Student", UserRoles.UniversityRep, "PlatformAdmin", "BtecAuthority" },
                     AvailableUniversities = universities
                 };
 
@@ -281,7 +281,7 @@ namespace Uni_Selector.Controllers
             {
                 if (!ModelState.IsValid)
                 {
-                    model.AvailableRoles = new List<string> { "Student", "UniversityRepresentative", "PlatformAdmin", "BtecAuthority" };
+                    model.AvailableRoles = new List<string> { "Student", UserRoles.UniversityRep, "PlatformAdmin", "BtecAuthority" };
                     model.AvailableUniversities = await _context.Universities
                         .Where(u => u.IsActive)
                         .Select(u => new UniversityOption { Id = u.Id, Name = u.NameEnglish })
@@ -295,7 +295,7 @@ namespace Uni_Selector.Controllers
                 if (existingUser != null)
                 {
                     ModelState.AddModelError("Email", "Email is already in use.");
-                    model.AvailableRoles = new List<string> { "Student", "UniversityRepresentative", "PlatformAdmin", "BtecAuthority" };
+                    model.AvailableRoles = new List<string> { "Student", UserRoles.UniversityRep, "PlatformAdmin", "BtecAuthority" };
                     model.AvailableUniversities = await _context.Universities
                         .Where(u => u.IsActive)
                         .Select(u => new UniversityOption { Id = u.Id, Name = u.NameEnglish })
@@ -324,7 +324,7 @@ namespace Uni_Selector.Controllers
                     {
                         ModelState.AddModelError("", error.Description);
                     }
-                    model.AvailableRoles = new List<string> { "Student", "UniversityRepresentative", "PlatformAdmin", "BtecAuthority" };
+                    model.AvailableRoles = new List<string> { "Student", UserRoles.UniversityRep, "PlatformAdmin", "BtecAuthority" };
                     model.AvailableUniversities = await _context.Universities
                         .Where(u => u.IsActive)
                         .Select(u => new UniversityOption { Id = u.Id, Name = u.NameEnglish })
@@ -362,13 +362,13 @@ namespace Uni_Selector.Controllers
                     };
                     _context.Students.Add(student);
                 }
-                else if (model.Role == "UniversityRepresentative")
+                else if (model.Role == UserRoles.UniversityRep)
                 {
                     if (!model.UniversityId.HasValue)
                     {
                         await _userManager.DeleteAsync(user);
                         ModelState.AddModelError("UniversityId", "University is required for University Representatives.");
-                        model.AvailableRoles = new List<string> { "Student", "UniversityRepresentative", "PlatformAdmin", "BtecAuthority" };
+                        model.AvailableRoles = new List<string> { "Student", UserRoles.UniversityRep, "PlatformAdmin", "BtecAuthority" };
                         model.AvailableUniversities = await _context.Universities
                             .Where(u => u.IsActive)
                             .Select(u => new UniversityOption { Id = u.Id, Name = u.NameEnglish })
@@ -401,7 +401,7 @@ namespace Uni_Selector.Controllers
             {
                 _logger.LogError(ex, "Error creating user");
                 ModelState.AddModelError("", "An error occurred while creating the user.");
-                model.AvailableRoles = new List<string> { "Student", "UniversityRepresentative", "PlatformAdmin", "BtecAuthority" };
+                model.AvailableRoles = new List<string> { "Student", UserRoles.UniversityRep, "PlatformAdmin", "BtecAuthority" };
                 model.AvailableUniversities = await _context.Universities
                     .Where(u => u.IsActive)
                     .Select(u => new UniversityOption { Id = u.Id, Name = u.NameEnglish })
@@ -436,7 +436,7 @@ namespace Uni_Selector.Controllers
                     EmailConfirmed = user.EmailConfirmed,
                     CreatedAt = user.CreatedAt,
                     LastLoginAt = user.LastLoginAt,
-                    AvailableRoles = new List<string> { "Student", "UniversityRepresentative", "PlatformAdmin", "BtecAuthority" },
+                    AvailableRoles = new List<string> { "Student", UserRoles.UniversityRep, "PlatformAdmin", "BtecAuthority" },
                     AvailableUniversities = await _context.Universities
                         .Where(u => u.IsActive)
                         .Select(u => new UniversityOption { Id = u.Id, Name = u.NameEnglish })
@@ -463,7 +463,7 @@ namespace Uni_Selector.Controllers
                         viewModel.ProfileCompleted = student.ProfileCompleted;
                     }
                 }
-                else if (primaryRole == "UniversityRepresentative")
+                else if (primaryRole == UserRoles.UniversityRep)
                 {
                     var rep = await _context.UniversityRepresentatives.FirstOrDefaultAsync(r => r.UserId == user.Id);
                     if (rep != null)
@@ -498,7 +498,7 @@ namespace Uni_Selector.Controllers
 
                 if (!ModelState.IsValid)
                 {
-                    model.AvailableRoles = new List<string> { "Student", "UniversityRepresentative", "PlatformAdmin", "BtecAuthority" };
+                    model.AvailableRoles = new List<string> { "Student", UserRoles.UniversityRep, "PlatformAdmin", "BtecAuthority" };
                     model.AvailableUniversities = await _context.Universities
                         .Where(u => u.IsActive)
                         .Select(u => new UniversityOption { Id = u.Id, Name = u.NameEnglish })
@@ -521,7 +521,7 @@ namespace Uni_Selector.Controllers
                     if (existingUser != null)
                     {
                         ModelState.AddModelError("Email", "Email is already in use.");
-                        model.AvailableRoles = new List<string> { "Student", "UniversityRepresentative", "PlatformAdmin", "BtecAuthority" };
+                        model.AvailableRoles = new List<string> { "Student", UserRoles.UniversityRep, "PlatformAdmin", "BtecAuthority" };
                         model.AvailableUniversities = await _context.Universities
                             .Where(u => u.IsActive)
                             .Select(u => new UniversityOption { Id = u.Id, Name = u.NameEnglish })
@@ -546,7 +546,7 @@ namespace Uni_Selector.Controllers
                     {
                         ModelState.AddModelError("", error.Description);
                     }
-                    model.AvailableRoles = new List<string> { "Student", "UniversityRepresentative", "PlatformAdmin", "BtecAuthority" };
+                    model.AvailableRoles = new List<string> { "Student", UserRoles.UniversityRep, "PlatformAdmin", "BtecAuthority" };
                     model.AvailableUniversities = await _context.Universities
                         .Where(u => u.IsActive)
                         .Select(u => new UniversityOption { Id = u.Id, Name = u.NameEnglish })
@@ -555,15 +555,15 @@ namespace Uni_Selector.Controllers
                     return View(model);
                 }
 
-                // Update role if changed
+                // Update role if changed — remove ALL current roles to avoid orphaned role assignments
                 var currentRoles = await _userManager.GetRolesAsync(user);
                 var currentRole = currentRoles.FirstOrDefault();
 
-                if (currentRole != model.Role)
+                if (currentRole != model.Role || currentRoles.Count > 1)
                 {
-                    if (!string.IsNullOrEmpty(currentRole))
+                    if (currentRoles.Count > 0)
                     {
-                        await _userManager.RemoveFromRoleAsync(user, currentRole);
+                        await _userManager.RemoveFromRolesAsync(user, currentRoles);
                     }
                     await _userManager.AddToRoleAsync(user, model.Role);
                 }
@@ -611,12 +611,12 @@ namespace Uni_Selector.Controllers
                         student.ProfileCompleted = model.ProfileCompleted ?? student.ProfileCompleted;
                     }
                 }
-                else if (model.Role == "UniversityRepresentative")
+                else if (model.Role == UserRoles.UniversityRep)
                 {
                     if (!model.UniversityId.HasValue)
                     {
                         ModelState.AddModelError("UniversityId", "University is required for University Representatives.");
-                        model.AvailableRoles = new List<string> { "Student", "UniversityRepresentative", "PlatformAdmin", "BtecAuthority" };
+                        model.AvailableRoles = new List<string> { "Student", UserRoles.UniversityRep, "PlatformAdmin", "BtecAuthority" };
                         model.AvailableUniversities = await _context.Universities
                             .Where(u => u.IsActive)
                             .Select(u => new UniversityOption { Id = u.Id, Name = u.NameEnglish })
@@ -658,7 +658,7 @@ namespace Uni_Selector.Controllers
             {
                 _logger.LogError(ex, $"Error updating user {id}");
                 ModelState.AddModelError("", "An error occurred while updating the user.");
-                model.AvailableRoles = new List<string> { "Student", "UniversityRepresentative", "PlatformAdmin", "BtecAuthority" };
+                model.AvailableRoles = new List<string> { "Student", UserRoles.UniversityRep, "PlatformAdmin", "BtecAuthority" };
                 model.AvailableUniversities = await _context.Universities
                     .Where(u => u.IsActive)
                     .Select(u => new UniversityOption { Id = u.Id, Name = u.NameEnglish })
@@ -753,9 +753,14 @@ namespace Uni_Selector.Controllers
                 }
 
                 var token = await _userManager.GeneratePasswordResetTokenAsync(user);
-                _logger.LogInformation($"Password reset requested for user {user.Email}. Token: {token}");
+                // Do NOT log the token — it is a credential and would leak in log aggregators
+                _logger.LogInformation("Password reset token generated for user {Email} (token not logged)", user.Email);
 
-                TempData["Success"] = $"Password reset email sent to {user.Email}.";
+                // TODO: Send the actual password reset email here via IEmailService
+                // e.g. var resetUrl = Url.Action("ResetPassword", "Account", new { token, email = user.Email }, Request.Scheme);
+                //      await _emailService.SendPasswordResetEmailAsync(user.Email, user.FullName, resetUrl);
+
+                TempData["Warning"] = $"Password reset token generated for {user.Email}. Email delivery is not yet implemented — please configure IEmailService to send the reset link.";
                 return RedirectToAction(nameof(Index));
             }
             catch (Exception ex)

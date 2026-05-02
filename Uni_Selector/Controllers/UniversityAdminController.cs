@@ -779,10 +779,21 @@ namespace Uni_Selector.Controllers
                 _context.UniversityRepresentatives.Remove(representative);
                 await _context.SaveChangesAsync();
 
-                // 2️⃣ Remove UniversityRep role
+                // 2️⃣ Remove UniversityRep role ONLY if the user has no other active representative records
                 if (await _userManager.IsInRoleAsync(user, UserRoles.UniversityRep))
                 {
-                    await _userManager.RemoveFromRoleAsync(user, UserRoles.UniversityRep);
+                    var hasOtherActiveRep = await _context.UniversityRepresentatives
+                        .AnyAsync(r => r.UserId == user.Id && r.IsActive);
+
+                    if (!hasOtherActiveRep)
+                    {
+                        await _userManager.RemoveFromRoleAsync(user, UserRoles.UniversityRep);
+                    }
+                    else
+                    {
+                        _logger.LogInformation(
+                            "User {Email} still has other active representative records; UniversityRep role retained.", user.Email);
+                    }
                 }
 
                 // 3️⃣ Assign Student role (if not already)
@@ -913,9 +924,21 @@ namespace Uni_Selector.Controllers
         #endregion
 
         #region Helper Methods
+        private static readonly string[] AllowedFileExtensions = { ".jpg", ".jpeg", ".png", ".gif", ".webp", ".pdf" };
+        private const long MaxFileSizeBytes = 5 * 1024 * 1024; // 5 MB
+
         private async Task<string> SaveFileAsync(IFormFile file, string subFolder)
         {
-            var fileName = $"{Guid.NewGuid()}_{Path.GetFileName(file.FileName)}";
+            // Validate file size
+            if (file.Length > MaxFileSizeBytes)
+                throw new InvalidOperationException($"File size exceeds the maximum allowed size of {MaxFileSizeBytes / 1024 / 1024} MB.");
+
+            // Validate file extension
+            var ext = Path.GetExtension(file.FileName).ToLowerInvariant();
+            if (!AllowedFileExtensions.Contains(ext))
+                throw new InvalidOperationException($"File type '{ext}' is not allowed. Allowed types: {string.Join(", ", AllowedFileExtensions)}");
+
+            var fileName = $"{Guid.NewGuid()}_{Path.GetFileNameWithoutExtension(file.FileName)}{ext}";
             var relativePath = Path.Combine("uploads", "universities", subFolder, fileName);
             var fullPath = Path.Combine(_webHostEnvironment.WebRootPath, relativePath);
 

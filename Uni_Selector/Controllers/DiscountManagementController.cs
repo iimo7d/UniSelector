@@ -269,6 +269,14 @@ namespace Uni_Selector.Controllers
                 return Json(new { success = false, message = $"Discount cannot be redeemed. Current status: {discount.Status}" });
             }
 
+            // Enforce 90-day expiry (consistent with DiscountsController.Verify)
+            if (discount.GrantedAt.AddDays(90) < DateTime.UtcNow)
+            {
+                discount.Status = DiscountStatus.Expired;
+                await _context.SaveChangesAsync();
+                return Json(new { success = false, message = "Discount has expired (valid for 90 days from grant date)." });
+            }
+
             // Verify application is enrolled
             if (discount.Application.Status != ApplicationStatus.Enrolled)
             {

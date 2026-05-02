@@ -35,8 +35,11 @@ namespace Uni_Selector.Controllers
                 .CountAsync(bp => !bp.IsApprovedByBtecAuthority && bp.IsActive);
             viewModel.ApprovedPrograms = await _context.BtecPrograms
                 .CountAsync(bp => bp.IsApprovedByBtecAuthority);
+            // Count programs explicitly rejected (have a rejection reason) rather than just "not approved & inactive"
+            // (deactivated programs are not the same as rejected programs)
             viewModel.RejectedPrograms = await _context.BtecPrograms
-                .CountAsync(bp => !bp.IsApprovedByBtecAuthority && !bp.IsActive);
+                .CountAsync(bp => !bp.IsApprovedByBtecAuthority &&
+                                  bp.RejectionReason != null && bp.RejectionReason != "");
 
             // ===================================
             // UNIVERSITY STATISTICS

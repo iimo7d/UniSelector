@@ -113,7 +113,15 @@ namespace Uni_Selector.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return View("Login", model);
+                // Store errors in TempData so the Login view (LoginViewModel) can display them
+                TempData["RegisterErrors"] = ModelState.Values
+                    .SelectMany(v => v.Errors)
+                    .Select(e => e.ErrorMessage)
+                    .ToList();
+                TempData["RegisterModel_Email"] = model.Email;
+                TempData["RegisterModel_FullName"] = model.FullName;
+                TempData["ShowRegisterTab"] = true;
+                return RedirectToAction(nameof(Login));
             }
 
 
@@ -160,12 +168,12 @@ namespace Uni_Selector.Controllers
                 return RedirectToAction("Index", "Home");
             }
 
-            foreach (var error in result.Errors)
-            {
-                ModelState.AddModelError(string.Empty, error.Description);
-            }
-
-            return View("Login", model);
+            // Store registration errors in TempData and redirect back to Login (avoids model type mismatch)
+            TempData["RegisterErrors"] = result.Errors.Select(e => e.Description).ToList();
+            TempData["RegisterModel_Email"] = model.Email;
+            TempData["RegisterModel_FullName"] = model.FullName;
+            TempData["ShowRegisterTab"] = true;
+            return RedirectToAction(nameof(Login));
         }
 
         // ENDPOINT 4: Logout

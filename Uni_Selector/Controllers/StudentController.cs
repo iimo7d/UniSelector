@@ -312,30 +312,15 @@ namespace Uni_Selector.Controllers
         {
             if (!ModelState.IsValid)
             {
-
-                var errors = ModelState
-           .Where(x => x.Value.Errors.Count > 0)
-           .Select(x => new
-           {
-               Field = x.Key,
-               Errors = x.Value.Errors.Select(e => e.ErrorMessage).ToArray()
-           })
-           .ToList();
-
-                // Log each error
-                foreach (var error in errors)
+                // Log validation errors (server-side only; never expose raw ModelState to the client)
+                foreach (var kvp in ModelState.Where(x => x.Value.Errors.Count > 0))
                 {
-                    _logger.LogWarning($"Field: {error.Field} | Errors: {string.Join(", ", error.Errors)}");
+                    _logger.LogWarning("Validation error – Field: {Field} | Errors: {Errors}",
+                        kvp.Key, string.Join(", ", kvp.Value.Errors.Select(e => e.ErrorMessage)));
                 }
-
-                // Show in TempData for debugging
-                TempData["DebugErrors"] = string.Join(" | ", errors.Select(e =>
-                    $"{e.Field}: {string.Join(", ", e.Errors)}"));
 
                 await PopulateViewBagData();
                 return View(model);
-
-         
             }
 
             try
@@ -383,6 +368,27 @@ namespace Uni_Selector.Controllers
                 student.VocationalBranch = model.VocationalBranch;
                 student.BtecLevel2Completed = model.BtecLevel2Completed;
                 student.BtecLevel3Completed = model.BtecLevel3Completed;
+
+                // Clear path-specific stale fields (mirrors CompleteProfile logic)
+                if (model.Path != PathType.BTEC)
+                {
+                    if (!string.IsNullOrEmpty(student.BtecCertificateUrl))
+                    {
+                        DeleteBtecCertificate(student.BtecCertificateUrl);
+                        student.BtecCertificateUrl = null;
+                    }
+                    student.BtecLevel2Completed = false;
+                    student.BtecLevel3Completed = false;
+                }
+                if (model.Path == PathType.Academic)
+                    student.VocationalBranch = null;
+                if (model.Path == PathType.Vocational)
+                    student.AcademicTrack = null;
+                if (model.Path == PathType.BTEC)
+                {
+                    student.AcademicTrack = null;
+                    student.VocationalBranch = null;
+                }
 
                 student.RegistrationBudget = model.RegistrationBudget;
                 student.DesiredMajors = model.DesiredMajors;

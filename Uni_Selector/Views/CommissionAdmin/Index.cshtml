@@ -92,10 +92,13 @@
                     <iconify-icon icon="solar:checklist-outline" class="icon text-xl me-4"></iconify-icon>
                     View Settlements
                 </a>
-                <a href="@Url.Action("Calculate")" class="btn btn-outline-success text-sm btn-sm px-12 py-12 radius-8" onclick="return confirm('Calculate commissions for all approved applications without commissions?')">
-                    <iconify-icon icon="solar:calculator-outline" class="icon text-xl me-4"></iconify-icon>
-                    Calculate Commissions
-                </a>
+                <form asp-action="Calculate" method="post" style="display:inline;" id="calculateForm">
+                    @Html.AntiForgeryToken()
+                    <button type="button" id="calculateBtn" class="btn btn-outline-success text-sm btn-sm px-12 py-12 radius-8">
+                        <iconify-icon icon="solar:calculator-outline" class="icon text-xl me-4"></iconify-icon>
+                        Calculate Commissions
+                    </button>
+                </form>
             </div>
         </div>
     </div>
@@ -296,6 +299,24 @@
 @section Scripts {
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
+        // Calculate commissions POST confirmation
+        document.getElementById('calculateBtn')?.addEventListener('click', function () {
+            Swal.fire({
+                title: 'Calculate Commissions?',
+                text: 'This will calculate commissions for all approved applications that do not yet have one.',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#198754',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Yes, Calculate',
+                cancelButtonText: 'Cancel'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById('calculateForm').submit();
+                }
+            });
+        });
+
         @if (TempData["Success"] != null)
         {
                 <text>

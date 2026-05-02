@@ -235,11 +235,20 @@ namespace Uni_Selector.Controllers
                 return View(model);
             }
 
-            // Check for duplicate application
-            var exists = await _context.StudentApplications
-                .AnyAsync(a => a.StudentId == student.Id &&
-                    ((a.UniversityProgramId == model.UniversityProgramId) ||
-                     (a.BtecProgramId == model.BtecProgramId)));
+            // Check for duplicate application — branch by type to avoid null-OR false positives
+            bool exists;
+            if (model.UniversityProgramId.HasValue)
+            {
+                exists = await _context.StudentApplications
+                    .AnyAsync(a => a.StudentId == student.Id &&
+                                   a.UniversityProgramId == model.UniversityProgramId);
+            }
+            else
+            {
+                exists = await _context.StudentApplications
+                    .AnyAsync(a => a.StudentId == student.Id &&
+                                   a.BtecProgramId == model.BtecProgramId);
+            }
 
             if (exists)
             {
@@ -329,6 +338,11 @@ namespace Uni_Selector.Controllers
         {
             try
             {
+                // Identify the current student so we can enforce ownership
+                var currentUser = await _userManager.GetUserAsync(User);
+                var currentStudent = currentUser == null ? null : await _context.Students
+                    .FirstOrDefaultAsync(s => s.UserId == currentUser.Id);
+
                 var application = await _context.StudentApplications
                     .Include(a => a.Student)
                         .ThenInclude(s => s.User)
@@ -341,7 +355,8 @@ namespace Uni_Selector.Controllers
                     .Include(a => a.HourDiscountSetByUser)
                     .Include(a => a.DiscountGrant)
                     .Include(a => a.Commission)
-                    .FirstOrDefaultAsync(a => a.Id == id);
+                    .FirstOrDefaultAsync(a => a.Id == id &&
+                        (currentStudent == null || a.StudentId == currentStudent.Id));
 
 
 
@@ -614,11 +629,10 @@ namespace Uni_Selector.Controllers
 
         private string GenerateApplicationNumber()
         {
-            // Format: APP-YYYYMMDD-XXXX
+            // Format: APP-YYYYMMDD-XXXXXXXX (Guid-based suffix to avoid collision under concurrent requests)
             var date = DateTime.UtcNow;
-            var random = new Random();
-            var number = random.Next(1000, 9999);
-            return $"APP-{date:yyyyMMdd}-{number}";
+            var suffix = Guid.NewGuid().ToString("N").Substring(0, 8).ToUpper();
+            return $"APP-{date:yyyyMMdd}-{suffix}";
         }
 
         #endregion

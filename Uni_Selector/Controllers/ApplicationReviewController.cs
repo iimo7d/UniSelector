@@ -290,20 +290,26 @@ namespace Uni_Selector.Controllers
                 return Json(new { success = false, message = "Application not found." });
             }
 
-            // Check if application can be approved
-            if (application.Status != ApplicationStatus.Pending && application.Status != ApplicationStatus.UnderReview)
+            // Atomically update status to Approved only if still eligible — prevents double-approval race
+            var approvedRows = await _context.StudentApplications
+                .Where(a => a.Id == id &&
+                           (a.Status == ApplicationStatus.Pending || a.Status == ApplicationStatus.UnderReview))
+                .ExecuteUpdateAsync(s => s
+                    .SetProperty(a => a.Status, ApplicationStatus.Approved)
+                    .SetProperty(a => a.ApprovalDate, DateTime.UtcNow)
+                    .SetProperty(a => a.UpdatedAt, DateTime.UtcNow));
+
+            if (approvedRows == 0)
             {
-                return Json(new { success = false, message = "Application cannot be approved in its current status." });
+                return Json(new { success = false, message = "Application cannot be approved in its current status (it may already have been processed)." });
             }
+
+            // Reload the entity so the tracked instance reflects the atomically-applied changes
+            await _context.Entry(application).ReloadAsync();
 
             // Get university for commission mode
             var university = rep.University;
             var isBtec = application.BtecProgramId.HasValue;
-
-            // Update application status
-            application.Status = ApplicationStatus.Approved;
-            application.ApprovalDate = DateTime.UtcNow;
-            application.UpdatedAt = DateTime.UtcNow;
             if (!string.IsNullOrWhiteSpace(model.ApprovalNotes))
             {
                 application.Notes = string.IsNullOrWhiteSpace(application.Notes)
@@ -566,6 +572,30 @@ namespace Uni_Selector.Controllers
             application.UpdatedAt = DateTime.UtcNow;
 
             await _context.SaveChangesAsync();
+
+            // Recalculate unsettled Commission — PlannedFirstSemesterHours affects some commission modes
+            try
+            {
+                var existingCommission = await _context.Commissions
+                    .FirstOrDefaultAsync(c => c.ApplicationId == application.Id && !c.Settled);
+
+                if (existingCommission != null)
+                {
+                    var uniForCommission = rep.University ?? await _context.Universities.FindAsync(rep.UniversityId);
+                    if (uniForCommission != null)
+                    {
+                        existingCommission.BaseAmount = CalculateCommissionBaseAmount(application, uniForCommission.CommissionMode);
+                        existingCommission.AmountEstimated = CalculateCommissionAmount(application, uniForCommission.CommissionMode);
+                        SetCommissionDetails(existingCommission, application, uniForCommission.CommissionMode);
+                        existingCommission.CalculatedAt = DateTime.UtcNow;
+                        await _context.SaveChangesAsync();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex, "Failed to recalculate commission after SetDiscount for application {ApplicationId}", application.Id);
+            }
 
             // ===================================
             // 🔔 SEND NOTIFICATION & EMAIL

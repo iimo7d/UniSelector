@@ -303,10 +303,14 @@ namespace Uni_Selector.Controllers
                     return RedirectToAction("Manage");
                 }
 
-                // Log the standards update (in real app, save to database)
-                _logger.LogInformation($"BTEC Standards updated by {currentUser.FullName} at {DateTime.UtcNow}");
-                _logger.LogInformation($"Update Description: {model.UpdateDescription}");
-                _logger.LogInformation($"Effective Date: {model.EffectiveDate}");
+                // WARNING: This action only logs the standards announcement and sends notifications.
+                // The standards values are NOT persisted to the database because there is no BtecStandards
+                // DB table/entity yet. To add persistence: create a BtecStandardsConfig entity, add it to
+                // ApplicationDbContext, and call _context.SaveChangesAsync() here.
+                _logger.LogInformation("BTEC Standards notice published by {User} at {Time} (NOT persisted to DB)",
+                    currentUser.FullName, DateTime.UtcNow);
+                _logger.LogInformation("Update Description: {Description}", model.UpdateDescription);
+                _logger.LogInformation("Effective Date: {Date}", model.EffectiveDate);
 
                 // If NotifyUniversities is true, send notifications and emails
                 if (model.NotifyUniversities)
@@ -314,7 +318,9 @@ namespace Uni_Selector.Controllers
                     await _btecStandardsNotifier.SendStandardsUpdateNotificationsAsync(model, currentUser);
                 }
 
-                TempData["Success"] = "BTEC standards have been updated successfully. All university representatives have been notified.";
+                TempData["Success"] = "BTEC standards notice has been published" +
+                    (model.NotifyUniversities ? " and university representatives have been notified." : ".") +
+                    " Note: values are not yet persisted to the database.";
                 return RedirectToAction("Index");
             }
             catch (Exception ex)

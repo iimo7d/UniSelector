@@ -386,5 +386,16 @@
                 });
                 </text>
         }
+        @if (TempData["Warning"] != null)
+        {
+                <text>
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Warning!',
+                    text: '@TempData["Warning"]',
+                    confirmButtonColor: '#FFA500'
+                });
+                </text>
+        }
     </script>
 }

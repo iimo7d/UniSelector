@@ -335,6 +335,10 @@ namespace Uni_Selector.Controllers
             program.Capacity = model.Capacity;
             program.UpdatedAt = DateTime.UtcNow;
 
+            // Material changes require re-approval by BTEC authority
+            program.IsApprovedByBtecAuthority = false;
+            program.ApprovalDate = null;
+
             await _context.SaveChangesAsync();
 
             TempData["SuccessMessage"] = "BTEC program updated successfully.";
@@ -363,7 +367,19 @@ namespace Uni_Selector.Controllers
                 return Json(new { success = false, message = "BTEC program not found." });
             }
 
-            program.IsActive = !program.IsActive;
+            var newActive = !program.IsActive;
+
+            // Cannot activate a program that hasn't been approved by BTEC authority
+            if (newActive && !program.IsApprovedByBtecAuthority)
+            {
+                return Json(new
+                {
+                    success = false,
+                    message = "Cannot activate a BTEC program that has not been approved by the BTEC authority."
+                });
+            }
+
+            program.IsActive = newActive;
             program.UpdatedAt = DateTime.UtcNow;
             await _context.SaveChangesAsync();
 

@@ -220,6 +220,13 @@ namespace Uni_Selector.Controllers
                 return View(model);
             }
 
+            // Validate that the selected Program exists
+            var programExists = await _context.Programs.AnyAsync(p => p.Id == model.ProgramId);
+            if (!programExists)
+            {
+                ModelState.AddModelError("ProgramId", "Selected program does not exist.");
+            }
+
             // Check if program already exists for this university
             var exists = await _context.UniversityPrograms
                 .AnyAsync(up => up.UniversityId == rep.UniversityId && up.ProgramId == model.ProgramId);
@@ -227,6 +234,21 @@ namespace Uni_Selector.Controllers
             if (exists)
             {
                 ModelState.AddModelError("", "This program already exists for your university.");
+            }
+
+            if (!ModelState.IsValid)
+            {
+                // Reload available programs dropdown before returning the view
+                var existingProgramIdsForError = await _context.UniversityPrograms
+                    .Where(up => up.UniversityId == rep.UniversityId)
+                    .Select(up => up.ProgramId)
+                    .ToListAsync();
+
+                ViewBag.AvailablePrograms = await _context.Programs
+                    .Where(p => !existingProgramIdsForError.Contains(p.Id))
+                    .OrderBy(p => p.NameEnglish)
+                    .ToListAsync();
+
                 return View(model);
             }
 

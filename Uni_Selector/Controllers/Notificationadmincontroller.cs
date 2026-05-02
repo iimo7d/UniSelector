@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -150,7 +150,7 @@ namespace Uni_Selector.Controllers
             {
                 var viewModel = new SendNotificationViewModel
                 {
-                    AvailableRoles = new List<string> { "Student", "UniversityRepresentative", "PlatformAdmin", "BtecAuthority" },
+                    AvailableRoles = new List<string> { "Student", UserRoles.UniversityRep, "PlatformAdmin", "BtecAuthority" },
                     RecipientTypes = new List<RecipientTypeOption>
                     {
                         new RecipientTypeOption { Value = "All", Text = "All Users", Description = "Send to all registered users" },
@@ -179,7 +179,7 @@ namespace Uni_Selector.Controllers
             {
                 if (!ModelState.IsValid)
                 {
-                    model.AvailableRoles = new List<string> { "Student", "UniversityRepresentative", "PlatformAdmin", "BtecAuthority" };
+                    model.AvailableRoles = new List<string> { "Student", UserRoles.UniversityRep, "PlatformAdmin", "BtecAuthority" };
                     model.RecipientTypes = new List<RecipientTypeOption>
                     {
                         new RecipientTypeOption { Value = "All", Text = "All Users", Description = "Send to all registered users" },
@@ -226,14 +226,14 @@ namespace Uni_Selector.Controllers
 
                     case "UniversityReps":
                         await _notificationService.SendNotificationToRoleAsync(
-                            "UniversityRepresentative",
+                            UserRoles.UniversityRep,
                             model.Title,
                             model.Message,
                             model.Category,
                             model.Channel,
                             model.ActionUrl);
 
-                        totalSent = (await _userManager.GetUsersInRoleAsync("UniversityRepresentative")).Count;
+                        totalSent = (await _userManager.GetUsersInRoleAsync(UserRoles.UniversityRep)).Count;
                         if (model.Channel == NotificationChannel.Email)
                             emailsSent = totalSent;
                         break;
@@ -242,7 +242,7 @@ namespace Uni_Selector.Controllers
                         if (string.IsNullOrWhiteSpace(model.SpecificRole))
                         {
                             ModelState.AddModelError("SpecificRole", "Please select a role.");
-                            model.AvailableRoles = new List<string> { "Student", "UniversityRepresentative", "PlatformAdmin", "BtecAuthority" };
+                            model.AvailableRoles = new List<string> { "Student", UserRoles.UniversityRep, "PlatformAdmin", "BtecAuthority" };
                             model.RecipientTypes = new List<RecipientTypeOption>
                             {
                                 new RecipientTypeOption { Value = "All", Text = "All Users", Description = "Send to all registered users" },
@@ -271,7 +271,7 @@ namespace Uni_Selector.Controllers
                         if (string.IsNullOrWhiteSpace(model.SpecificUserIds))
                         {
                             ModelState.AddModelError("SpecificUserIds", "Please enter user IDs.");
-                            model.AvailableRoles = new List<string> { "Student", "UniversityRepresentative", "PlatformAdmin", "BtecAuthority" };
+                            model.AvailableRoles = new List<string> { "Student", UserRoles.UniversityRep, "PlatformAdmin", "BtecAuthority" };
                             model.RecipientTypes = new List<RecipientTypeOption>
                             {
                                 new RecipientTypeOption { Value = "All", Text = "All Users", Description = "Send to all registered users" },
@@ -333,7 +333,7 @@ namespace Uni_Selector.Controllers
             {
                 _logger.LogError(ex, "Error sending bulk notification");
                 ModelState.AddModelError("", "An error occurred while sending the notification.");
-                model.AvailableRoles = new List<string> { "Student", "UniversityRepresentative", "PlatformAdmin", "BtecAuthority" };
+                model.AvailableRoles = new List<string> { "Student", UserRoles.UniversityRep, "PlatformAdmin", "BtecAuthority" };
                 model.RecipientTypes = new List<RecipientTypeOption>
                 {
                     new RecipientTypeOption { Value = "All", Text = "All Users", Description = "Send to all registered users" },

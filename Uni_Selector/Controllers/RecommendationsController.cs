@@ -129,12 +129,13 @@ namespace Uni_Selector.Controllers
                     Language = r.UniversityProgram != null ? r.UniversityProgram.Program.Language.ToString() : r.BtecProgram.Language.ToString(),
                     IsBtec = r.BtecProgramId.HasValue,
                     IsViewed = r.IsViewed,
-                    HasApplication = applications.Any(a =>
-                        (a.UniversityProgramId == r.UniversityProgramId) ||
-                        (a.BtecProgramId == r.BtecProgramId)),
-                    ApplicationStatus = applications.FirstOrDefault(a =>
-                        (a.UniversityProgramId == r.UniversityProgramId) ||
-                        (a.BtecProgramId == r.BtecProgramId))?.Status.ToString()
+                    // Branch by type to avoid null-OR false positives across different program types
+                    HasApplication = r.BtecProgramId.HasValue
+                        ? applications.Any(a => a.BtecProgramId == r.BtecProgramId)
+                        : applications.Any(a => a.UniversityProgramId == r.UniversityProgramId),
+                    ApplicationStatus = (r.BtecProgramId.HasValue
+                        ? applications.FirstOrDefault(a => a.BtecProgramId == r.BtecProgramId)
+                        : applications.FirstOrDefault(a => a.UniversityProgramId == r.UniversityProgramId))?.Status.ToString()
                 }).ToList(),
                 TotalCount = totalCount,
                 PageNumber = pageNumber,
@@ -261,16 +262,23 @@ namespace Uni_Selector.Controllers
                 catch { }
             }
 
-            // Check if student has application for this program
-            var hasApplication = await _context.StudentApplications
-                .AnyAsync(a => a.StudentId == student.Id &&
-                    ((a.UniversityProgramId == recommendation.UniversityProgramId) ||
-                     (a.BtecProgramId == recommendation.BtecProgramId)));
-
-            var application = await _context.StudentApplications
-                .FirstOrDefaultAsync(a => a.StudentId == student.Id &&
-                    ((a.UniversityProgramId == recommendation.UniversityProgramId) ||
-                     (a.BtecProgramId == recommendation.BtecProgramId)));
+            // Check if student has application for this program — branch by type to avoid null-OR false positives
+            bool hasApplication;
+            StudentApplication? application;
+            if (recommendation.BtecProgramId.HasValue)
+            {
+                hasApplication = await _context.StudentApplications
+                    .AnyAsync(a => a.StudentId == student.Id && a.BtecProgramId == recommendation.BtecProgramId);
+                application = await _context.StudentApplications
+                    .FirstOrDefaultAsync(a => a.StudentId == student.Id && a.BtecProgramId == recommendation.BtecProgramId);
+            }
+            else
+            {
+                hasApplication = await _context.StudentApplications
+                    .AnyAsync(a => a.StudentId == student.Id && a.UniversityProgramId == recommendation.UniversityProgramId);
+                application = await _context.StudentApplications
+                    .FirstOrDefaultAsync(a => a.StudentId == student.Id && a.UniversityProgramId == recommendation.UniversityProgramId);
+            }
 
             var model = new RecommendationDetailsViewModel
             {
