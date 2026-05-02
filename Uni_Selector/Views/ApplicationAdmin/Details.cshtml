@@ -1,0 +1,308 @@
+﻿@using Uni_Selector.ViewModels.AdminApplication
+@model ApplicationDetailsViewModel
+
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = "Application Details";
+}
+
+<div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-24">
+    <h6 class="fw-semibold mb-0">Application Details</h6>
+    <ul class="d-flex align-items-center gap-2">
+        <li class="fw-medium">
+            <a href="@Url.Action("Index", "Admin")" class="d-flex align-items-center gap-1 hover-text-primary">
+                <iconify-icon icon="solar:home-smile-angle-outline" class="icon text-lg"></iconify-icon>
+                Dashboard
+            </a>
+        </li>
+        <li>-</li>
+        <li class="fw-medium">
+            <a href="@Url.Action("Index")" class="hover-text-primary">Applications</a>
+        </li>
+        <li>-</li>
+        <li class="fw-medium">@Model.ApplicationNumber</li>
+    </ul>
+</div>
+
+<div class="row gy-4">
+    <!-- Left Column - Application Overview -->
+    <div class="col-lg-4">
+        <div class="card h-100 radius-12">
+            <div class="card-body p-24">
+                <div class="text-center border-bottom pb-24 mb-24">
+                    <div class="w-80-px h-80-px rounded-circle @(Model.Status == Uni_Selector.Models.Enums.ApplicationStatus.Approved ? "bg-success-focus" : Model.Status == Uni_Selector.Models.Enums.ApplicationStatus.Rejected ? "bg-danger-focus" : "bg-warning-focus") d-flex align-items-center justify-content-center mx-auto mb-16">
+                        <iconify-icon icon="solar:document-text-bold" class="text-48 @(Model.Status == Uni_Selector.Models.Enums.ApplicationStatus.Approved ? "text-success-600" : Model.Status == Uni_Selector.Models.Enums.ApplicationStatus.Rejected ? "text-danger-600" : "text-warning-600")"></iconify-icon>
+                    </div>
+                    <h5 class="mb-8">@Model.ApplicationNumber</h5>
+                    <span class="badge @(Model.Status == Uni_Selector.Models.Enums.ApplicationStatus.Pending ? "bg-warning-focus text-warning-600" : Model.Status == Uni_Selector.Models.Enums.ApplicationStatus.UnderReview ? "bg-info-focus text-info-600" : Model.Status == Uni_Selector.Models.Enums.ApplicationStatus.Approved ? "bg-success-focus text-success-600" : Model.Status == Uni_Selector.Models.Enums.ApplicationStatus.Rejected ? "bg-danger-focus text-danger-600" : Model.Status == Uni_Selector.Models.Enums.ApplicationStatus.Enrolled ? "bg-primary-focus text-primary-600" : "bg-neutral-200 text-neutral-600") px-24 py-8 radius-4 fw-medium text-md">
+                        @Model.StatusText
+                    </span>
+                </div>
+
+                <div class="mb-20">
+                    <h6 class="text-lg mb-16 fw-semibold">Application Info</h6>
+                    <ul class="list-unstyled">
+                        <li class="d-flex align-items-center gap-1 mb-12">
+                            <span class="w-40 text-sm fw-semibold text-secondary-light">Type:</span>
+                            <span class="w-60 text-sm fw-medium">
+                                @if (Model.IsBtec)
+                                {
+                                    <span class="badge bg-purple-focus text-purple-600 px-12 py-4">BTEC</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-info-focus text-info-600 px-12 py-4">Regular</span>
+                                }
+                            </span>
+                        </li>
+                        <li class="d-flex align-items-center gap-1 mb-12">
+                            <span class="w-40 text-sm fw-semibold text-secondary-light">Applied:</span>
+                            <span class="w-60 text-sm">@Model.ApplicationDate.ToString("dd MMM yyyy, HH:mm")</span>
+                        </li>
+                        @if (Model.ApprovalDate.HasValue)
+                        {
+                            <li class="d-flex align-items-center gap-1 mb-12">
+                                <span class="w-40 text-sm fw-semibold text-secondary-light">Approved:</span>
+                                <span class="w-60 text-sm">@Model.ApprovalDate.Value.ToString("dd MMM yyyy")</span>
+                            </li>
+                        }
+                        @if (Model.UpdatedAt.HasValue)
+                        {
+                            <li class="d-flex align-items-center gap-1 mb-12">
+                                <span class="w-40 text-sm fw-semibold text-secondary-light">Last Updated:</span>
+                                <span class="w-60 text-sm">@Model.UpdatedAt.Value.ToString("dd MMM yyyy")</span>
+                            </li>
+                        }
+                        @if (!string.IsNullOrEmpty(Model.AdmissionNumber))
+                        {
+                            <li class="d-flex align-items-center gap-1 mb-12">
+                                <span class="w-40 text-sm fw-semibold text-secondary-light">Admission #:</span>
+                                <span class="w-60 text-sm fw-semibold text-primary-600">@Model.AdmissionNumber</span>
+                            </li>
+                        }
+                    </ul>
+                </div>
+
+                @if (!string.IsNullOrEmpty(Model.Notes))
+                {
+                    <div class="alert alert-info mb-20">
+                        <h6 class="text-sm fw-semibold mb-8">Notes:</h6>
+                        <p class="text-xs mb-0">@Model.Notes</p>
+                    </div>
+                }
+
+                @if (!string.IsNullOrEmpty(Model.RejectionReason))
+                {
+                    <div class="alert alert-danger mb-20">
+                        <h6 class="text-sm fw-semibold mb-8">Rejection Reason:</h6>
+                        <p class="text-xs mb-0">@Model.RejectionReason</p>
+                    </div>
+                }
+
+                <div class="d-flex gap-2">
+                    <a href="@Url.Action("Override", new { id = Model.Id })" class="btn btn-warning flex-fill text-sm btn-sm px-12 py-8 radius-8">
+                        <iconify-icon icon="solar:shield-warning-outline" class="icon text-lg me-4"></iconify-icon>
+                        Override Status
+                    </a>
+                    <a href="@Url.Action("Index")" class="btn btn-outline-secondary flex-fill text-sm btn-sm px-12 py-8 radius-8">
+                        <iconify-icon icon="ep:back" class="icon text-lg me-4"></iconify-icon>
+                        Back
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Right Column - Detailed Information -->
+    <div class="col-lg-8">
+        <div class="card radius-12">
+            <div class="card-body p-24">
+                <!-- Student Information -->
+                <div class="mb-24 pb-24 border-bottom">
+                    <h6 class="text-lg mb-16 fw-semibold d-flex align-items-center gap-8">
+                        <iconify-icon icon="solar:user-outline" class="text-primary-600 text-xl"></iconify-icon>
+                        Student Information
+                    </h6>
+                    <div class="row">
+                        <div class="col-md-6 mb-12">
+                            <span class="text-sm text-secondary-light d-block mb-4">Full Name</span>
+                            <span class="text-md fw-semibold">@Model.StudentName</span>
+                        </div>
+                        <div class="col-md-6 mb-12">
+                            <span class="text-sm text-secondary-light d-block mb-4">Email</span>
+                            <span class="text-md">@Model.StudentEmail</span>
+                        </div>
+                        <div class="col-md-6 mb-12">
+                            <span class="text-sm text-secondary-light d-block mb-4">Phone</span>
+                            <span class="text-md">@Model.StudentPhone</span>
+                        </div>
+                        <div class="col-md-6 mb-12">
+                            <span class="text-sm text-secondary-light d-block mb-4">GPA</span>
+                            <span class="badge bg-primary-focus text-primary-600 px-16 py-6 fw-semibold">@Model.StudentGPA.ToString("F2")</span>
+                        </div>
+                        <div class="col-md-6 mb-12">
+                            <span class="text-sm text-secondary-light d-block mb-4">Location</span>
+                            <span class="text-md">@Model.StudentCity, @Model.StudentProvince</span>
+                        </div>
+                        <div class="col-md-6 mb-12">
+                            <span class="text-sm text-secondary-light d-block mb-4">Educational Path</span>
+                            <span class="badge bg-info-focus text-info-600 px-16 py-6">@Model.StudentPath</span>
+                        </div>
+                        <div class="col-md-6 mb-12">
+                            <span class="text-sm text-secondary-light d-block mb-4">Registration Budget</span>
+                            <span class="text-md fw-semibold text-success-600">@Model.RegistrationBudget.ToString("N2") JOD</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- University & Program Information -->
+                <div class="mb-24 pb-24 border-bottom">
+                    <h6 class="text-lg mb-16 fw-semibold d-flex align-items-center gap-8">
+                        <iconify-icon icon="solar:diploma-outline" class="text-primary-600 text-xl"></iconify-icon>
+                        University & Program
+                    </h6>
+                    <div class="row">
+                        <div class="col-12 mb-16">
+                            <span class="text-sm text-secondary-light d-block mb-4">University</span>
+                            <h6 class="text-md fw-semibold mb-0">@Model.UniversityName</h6>
+                        </div>
+                        <div class="col-md-6 mb-12">
+                            <span class="text-sm text-secondary-light d-block mb-4">Program (English)</span>
+                            <span class="text-md fw-medium">@Model.ProgramNameEnglish</span>
+                        </div>
+                        <div class="col-md-6 mb-12">
+                            <span class="text-sm text-secondary-light d-block mb-4">Program (Arabic)</span>
+                            <span class="text-md fw-medium" dir="rtl">@Model.ProgramNameArabic</span>
+                        </div>
+                        <div class="col-md-3 mb-12">
+                            <span class="text-sm text-secondary-light d-block mb-4">Degree</span>
+                            <span class="badge bg-success-focus text-success-600 px-12 py-6">@Model.Degree</span>
+                        </div>
+                        <div class="col-md-3 mb-12">
+                            <span class="text-sm text-secondary-light d-block mb-4">Language</span>
+                            <span class="badge bg-info-focus text-info-600 px-12 py-6">@Model.Language</span>
+                        </div>
+                        <div class="col-md-3 mb-12">
+                            <span class="text-sm text-secondary-light d-block mb-4">Study System</span>
+                            <span class="badge bg-warning-focus text-warning-600 px-12 py-6">@Model.StudySystem</span>
+                        </div>
+                        <div class="col-md-3 mb-12">
+                            <span class="text-sm text-secondary-light d-block mb-4">Duration</span>
+                            <span class="text-md">@Model.DurationInYears Year(s)</span>
+                        </div>
+                        <div class="col-md-6 mb-12">
+                            <span class="text-sm text-secondary-light d-block mb-4">Total Credit Hours</span>
+                            <span class="text-md fw-semibold">@Model.TotalCreditHours hrs</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Financial Information -->
+                <div class="mb-24 pb-24 border-bottom">
+                    <h6 class="text-lg mb-16 fw-semibold d-flex align-items-center gap-8">
+                        <iconify-icon icon="solar:wallet-outline" class="text-primary-600 text-xl"></iconify-icon>
+                        Financial Information
+                    </h6>
+                    <div class="row">
+                        <div class="col-md-4 mb-12">
+                            <span class="text-sm text-secondary-light d-block mb-4">Hour Price (Base)</span>
+                            <span class="text-md fw-semibold">@Model.HourPriceBase.ToString("N2") JOD</span>
+                        </div>
+                        <div class="col-md-4 mb-12">
+                            <span class="text-sm text-secondary-light d-block mb-4">Registration Fee</span>
+                            <span class="text-md fw-semibold">@Model.RegistrationFeeFirstSemester.ToString("N2") JOD</span>
+                        </div>
+                        @if (Model.HourDiscountPercent.HasValue)
+                        {
+                            <div class="col-md-4 mb-12">
+                                <span class="text-sm text-secondary-light d-block mb-4">Hour Discount</span>
+                                <span class="badge bg-success-focus text-success-600 px-16 py-8 fw-semibold">@Model.HourDiscountPercent.Value% OFF</span>
+                            </div>
+                        }
+                        @if (Model.PlannedFirstSemesterHours.HasValue)
+                        {
+                            <div class="col-md-4 mb-12">
+                                <span class="text-sm text-secondary-light d-block mb-4">Planned Hours (1st Semester)</span>
+                                <span class="text-md fw-semibold">@Model.PlannedFirstSemesterHours.Value hrs</span>
+                            </div>
+                        }
+                        <div class="col-md-4 mb-12">
+                            <span class="text-sm text-secondary-light d-block mb-4">Estimated Total Cost</span>
+                            <span class="text-lg fw-bold text-primary-600">@Model.EstimatedTotalCost.ToString("N2") JOD</span>
+                        </div>
+                        @if (!string.IsNullOrEmpty(Model.HourDiscountSetBy))
+                        {
+                            <div class="col-12">
+                                <div class="alert alert-info-focus mb-0">
+                                    <small class="text-xs">Discount set by <strong>@Model.HourDiscountSetBy</strong> on @Model.HourDiscountSetAt?.ToString("dd MMM yyyy")</small>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+
+                <!-- Discount Grant Information -->
+                @if (Model.HasDiscountGrant)
+                {
+                    <div class="mb-24 pb-24 border-bottom">
+                        <h6 class="text-lg mb-16 fw-semibold d-flex align-items-center gap-8">
+                            <iconify-icon icon="solar:ticket-outline" class="text-primary-600 text-xl"></iconify-icon>
+                            Discount Grant
+                        </h6>
+                        <div class="row">
+                            <div class="col-md-6 mb-12">
+                                <span class="text-sm text-secondary-light d-block mb-4">Discount Code</span>
+                                <code class="text-lg fw-bold">@Model.DiscountCode</code>
+                            </div>
+                            <div class="col-md-6 mb-12">
+                                <span class="text-sm text-secondary-light d-block mb-4">Status</span>
+                                <span class="badge @(Model.DiscountStatus == Uni_Selector.Models.Enums.DiscountStatus.Issued ? "bg-warning-focus text-warning-600" : Model.DiscountStatus == Uni_Selector.Models.Enums.DiscountStatus.Redeemed ? "bg-success-focus text-success-600" : "bg-danger-focus text-danger-600") px-16 py-6">
+                                    @Model.DiscountStatus
+                                </span>
+                            </div>
+                            <div class="col-md-6 mb-12">
+                                <span class="text-sm text-secondary-light d-block mb-4">Granted At</span>
+                                <span class="text-sm">@Model.DiscountGrantedAt?.ToString("dd MMM yyyy, HH:mm")</span>
+                            </div>
+                            @if (Model.DiscountRedeemedAt.HasValue)
+                            {
+                                <div class="col-md-6 mb-12">
+                                    <span class="text-sm text-secondary-light d-block mb-4">Redeemed At</span>
+                                    <span class="text-sm">@Model.DiscountRedeemedAt.Value.ToString("dd MMM yyyy, HH:mm")</span>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                }
+
+                <!-- Commission Information -->
+                @if (Model.HasCommission)
+                {
+                    <div>
+                        <h6 class="text-lg mb-16 fw-semibold d-flex align-items-center gap-8">
+                            <iconify-icon icon="solar:money-bag-outline" class="text-primary-600 text-xl"></iconify-icon>
+                            Commission
+                        </h6>
+                        <div class="row">
+                            <div class="col-md-6 mb-12">
+                                <span class="text-sm text-secondary-light d-block mb-4">Commission Amount</span>
+                                <span class="text-lg fw-bold text-success-600">@Model.CommissionAmount?.ToString("N2") JOD</span>
+                            </div>
+                            <div class="col-md-6 mb-12">
+                                <span class="text-sm text-secondary-light d-block mb-4">Settlement Status</span>
+                                @if (Model.CommissionSettled == true)
+                                {
+                                    <span class="badge bg-success-focus text-success-600 px-16 py-6">Settled</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-warning-focus text-warning-600 px-16 py-6">Pending</span>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>

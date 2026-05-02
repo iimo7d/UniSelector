@@ -1,0 +1,250 @@
+﻿@using Uni_Selector.ViewModels.AdminApplication
+@model ApplicationOverrideViewModel
+
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = "Override Application Status";
+}
+
+<div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-24">
+    <h6 class="fw-semibold mb-0">Override Application Status</h6>
+    <ul class="d-flex align-items-center gap-2">
+        <li class="fw-medium">
+            <a href="@Url.Action("Index", "Admin")" class="d-flex align-items-center gap-1 hover-text-primary">
+                <iconify-icon icon="solar:home-smile-angle-outline" class="icon text-lg"></iconify-icon>
+                Dashboard
+            </a>
+        </li>
+        <li>-</li>
+        <li class="fw-medium">
+            <a href="@Url.Action("Index")" class="hover-text-primary">Applications</a>
+        </li>
+        <li>-</li>
+        <li class="fw-medium">Override Status</li>
+    </ul>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-xxl-8 col-xl-10">
+        <!-- Warning Alert -->
+        <div class="alert alert-warning d-flex align-items-start gap-12 mb-24" role="alert">
+            <iconify-icon icon="solar:shield-warning-bold" class="icon text-xl flex-shrink-0 mt-4"></iconify-icon>
+            <div>
+                <h6 class="mb-8">Admin Override Action</h6>
+                <p class="mb-0 text-sm">You are about to override the application status. This action will be logged and cannot be undone automatically. Please ensure all information is correct before proceeding.</p>
+            </div>
+        </div>
+
+        <div class="card radius-12">
+            <div class="card-header py-16 px-24 bg-base border-bottom">
+                <h6 class="text-lg fw-semibold mb-0">Application Information</h6>
+            </div>
+            <div class="card-body p-24">
+                <!-- Current Application Info -->
+                <div class="bg-neutral-50 p-20 radius-8 mb-24">
+                    <div class="row">
+                        <div class="col-md-6 mb-12">
+                            <span class="text-sm text-secondary-light d-block mb-4">Application Number</span>
+                            <span class="text-md fw-semibold text-primary-600">@Model.ApplicationNumber</span>
+                        </div>
+                        <div class="col-md-6 mb-12">
+                            <span class="text-sm text-secondary-light d-block mb-4">Current Status</span>
+                            <span class="badge @(Model.CurrentStatus == Uni_Selector.Models.Enums.ApplicationStatus.Pending ? "bg-warning-focus text-warning-600" : Model.CurrentStatus == Uni_Selector.Models.Enums.ApplicationStatus.UnderReview ? "bg-info-focus text-info-600" : Model.CurrentStatus == Uni_Selector.Models.Enums.ApplicationStatus.Approved ? "bg-success-focus text-success-600" : Model.CurrentStatus == Uni_Selector.Models.Enums.ApplicationStatus.Rejected ? "bg-danger-focus text-danger-600" : Model.CurrentStatus == Uni_Selector.Models.Enums.ApplicationStatus.Enrolled ? "bg-primary-focus text-primary-600" : "bg-neutral-200 text-neutral-600") px-20 py-8 fw-semibold text-md">
+                                @Model.CurrentStatus
+                            </span>
+                        </div>
+                        <div class="col-md-12 mb-12">
+                            <span class="text-sm text-secondary-light d-block mb-4">Student</span>
+                            <span class="text-md fw-medium">@Model.StudentName</span>
+                        </div>
+                        <div class="col-md-6 mb-12">
+                            <span class="text-sm text-secondary-light d-block mb-4">University</span>
+                            <span class="text-md">@Model.UniversityName</span>
+                        </div>
+                        <div class="col-md-6 mb-12">
+                            <span class="text-sm text-secondary-light d-block mb-4">Program</span>
+                            <span class="text-md">@Model.ProgramName</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Override Form -->
+                <form asp-action="Override" asp-route-id="@Model.ApplicationId" method="post" id="overrideForm">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" asp-for="ApplicationId" />
+                    <input type="hidden" asp-for="ApplicationNumber" />
+                    <input type="hidden" asp-for="StudentName" />
+                    <input type="hidden" asp-for="UniversityName" />
+                    <input type="hidden" asp-for="ProgramName" />
+                    <input type="hidden" asp-for="CurrentStatus" />
+
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                    <h6 class="text-md text-primary-light mb-16 fw-semibold">Override Information</h6>
+
+                    <div class="row gy-3">
+                        <!-- New Status -->
+                        <div class="col-12">
+                            <label asp-for="NewStatus" class="form-label fw-semibold text-primary-light text-sm mb-8">
+                                New Status <span class="text-danger-600">*</span>
+                            </label>
+                            <select asp-for="NewStatus" class="form-control radius-8" id="newStatusSelect" asp-items="Html.GetEnumSelectList<Uni_Selector.Models.Enums.ApplicationStatus>()">
+                                <option value="">Select New Status</option>
+                            </select>
+                            <span asp-validation-for="NewStatus" class="text-danger text-sm"></span>
+                        </div>
+
+                        <!-- Admission Number (shown for Approved status) -->
+                        <div class="col-12" id="admissionNumberField" style="display: none;">
+                            <label asp-for="AdmissionNumber" class="form-label fw-semibold text-primary-light text-sm mb-8">
+                                Admission Number <span class="text-secondary-light">(for Approved status)</span>
+                            </label>
+                            <input asp-for="AdmissionNumber" type="text" class="form-control radius-8" placeholder="e.g., ADM2024-12345">
+                            <span asp-validation-for="AdmissionNumber" class="text-danger text-sm"></span>
+                        </div>
+
+                        <!-- Rejection Reason (shown for Rejected status) -->
+                        <div class="col-12" id="rejectionReasonField" style="display: none;">
+                            <label asp-for="RejectionReason" class="form-label fw-semibold text-primary-light text-sm mb-8">
+                                Rejection Reason <span class="text-danger-600">*</span>
+                            </label>
+                            <textarea asp-for="RejectionReason" class="form-control radius-8" rows="3" placeholder="Please provide a clear reason for rejection..."></textarea>
+                            <span asp-validation-for="RejectionReason" class="text-danger text-sm"></span>
+                        </div>
+
+                        <!-- Override Notes -->
+                        <div class="col-12">
+                            <label asp-for="OverrideNotes" class="form-label fw-semibold text-primary-light text-sm mb-8">
+                                Override Notes <span class="text-secondary-light">(Optional - for internal records)</span>
+                            </label>
+                            <textarea asp-for="OverrideNotes" class="form-control radius-8" rows="4" placeholder="Add any additional notes about this override..."></textarea>
+                            <span asp-validation-for="OverrideNotes" class="text-danger text-sm"></span>
+                            <small class="text-secondary-light d-block mt-8">
+                                <iconify-icon icon="solar:info-circle-outline" class="text-sm"></iconify-icon>
+                                These notes will be appended to the application notes with an [ADMIN OVERRIDE] tag.
+                            </small>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="d-flex align-items-center justify-content-center gap-3 mt-32">
+                        <a href="@Url.Action("Details", new { id = Model.ApplicationId })" class="btn btn-outline-secondary border border-secondary-600 text-md px-56 py-11 radius-8">
+                            <iconify-icon icon="ep:back" class="icon text-lg me-4"></iconify-icon>
+                            Cancel
+                        </a>
+                        <button type="submit" class="btn btn-warning border border-warning-600 text-md px-56 py-11 radius-8" id="submitBtn">
+                            <iconify-icon icon="solar:shield-check-outline" class="icon text-lg me-4"></iconify-icon>
+                            Override Status
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        // Show/hide fields based on selected status
+        document.getElementById('newStatusSelect').addEventListener('change', function() {
+            const selectedStatus = parseInt(this.value);
+            const admissionField = document.getElementById('admissionNumberField');
+            const rejectionField = document.getElementById('rejectionReasonField');
+
+            // Hide all conditional fields
+            admissionField.style.display = 'none';
+            rejectionField.style.display = 'none';
+
+            // Show relevant fields based on status
+            // Approved = 3, Rejected = 4
+            if (selectedStatus === 3) {
+                admissionField.style.display = 'block';
+            } else if (selectedStatus === 4) {
+                rejectionField.style.display = 'block';
+            }
+        });
+
+        // Initialize - check if there's a pre-selected value
+        window.addEventListener('DOMContentLoaded', function() {
+            const statusSelect = document.getElementById('newStatusSelect');
+            if (statusSelect.value) {
+                statusSelect.dispatchEvent(new Event('change'));
+            }
+        });
+
+        // Form submission confirmation
+        document.getElementById('overrideForm').addEventListener('submit', function(e) {
+            const newStatus = document.getElementById('newStatusSelect').value;
+
+            if (!newStatus) {
+                e.preventDefault();
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Required Field',
+                    text: 'Please select a new status',
+                    confirmButtonColor: '#dc3545'
+                });
+                return;
+            }
+
+            e.preventDefault();
+            const form = this;
+
+            // Get status names for display
+            const statusSelect = document.getElementById('newStatusSelect');
+            const newStatusText = statusSelect.options[statusSelect.selectedIndex].text;
+            const currentStatusText = '@Model.CurrentStatus';
+
+            Swal.fire({
+                title: 'Confirm Status Override',
+                html: `
+                    <div class="text-start">
+                        <p><strong>Application:</strong> @Model.ApplicationNumber</p>
+                        <p><strong>Student:</strong> @Model.StudentName</p>
+                        <hr>
+                        <p class="mb-2">Change status from:</p>
+                        <p class="text-warning fw-bold mb-2">${currentStatusText}</p>
+                        <p class="mb-2">To:</p>
+                        <p class="text-primary fw-bold">${newStatusText}</p>
+                        <hr>
+                        <small class="text-danger">
+                            <i class="bi bi-exclamation-triangle"></i>
+                            This action will be logged and will affect commission calculations and notifications.
+                        </small>
+                    </div>
+                `,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#FFA500',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Yes, Override Status',
+                cancelButtonText: 'Cancel',
+                width: '600px'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Disable submit button and show loading
+                    const submitBtn = document.getElementById('submitBtn');
+                    submitBtn.disabled = true;
+                    submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-8"></span> Processing...';
+                    form.submit();
+                }
+            });
+        });
+
+        // Show validation errors from TempData
+        @if (TempData["Error"] != null)
+        {
+                <text>
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error!',
+                    text: '@TempData["Error"]',
+                    confirmButtonColor: '#dc3545'
+                });
+                </text>
+        }
+    </script>
+}

@@ -1,0 +1,299 @@
+﻿@using Uni_Selector.Models.Enums
+@model Uni_Selector.ViewModels.Commission.CommissionListViewModel
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = "Commission History";
+}
+
+<div class="dashboard-main-body">
+    <!-- Breadcrumb -->
+    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-24">
+        <h6 class="fw-semibold mb-0">Commission History</h6>
+        <ul class="d-flex align-items-center gap-2">
+            <li class="fw-medium">
+                <a asp-controller="UniversityRep" asp-action="Index" class="d-flex align-items-center gap-1 hover-text-primary">
+                    <iconify-icon icon="solar:home-smile-angle-outline" class="icon text-lg"></iconify-icon>
+                    Dashboard
+                </a>
+            </li>
+            <li>-</li>
+            <li class="fw-medium">Commissions</li>
+        </ul>
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="row gy-4 mb-24">
+        <div class="col-xxl-4 col-sm-6">
+            <div class="card p-3 shadow-2 radius-8 border h-100 bg-gradient-start-1">
+                <div class="card-body p-0">
+                    <div class="d-flex flex-wrap align-items-center justify-content-between gap-1 mb-8">
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="mb-0 w-48-px h-48-px bg-primary-600 flex-shrink-0 text-white d-flex justify-content-center align-items-center radius-8 h6 mb-0">
+                                <iconify-icon icon="solar:dollar-bold-duotone" class="icon"></iconify-icon>
+                            </span>
+                            <span class="mb-0 fw-medium text-secondary-light text-md">Total Commission</span>
+                        </div>
+                    </div>
+                    <h4 class="mb-0 text-primary-light fw-bold">@Model.TotalCommissionAmount.ToString("N2") JOD</h4>
+                    <p class="fw-medium text-sm text-secondary-light mb-0 mt-2">All time earnings</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xxl-4 col-sm-6">
+            <div class="card p-3 shadow-2 radius-8 border h-100 bg-gradient-start-2">
+                <div class="card-body p-0">
+                    <div class="d-flex flex-wrap align-items-center justify-content-between gap-1 mb-8">
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="mb-0 w-48-px h-48-px bg-success-600 flex-shrink-0 text-white d-flex justify-content-center align-items-center radius-8 h6 mb-0">
+                                <iconify-icon icon="solar:check-circle-bold" class="icon"></iconify-icon>
+                            </span>
+                            <span class="mb-0 fw-medium text-secondary-light text-md">Settled</span>
+                        </div>
+                    </div>
+                    <h4 class="mb-0 text-primary-light fw-bold">@Model.SettledAmount.ToString("N2") JOD</h4>
+                    <p class="fw-medium text-sm text-secondary-light mb-0 mt-2">@Model.SettledCount commissions</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xxl-4 col-sm-6">
+            <div class="card p-3 shadow-2 radius-8 border h-100 bg-gradient-start-3">
+                <div class="card-body p-0">
+                    <div class="d-flex flex-wrap align-items-center justify-content-between gap-1 mb-8">
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="mb-0 w-48-px h-48-px bg-warning-600 flex-shrink-0 text-white d-flex justify-content-center align-items-center radius-8 h6 mb-0">
+                                <iconify-icon icon="solar:clock-circle-bold" class="icon"></iconify-icon>
+                            </span>
+                            <span class="mb-0 fw-medium text-secondary-light text-md">Pending</span>
+                        </div>
+                    </div>
+                    <h4 class="mb-0 text-primary-light fw-bold">@Model.PendingAmount.ToString("N2") JOD</h4>
+                    <p class="fw-medium text-sm text-secondary-light mb-0 mt-2">@Model.PendingCount commissions</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Commissions Table -->
+    <div class="card h-100 p-0 radius-12">
+        <div class="card-header border-bottom bg-base py-16 px-24 d-flex align-items-center justify-content-between flex-wrap">
+            <h6 class="text-lg fw-semibold mb-0">Commission History for @Model.UniversityName</h6>
+        </div>
+
+        <div class="card-body p-24">
+            <!-- Filters -->
+            <form method="get" class="row mb-20 gy-3">
+                <div class="col-md-3">
+                    <input type="text" name="search" value="@Model.Search" class="form-control radius-8" placeholder="Search...">
+                </div>
+                <div class="col-md-2">
+                    <select name="settled" class="form-control radius-8 form-select">
+                        <option value="">All Status</option>
+                        <option value="true" selected="@(Model.SettledFilter == true)">Settled</option>
+                        <option value="false" selected="@(Model.SettledFilter == false)">Pending</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <select name="mode" class="form-control radius-8 form-select">
+                        <option value="">All Modes</option>
+                        @foreach (CommissionMode mode in Enum.GetValues(typeof(CommissionMode)))
+                        {
+                            <option value="@((int)mode)" selected="@(Model.ModeFilter == mode)">
+                                @(mode == CommissionMode.FirstSemesterRegistration2Percent ? "1st Semester" :
+                                                            mode == CommissionMode.ProgramTotalHours2Percent ? "Total Hours" : "1st Sem + Hours")
+                            </option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <input type="date" name="fromDate" value="@Model.FromDate?.ToString("yyyy-MM-dd")" class="form-control radius-8">
+                </div>
+                <div class="col-md-2">
+                    <input type="date" name="toDate" value="@Model.ToDate?.ToString("yyyy-MM-dd")" class="form-control radius-8">
+                </div>
+                <div class="col-md-1">
+                    <button type="submit" class="btn btn-primary w-100 radius-8">
+                        <iconify-icon icon="ic:baseline-search"></iconify-icon>
+                    </button>
+                </div>
+            </form>
+
+            <!-- Results count -->
+            <div class="d-flex justify-content-between align-items-center mb-16">
+                <span class="text-md text-secondary-light">Showing @Model.Commissions.Count of @Model.TotalCount commissions</span>
+            </div>
+
+            <!-- Table -->
+            <div class="table-responsive">
+                <table class="table bordered-table mb-0">
+                    <thead>
+                        <tr>
+                            <th>Student</th>
+                            <th>Application</th>
+                            <th>Mode</th>
+                            <th>Base Amount</th>
+                            <th>Commission (2%)</th>
+                            <th>Status</th>
+                            <th>Date</th>
+                            <th class="text-center">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.Commissions.Any())
+                        {
+                            @foreach (var c in Model.Commissions)
+                            {
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="flex-shrink-0 me-12 radius-8 bg-primary-50 d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                                                <iconify-icon icon="solar:user-bold" class="text-primary-600 text-xl"></iconify-icon>
+                                            </div>
+                                            <div>
+                                                <h6 class="text-md mb-0 fw-medium">@c.StudentName</h6>
+                                                <span class="text-sm text-secondary-light">@c.StudentEmail</span>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="fw-medium d-block">@c.ApplicationNumber</span>
+                                        @if (!string.IsNullOrWhiteSpace(c.AdmissionNumber))
+                                        {
+                                            <span class="text-sm text-success-600">@c.AdmissionNumber</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        @switch (c.Mode)
+                                        {
+                                            case CommissionMode.FirstSemesterRegistration2Percent:
+                                                <span class="badge bg-info-focus text-info-main">1st Semester</span>
+                                                break;
+                                            case CommissionMode.ProgramTotalHours2Percent:
+                                                <span class="badge bg-purple-focus text-purple-main">Total Hours</span>
+                                                break;
+                                            case CommissionMode.FirstSemesterRegPlusHours2Percent:
+                                                <span class="badge bg-primary-focus text-primary-main">1st Sem + Hours</span>
+                                                break;
+                                        }
+                                    </td>
+                                    <td><span class="fw-medium">@c.BaseAmount.ToString("N2") JOD</span></td>
+                                    <td><span class="fw-bold text-primary-600">@c.AmountEstimated.ToString("N2") JOD</span></td>
+                                    <td>
+                                        @if (c.Settled)
+                                        {
+                                            <div>
+                                                <span class="bg-success-focus text-success-main px-24 py-4 rounded-pill fw-medium text-sm d-block mb-4">Settled</span>
+                                                @if (!string.IsNullOrWhiteSpace(c.SettlementPeriod))
+                                                {
+                                                    <a asp-action="Settlement" asp-route-settlementId="@c.MonthlySettlementId" class="text-xs text-primary-600">
+                                                        @c.SettlementPeriod
+                                                    </a>
+                                                }
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <span class="bg-warning-focus text-warning-main px-24 py-4 rounded-pill fw-medium text-sm">Pending</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        <span class="d-block">@c.CreatedAt.ToString("MMM dd, yyyy")</span>
+                                        @if (c.CalculatedAt.HasValue)
+                                        {
+                                            <span class="text-xs text-secondary-light">Calc: @c.CalculatedAt.Value.ToString("MMM dd")</span>
+                                        }
+                                    </td>
+                                    <td class="text-center">
+                                        <a asp-action="Details" asp-route-id="@c.Id" class="w-32-px h-32-px bg-primary-light text-primary-600 rounded-circle d-inline-flex align-items-center justify-content-center">
+                                            <iconify-icon icon="iconamoon:eye-light"></iconify-icon>
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="8" class="text-center text-secondary-light py-24">
+                                    <iconify-icon icon="tabler:database-off" class="text-xxl mb-12"></iconify-icon>
+                                    <p class="mb-0">No commissions found.</p>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            @if (Model.TotalPages > 1)
+            {
+                <div class="d-flex justify-content-center mt-24">
+                    <ul class="pagination">
+                        @if (Model.CurrentPage > 1)
+                        {
+                            <li class="page-item">
+                                <a class="page-link" asp-action="Index" asp-route-page="@(Model.CurrentPage - 1)"
+                                   asp-route-search="@Model.Search" asp-route-settled="@Model.SettledFilter"
+                                   asp-route-mode="@Model.ModeFilter"
+                                   asp-route-fromDate="@Model.FromDate?.ToString("yyyy-MM-dd")"
+                                   asp-route-toDate="@Model.ToDate?.ToString("yyyy-MM-dd")">Previous</a>
+                            </li>
+                        }
+                        @for (int i = 1; i <= Model.TotalPages; i++)
+                        {
+                            <li class="page-item @(i == Model.CurrentPage ? "active" : "")">
+                                <a class="page-link" asp-action="Index" asp-route-page="@i"
+                                   asp-route-search="@Model.Search" asp-route-settled="@Model.SettledFilter"
+                                   asp-route-mode="@Model.ModeFilter"
+                                   asp-route-fromDate="@Model.FromDate?.ToString("yyyy-MM-dd")"
+                                   asp-route-toDate="@Model.ToDate?.ToString("yyyy-MM-dd")">@i</a>
+                            </li>
+                        }
+                        @if (Model.CurrentPage < Model.TotalPages)
+                        {
+                            <li class="page-item">
+                                <a class="page-link" asp-action="Index" asp-route-page="@(Model.CurrentPage + 1)"
+                                   asp-route-search="@Model.Search" asp-route-settled="@Model.SettledFilter"
+                                   asp-route-mode="@Model.ModeFilter"
+                                   asp-route-fromDate="@Model.FromDate?.ToString("yyyy-MM-dd")"
+                                   asp-route-toDate="@Model.ToDate?.ToString("yyyy-MM-dd")">Next</a>
+                            </li>
+                        }
+                    </ul>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        @if (TempData["Success"] != null)
+        {
+                <text>
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success!',
+                    text: '@TempData["Success"]',
+                    timer: 3000,
+                    showConfirmButton: false
+                });
+                </text>
+        }
+
+        @if (TempData["Error"] != null)
+        {
+                <text>
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error!',
+                    text: '@TempData["Error"]',
+                    timer: 3000,
+                    showConfirmButton: false
+                });
+                </text>
+        }
+    </script>
+}

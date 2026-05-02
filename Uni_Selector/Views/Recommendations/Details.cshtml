@@ -1,0 +1,491 @@
+﻿@using Uni_Selector.ViewModels.Recommendations
+@model RecommendationDetailsViewModel
+
+@{
+    ViewData["Title"] = "Recommendation Details";
+}
+
+<!-- Breadcrumb -->
+<section>
+    <div class="bg-lightGrey10 dark:bg-lightGrey10-dark relative z-0 overflow-y-visible py-50px md:py-20 lg:py-100px 2xl:pb-150px 2xl:pt-40.5">
+        <div class="container">
+            <div class="text-center">
+                <h1 class="text-3xl md:text-size-40 2xl:text-size-55 font-bold text-blackColor dark:text-blackColor-dark mb-7 md:mb-6 pt-3">
+                    Program Details
+                </h1>
+                <ul class="flex gap-1 justify-center">
+                    <li>
+                        <a asp-controller="Home" asp-action="Index" class="text-lg text-blackColor2 dark:text-blackColor2-dark">
+                            Home <i class="icofont-simple-right"></i>
+                        </a>
+                    </li>
+                    <li>
+                        <a asp-action="Index" class="text-lg text-blackColor2 dark:text-blackColor2-dark">
+                            Recommendations <i class="icofont-simple-right"></i>
+                        </a>
+                    </li>
+                    <li>
+                        <span class="text-lg text-blackColor2 dark:text-blackColor2-dark">Details</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Course Details Section -->
+<section>
+    <div class="container py-10 md:py-50px lg:py-60px 2xl:py-100px">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-30px">
+            <!-- Main Content -->
+            <div class="lg:col-start-1 lg:col-span-8 space-y-[35px]">
+                <div data-aos="fade-up">
+                    <!-- University Image -->
+                    @if (!string.IsNullOrEmpty(Model.UniversityImage))
+                    {
+                        <div class="overflow-hidden relative mb-5">
+                            <img src="@Model.UniversityImage" alt="@Model.UniversityName" class="w-full rounded-lg" />
+                        </div>
+                    }
+
+                    <!-- Content -->
+                    <div>
+                        <!-- Score and Tags -->
+                        <div class="flex items-center justify-between flex-wrap gap-6 mb-30px" data-aos="fade-up">
+                            <div class="flex items-center gap-6">
+                                <button class="text-sm text-whiteColor bg-primaryColor border border-primaryColor px-26px py-0.5 leading-23px font-semibold rounded inline-block">
+                                    Match Score: @Model.Score.ToString("F1")%
+                                </button>
+                                <button class="text-sm text-whiteColor @(Model.IsBtec ? "bg-orange-500 border-orange-500" : "bg-secondaryColor border-secondaryColor") border px-22px py-0.5 leading-23px font-semibold rounded inline-block">
+                                    @(Model.IsBtec ? "BTEC Program" : "Regular Program")
+                                </button>
+                                @if (Model.HasApplication)
+                                {
+                                    <button class="text-sm text-whiteColor bg-purple-600 border-purple-600 border px-22px py-0.5 leading-23px font-semibold rounded inline-block">
+                                        <i class="icofont-check-circled"></i> Applied
+                                    </button>
+                                }
+                            </div>
+                            <div>
+                                <p class="text-sm text-contentColor dark:text-contentColor-dark font-medium">
+                                    Estimated Cost:
+                                    <span class="text-blackColor dark:text-blackColor-dark font-bold">@Model.EstimatedTotalCost.ToString("F2") JOD</span>
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Program Title -->
+                        <h4 class="text-size-32 md:text-4xl leading-43px md:leading-14.5 font-bold text-blackColor dark:text-blackColor-dark mb-15px">
+                            @Model.ProgramName
+                        </h4>
+
+                        @if (!string.IsNullOrEmpty(Model.ProgramNameArabic))
+                        {
+                            <p class="text-xl text-contentColor dark:text-contentColor-dark mb-4">@Model.ProgramNameArabic</p>
+                        }
+
+                        <!-- University Info -->
+                        <div class="flex items-center gap-4 mb-30px">
+                            @if (!string.IsNullOrEmpty(Model.UniversityLogo))
+                            {
+                                <img src="@Model.UniversityLogo" alt="@Model.UniversityName" class="h-16 w-auto object-contain" />
+                            }
+                            <div>
+                                <h5 class="text-lg font-bold text-blackColor dark:text-blackColor-dark">@Model.UniversityName</h5>
+                                <p class="text-sm text-contentColor dark:text-contentColor-dark">
+                                    <i class="icofont-location-pin text-primaryColor"></i> @Model.UniversityAddress
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Recommendation Reasons -->
+                        @if (Model.Reasons.Any())
+                        {
+                            <div class="mb-30px p-5 bg-green-50 dark:bg-green-900 rounded-lg">
+                                <h5 class="text-lg font-bold text-blackColor dark:text-blackColor-dark mb-3 flex items-center">
+                                    <i class="icofont-star text-green-600 mr-2"></i>
+                                    Why This Program Matches You
+                                </h5>
+                                <ul class="space-y-2">
+                                    @foreach (var reason in Model.Reasons)
+                                    {
+                                        <li class="flex items-start text-contentColor dark:text-contentColor-dark">
+                                            <i class="icofont-check-circled text-green-600 mr-2 mt-1"></i>
+                                            <span>@reason</span>
+                                        </li>
+                                    }
+                                </ul>
+                            </div>
+                        }
+
+                        <!-- Tabs -->
+                        <div class="mb-10" data-aos="fade-up">
+                            <div class="flex flex-wrap mb-10 rounded gap-10px tab-btn-wrap">
+                                <button class="is-checked relative p-10px md:px-25px md:py-15px lg:py-3 2xl:py-15px 2xl:px-45px text-blackColor bg-whiteColor hover:bg-primaryColor hover:text-whiteColor shadow-overview-button dark:bg-whiteColor-dark dark:text-blackColor-dark dark:hover:bg-primaryColor dark:hover:text-whiteColor flex items-center active">
+                                    <i class="icofont-paper mr-2"></i> Overview
+                                </button>
+                                <button class="is-checked relative p-10px md:px-25px md:py-15px lg:py-3 2xl:py-15px 2xl:px-45px text-blackColor bg-whiteColor hover:bg-primaryColor hover:text-whiteColor shadow-overview-button dark:bg-whiteColor-dark dark:text-blackColor-dark dark:hover:bg-primaryColor dark:hover:text-whiteColor flex items-center">
+                                    <i class="icofont-tasks mr-2"></i> Requirements
+                                </button>
+                                <button class="is-checked relative p-10px md:px-25px md:py-15px lg:py-3 2xl:py-15px 2xl:px-45px text-blackColor bg-whiteColor hover:bg-primaryColor hover:text-whiteColor shadow-overview-button dark:bg-whiteColor-dark dark:text-blackColor-dark dark:hover:bg-primaryColor dark:hover:text-whiteColor flex items-center">
+                                    <i class="icofont-university mr-2"></i> University Info
+                                </button>
+                            </div>
+
+                            <div class="tab-contents">
+                                <!-- Overview Tab -->
+                                <div>
+                                    <h3 class="text-2xl font-bold text-blackColor dark:text-blackColor-dark mb-15px">
+                                        Program Overview
+                                    </h3>
+                                    <p class="text-sm text-contentColor dark:text-contentColor-dark leading-7 mb-6">
+                                        @Model.Description
+                                    </p>
+
+                                    <h4 class="text-lg font-bold text-blackColor dark:text-blackColor-dark mb-10px">Program Highlights:</h4>
+                                    <ul class="space-y-3 mb-30px">
+                                        <li class="flex items-center group">
+                                            <i class="icofont-check px-2 py-2 text-primaryColor bg-whitegrey3 bg-opacity-40 group-hover:bg-primaryColor group-hover:text-white mr-15px"></i>
+                                            <p class="text-sm font-medium text-contentColor dark:text-contentColor-dark">
+                                                Total Credit Hours: <strong>@Model.TotalCreditHours Hours</strong>
+                                            </p>
+                                        </li>
+                                        <li class="flex items-center group">
+                                            <i class="icofont-check px-2 py-2 text-primaryColor bg-whitegrey3 bg-opacity-40 group-hover:bg-primaryColor group-hover:text-white mr-15px"></i>
+                                            <p class="text-sm font-medium text-contentColor dark:text-contentColor-dark">
+                                                Duration: <strong>@Model.DurationYears Years</strong>
+                                            </p>
+                                        </li>
+                                        <li class="flex items-center group">
+                                            <i class="icofont-check px-2 py-2 text-primaryColor bg-whitegrey3 bg-opacity-40 group-hover:bg-primaryColor group-hover:text-white mr-15px"></i>
+                                            <p class="text-sm font-medium text-contentColor dark:text-contentColor-dark">
+                                                Language: <strong>@Model.Language</strong>
+                                            </p>
+                                        </li>
+                                        @if (!string.IsNullOrEmpty(Model.Degree))
+                                        {
+                                            <li class="flex items-center group">
+                                                <i class="icofont-check px-2 py-2 text-primaryColor bg-whitegrey3 bg-opacity-40 group-hover:bg-primaryColor group-hover:text-white mr-15px"></i>
+                                                <p class="text-sm font-medium text-contentColor dark:text-contentColor-dark">
+                                                    Degree: <strong>@Model.Degree</strong>
+                                                </p>
+                                            </li>
+                                        }
+                                        @if (!string.IsNullOrEmpty(Model.BtecLevel))
+                                        {
+                                            <li class="flex items-center group">
+                                                <i class="icofont-check px-2 py-2 text-primaryColor bg-whitegrey3 bg-opacity-40 group-hover:bg-primaryColor group-hover:text-white mr-15px"></i>
+                                                <p class="text-sm font-medium text-contentColor dark:text-contentColor-dark">
+                                                    BTEC Level: <strong>@Model.BtecLevel</strong>
+                                                </p>
+                                            </li>
+                                        }
+                                        @if (!string.IsNullOrEmpty(Model.TechnicalField))
+                                        {
+                                            <li class="flex items-center group">
+                                                <i class="icofont-check px-2 py-2 text-primaryColor bg-whitegrey3 bg-opacity-40 group-hover:bg-primaryColor group-hover:text-white mr-15px"></i>
+                                                <p class="text-sm font-medium text-contentColor dark:text-contentColor-dark">
+                                                    Technical Field: <strong>@Model.TechnicalField</strong>
+                                                </p>
+                                            </li>
+                                        }
+                                    </ul>
+                                </div>
+
+                                <!-- Requirements Tab -->
+                                <div class="hidden">
+                                    <h3 class="text-2xl font-bold text-blackColor dark:text-blackColor-dark mb-15px">
+                                        Entry Requirements
+                                    </h3>
+                                    <ul class="space-y-3">
+                                        <li class="flex items-start">
+                                            <i class="icofont-star text-secondaryColor mr-3 mt-1"></i>
+                                            <p class="text-sm text-contentColor dark:text-contentColor-dark">
+                                                Minimum GPA: <strong class="text-blackColor dark:text-blackColor-dark">@Model.MinGPA</strong>
+                                            </p>
+                                        </li>
+                                        @if (!string.IsNullOrEmpty(Model.RequiredPath))
+                                        {
+                                            <li class="flex items-start">
+                                                <i class="icofont-star text-secondaryColor mr-3 mt-1"></i>
+                                                <p class="text-sm text-contentColor dark:text-contentColor-dark">
+                                                    Required Path: <strong class="text-blackColor dark:text-blackColor-dark">@Model.RequiredPath</strong>
+                                                </p>
+                                            </li>
+                                        }
+                                        <li class="flex items-start">
+                                            <i class="icofont-star text-secondaryColor mr-3 mt-1"></i>
+                                            <p class="text-sm text-contentColor dark:text-contentColor-dark">
+                                                Semester Start: <strong class="text-blackColor dark:text-blackColor-dark">@Model.SemesterStartDate.ToString("dd MMM yyyy")</strong>
+                                            </p>
+                                        </li>
+                                        <li class="flex items-start">
+                                            <i class="icofont-star text-secondaryColor mr-3 mt-1"></i>
+                                            <p class="text-sm text-contentColor dark:text-contentColor-dark">
+                                                Available Seats: <strong class="text-blackColor dark:text-blackColor-dark">@Model.Capacity</strong>
+                                            </p>
+                                        </li>
+                                    </ul>
+                                </div>
+
+                                <!-- University Info Tab -->
+                                <div class="hidden">
+                                    <h3 class="text-2xl font-bold text-blackColor dark:text-blackColor-dark mb-15px">
+                                        About @Model.UniversityName
+                                    </h3>
+                                    <div class="space-y-4">
+                                        <div class="flex items-start">
+                                            <i class="icofont-location-pin text-primaryColor mr-3 mt-1 text-xl"></i>
+                                            <div>
+                                                <p class="font-semibold text-blackColor dark:text-blackColor-dark">Address</p>
+                                                <p class="text-sm text-contentColor dark:text-contentColor-dark">@Model.UniversityAddress</p>
+                                            </div>
+                                        </div>
+                                        <div class="flex items-start">
+                                            <i class="icofont-phone text-primaryColor mr-3 mt-1 text-xl"></i>
+                                            <div>
+                                                <p class="font-semibold text-blackColor dark:text-blackColor-dark">Phone</p>
+                                                <p class="text-sm text-contentColor dark:text-contentColor-dark">@Model.UniversityPhone</p>
+                                            </div>
+                                        </div>
+                                        <div class="flex items-start">
+                                            <i class="icofont-email text-primaryColor mr-3 mt-1 text-xl"></i>
+                                            <div>
+                                                <p class="font-semibold text-blackColor dark:text-blackColor-dark">Email</p>
+                                                <p class="text-sm text-contentColor dark:text-contentColor-dark">@Model.UniversityEmail</p>
+                                            </div>
+                                        </div>
+                                        @if (Model.DistanceInKm.HasValue)
+                                        {
+                                            <div class="flex items-start">
+                                                <i class="icofont-map text-primaryColor mr-3 mt-1 text-xl"></i>
+                                                <div>
+                                                    <p class="font-semibold text-blackColor dark:text-blackColor-dark">Distance</p>
+                                                    <p class="text-sm text-contentColor dark:text-contentColor-dark">Approximately @Model.DistanceInKm.Value.ToString("F1") km from your location</p>
+                                                </div>
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sidebar -->
+            <div class="lg:col-start-9 lg:col-span-4">
+                <div class="flex flex-col">
+                    <!-- Price Section -->
+                    <div class="py-33px px-25px shadow-event mb-30px bg-whiteColor dark:bg-whiteColor-dark rounded-md" data-aos="fade-up">
+                        <div class="flex justify-between mb-5">
+                            <div class="text-size-21 font-bold text-primaryColor font-inter leading-25px">
+                                @Model.EstimatedTotalCost.ToString("F2") JOD
+                                <p class="text-xs text-contentColor dark:text-contentColor-dark mt-1">Estimated First Semester (with 5% discount)</p>
+                            </div>
+                            <div>
+                                <span class="uppercase text-sm font-semibold text-green-600 leading-27px px-2 bg-green-100">
+                                    5% OFF
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- Application Status -->
+                        @if (Model.HasApplication)
+                        {
+                            <div class="mb-5 p-4 bg-purple-50 dark:bg-purple-900 rounded">
+                                <p class="text-sm font-semibold text-purple-800 dark:text-purple-200 mb-2">
+                                    <i class="icofont-check-circled"></i> You have applied to this program
+                                </p>
+                                <p class="text-xs text-contentColor dark:text-contentColor-dark">
+                                    Status: <strong>@Model.ApplicationStatus</strong>
+                                </p>
+                                @if (Model.ApplicationDate.HasValue)
+                                {
+                                    <p class="text-xs text-contentColor dark:text-contentColor-dark">
+                                        Applied on: @Model.ApplicationDate.Value.ToString("dd MMM yyyy")
+                                    </p>
+                                }
+                            </div>
+                        }
+
+                        <!-- Action Buttons -->
+                        <div class="mb-5" data-aos="fade-up">
+                            @if (!Model.HasApplication)
+                            {
+                                <button type="button" onclick="applyNow()" class="w-full text-size-15 text-whiteColor bg-primaryColor px-25px py-10px border mb-10px leading-1.8 border-primaryColor hover:text-primaryColor hover:bg-whiteColor inline-block rounded group">
+                                    <i class="icofont-plus-circle"></i> Apply to This Program
+                                </button>
+                            }
+                            else
+                            {
+                                <a href="@Url.Action("Index", "Applications")" class="w-full text-center block text-size-15 text-whiteColor bg-secondaryColor px-25px py-10px border mb-10px leading-1.8 border-secondaryColor hover:text-secondaryColor hover:bg-whiteColor rounded">
+                                    <i class="icofont-eye"></i> View Applications
+                                </a>
+                            }
+                            <a asp-action="Index" class="w-full text-center block text-size-15 text-blackColor bg-whiteColor px-25px py-10px border mb-10px leading-1.8 border-borderColor hover:bg-primaryColor hover:text-whiteColor hover:border-primaryColor rounded">
+                                <i class="icofont-arrow-left"></i> Back to Recommendations
+                            </a>
+                        </div>
+
+                        <!-- Program Details -->
+                        <ul>
+                            <li class="flex items-center justify-between py-10px border-b border-borderColor dark:border-borderColor-dark">
+                                <p class="text-sm font-medium text-contentColor dark:text-contentColor-dark leading-1.8">
+                                    Match Score:
+                                </p>
+                                <p class="text-xs px-10px py-6px @Model.ScoreBadgeClass rounded-full leading-13px font-bold">
+                                    @Model.Score.ToString("F1")%
+                                </p>
+                            </li>
+                            <li class="flex items-center justify-between py-10px border-b border-borderColor dark:border-borderColor-dark">
+                                <p class="text-sm font-medium text-contentColor dark:text-contentColor-dark leading-1.8">
+                                    Credit Hour Price:
+                                </p>
+                                <p class="text-xs text-contentColor dark:text-contentColor-dark px-10px py-6px bg-borderColor dark:bg-borderColor-dark rounded-full leading-13px">
+                                    @Model.HourPriceBase.ToString("F2") JOD
+                                </p>
+                            </li>
+                            <li class="flex items-center justify-between py-10px border-b border-borderColor dark:border-borderColor-dark">
+                                <p class="text-sm font-medium text-contentColor dark:text-contentColor-dark leading-1.8">
+                                    Registration Fee (1st):
+                                </p>
+                                <p class="text-xs text-contentColor dark:text-contentColor-dark px-10px py-6px bg-borderColor dark:bg-borderColor-dark rounded-full leading-13px">
+                                    @Model.RegistrationFeeFirstSemester.ToString("F2") JOD
+                                </p>
+                            </li>
+                            <li class="flex items-center justify-between py-10px border-b border-borderColor dark:border-borderColor-dark">
+                                <p class="text-sm font-medium text-contentColor dark:text-contentColor-dark leading-1.8">
+                                    Registration Fee (Regular):
+                                </p>
+                                <p class="text-xs text-contentColor dark:text-contentColor-dark px-10px py-6px bg-borderColor dark:bg-borderColor-dark rounded-full leading-13px">
+                                    @Model.RegistrationFeeRegularSemester.ToString("F2") JOD
+                                </p>
+                            </li>
+                            @if (!string.IsNullOrEmpty(Model.StudySystem))
+                            {
+                                <li class="flex items-center justify-between py-10px border-b border-borderColor dark:border-borderColor-dark">
+                                    <p class="text-sm font-medium text-contentColor dark:text-contentColor-dark leading-1.8">
+                                        Study System:
+                                    </p>
+                                    <p class="text-xs text-contentColor dark:text-contentColor-dark px-10px py-6px bg-borderColor dark:bg-borderColor-dark rounded-full leading-13px">
+                                        @Model.StudySystem
+                                    </p>
+                                </li>
+                            }
+                            <li class="flex items-center justify-between py-10px border-b border-borderColor dark:border-borderColor-dark">
+                                <p class="text-sm font-medium text-contentColor dark:text-contentColor-dark leading-1.8">
+                                    Language:
+                                </p>
+                                <p class="text-xs text-contentColor dark:text-contentColor-dark px-10px py-6px bg-borderColor dark:bg-borderColor-dark rounded-full leading-13px">
+                                    @Model.Language
+                                </p>
+                            </li>
+                            <li class="flex items-center justify-between py-10px">
+                                <p class="text-sm font-medium text-contentColor dark:text-contentColor-dark leading-1.8">
+                                    Capacity:
+                                </p>
+                                <p class="text-xs text-contentColor dark:text-contentColor-dark px-10px py-6px bg-borderColor dark:bg-borderColor-dark rounded-full leading-13px">
+                                    @Model.Capacity Students
+                                </p>
+                            </li>
+                        </ul>
+
+                        <div class="mt-5" data-aos="fade-up">
+                            <p class="text-sm text-contentColor dark:text-contentColor-dark leading-1.8 text-center mb-5px">
+                                More inquiry about program
+                            </p>
+                            <a href="tel:@Model.UniversityPhone" class="w-full block text-center text-xl text-primaryColor bg-whiteColor px-25px py-10px mb-10px font-bold leading-1.8 border border-primaryColor hover:text-whiteColor hover:bg-primaryColor rounded">
+                                <i class="icofont-phone"></i> @Model.UniversityPhone
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Quick Info -->
+                    <div class="p-5 md:p-30px lg:p-5 2xl:p-30px mb-30px border border-borderColor2 dark:border-borderColor2-dark rounded" data-aos="fade-up">
+                        <h4 class="text-size-22 text-blackColor dark:text-blackColor-dark font-bold pl-2 before:w-0.5 relative before:h-[21px] before:bg-primaryColor before:absolute before:bottom-[5px] before:left-0 leading-30px mb-25px">
+                            Quick Info
+                        </h4>
+                        <ul class="space-y-3">
+                            <li class="flex items-center text-sm">
+                                <i class="icofont-graduate-alt text-primaryColor mr-2"></i>
+                                <span class="text-contentColor dark:text-contentColor-dark">
+                                    <strong>@Model.TotalCreditHours</strong> Credit Hours
+                                </span>
+                            </li>
+                            <li class="flex items-center text-sm">
+                                <i class="icofont-calendar text-primaryColor mr-2"></i>
+                                <span class="text-contentColor dark:text-contentColor-dark">
+                                    <strong>@Model.DurationYears</strong> Years Duration
+                                </span>
+                            </li>
+                            <li class="flex items-center text-sm">
+                                <i class="icofont-language text-primaryColor mr-2"></i>
+                                <span class="text-contentColor dark:text-contentColor-dark">
+                                    Language: <strong>@Model.Language</strong>
+                                </span>
+                            </li>
+                            <li class="flex items-center text-sm">
+                                <i class="icofont-users-alt-4 text-primaryColor mr-2"></i>
+                                <span class="text-contentColor dark:text-contentColor-dark">
+                                    Capacity: <strong>@Model.Capacity</strong> Students
+                                </span>
+                            </li>
+                            @if (Model.DistanceInKm.HasValue)
+                            {
+                                <li class="flex items-center text-sm">
+                                    <i class="icofont-map text-primaryColor mr-2"></i>
+                                    <span class="text-contentColor dark:text-contentColor-dark">
+                                        Distance: <strong>@Model.DistanceInKm.Value.ToString("F1")</strong> km
+                                    </span>
+                                </li>
+                            }
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<form id="antiForgeryForm" method="post" style="display:none">
+    @Html.AntiForgeryToken()
+</form>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Mark as viewed (no jQuery)
+            const tokenInput = document.querySelector('#antiForgeryForm input[name="__RequestVerificationToken"]');
+            const token = tokenInput ? tokenInput.value : null;
+
+            try {
+                await fetch('@Url.Action("View", "Recommendations", new { id = Model.RecommendationId })', {
+                    method: 'POST',
+                    headers: token ? { 'RequestVerificationToken': token } : {}
+                });
+            } catch (e) {
+                // ignore (shouldn't break Apply button)
+            }
+        });
+
+        function applyNow() {
+            Swal.fire({
+                title: 'Apply to This Program?',
+                html: `<p class="text-sm mb-3">You are about to apply to <strong>@Model.ProgramName</strong> at <strong>@Model.UniversityName</strong>.</p>
+                       <p class="text-sm">You will be redirected to the application form.</p>`,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'Yes, Apply Now!',
+                cancelButtonText: 'Cancel'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href =
+                        '@Url.Action("Create", "Applications", new { recommendationId = Model.RecommendationId })';
+                }
+            });
+        }
+    </script>
+}

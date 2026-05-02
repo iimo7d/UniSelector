@@ -1,0 +1,297 @@
+﻿@model Uni_Selector.ViewModels.ProgramManagement.BtecProgramListViewModel
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = "BTEC Programs";
+}
+
+<div class="dashboard-main-body">
+    <!-- Breadcrumb -->
+    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-24">
+        <h6 class="fw-semibold mb-0">BTEC Programs</h6>
+        <ul class="d-flex align-items-center gap-2">
+            <li class="fw-medium">
+                <a asp-controller="UniversityRep" asp-action="Index" class="d-flex align-items-center gap-1 hover-text-primary">
+                    <iconify-icon icon="solar:home-smile-angle-outline" class="icon text-lg"></iconify-icon>
+                    Dashboard
+                </a>
+            </li>
+            <li>-</li>
+            <li class="fw-medium">BTEC Programs</li>
+        </ul>
+    </div>
+
+    <div class="card h-100 p-0 radius-12">
+        <div class="card-header border-bottom bg-base py-16 px-24 d-flex align-items-center justify-content-between">
+            <h6 class="text-lg fw-semibold mb-0">BTEC Program List</h6>
+            @if (Model.CanManagePrograms)
+            {
+                <a asp-action="Create" class="btn btn-primary text-sm btn-sm px-12 py-12 radius-8 d-flex align-items-center gap-2">
+                    <iconify-icon icon="ic:baseline-plus" class="icon text-xl line-height-1"></iconify-icon>
+                    Add New BTEC Program
+                </a>
+            }
+        </div>
+
+        <div class="card-body p-24">
+            <!-- Filters -->
+            <form method="get" class="row mb-20 gy-3">
+                <div class="col-md-3">
+                    <input type="text" name="search" value="@Model.Search" class="form-control radius-8" placeholder="Search by name or field...">
+                </div>
+                <div class="col-md-2">
+                    <select name="isActive" class="form-control radius-8 form-select">
+                        <option value="">All Status</option>
+                        <option value="true" selected="@(Model.IsActiveFilter == true)">Active</option>
+                        <option value="false" selected="@(Model.IsActiveFilter == false)">Inactive</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <select name="isApproved" class="form-control radius-8 form-select">
+                        <option value="">All Approvals</option>
+                        <option value="true" selected="@(Model.IsApprovedFilter == true)">Approved</option>
+                        <option value="false" selected="@(Model.IsApprovedFilter == false)">Pending</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-primary w-100 radius-8">
+                        <iconify-icon icon="ic:baseline-search" class="icon"></iconify-icon> Search
+                    </button>
+                </div>
+                <div class="col-md-3">
+                    <a asp-action="Index" class="btn btn-outline-secondary w-100 radius-8">Clear Filters</a>
+                </div>
+            </form>
+
+            <!-- Results count -->
+            <div class="d-flex justify-content-between align-items-center mb-16">
+                <span class="text-md text-secondary-light">Showing @Model.Programs.Count of @Model.TotalCount programs</span>
+            </div>
+
+            <!-- Table -->
+            <div class="table-responsive">
+                <table class="table bordered-table mb-0">
+                    <thead>
+                        <tr>
+                            <th scope="col">Program Name</th>
+                            <th scope="col">Level</th>
+                            <th scope="col">Technical Field</th>
+                            <th scope="col">Duration</th>
+                            <th scope="col">Hour Price</th>
+                            <th scope="col">Capacity</th>
+                            <th scope="col">Approval Status</th>
+                            <th scope="col">Status</th>
+                            <th scope="col" class="text-center">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.Programs.Any())
+                        {
+                            @foreach (var program in Model.Programs)
+                            {
+                                <tr>
+                                    <td>
+                                        <div>
+                                            <h6 class="text-md mb-0 fw-medium">@program.NameEnglish</h6>
+                                            <span class="text-sm text-secondary-light">@program.NameArabic</span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-info-focus text-info-main px-16 py-4 radius-4">
+                                            BTEC @program.Level
+                                        </span>
+                                    </td>
+                                    <td>@program.TechnicalField</td>
+                                    <td>@program.DurationInYears Years</td>
+                                    <td>@program.HourPriceBase.ToString("N2") JOD</td>
+                                    <td>@program.Capacity</td>
+                                    <td>
+                                        @if (program.IsApprovedByBtecAuthority)
+                                        {
+                                            <span class="bg-success-focus text-success-main px-24 py-4 rounded-pill fw-medium text-sm">
+                                                <iconify-icon icon="mdi:check-circle" class="icon"></iconify-icon> Approved
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="bg-warning-focus text-warning-main px-24 py-4 rounded-pill fw-medium text-sm">
+                                                <iconify-icon icon="mdi:clock-outline" class="icon"></iconify-icon> Pending
+                                            </span>
+                                        }
+                                    </td>
+                                    <td>
+                                        @if (program.IsActive)
+                                        {
+                                            <span class="bg-success-focus text-success-main px-24 py-4 rounded-pill fw-medium text-sm">Active</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="bg-danger-focus text-danger-main px-24 py-4 rounded-pill fw-medium text-sm">Inactive</span>
+                                        }
+                                    </td>
+                                    <td class="text-center">
+                                        <a asp-action="Details" asp-route-id="@program.Id"
+                                           class="w-32-px h-32-px bg-primary-light text-primary-600 rounded-circle d-inline-flex align-items-center justify-content-center"
+                                           title="View Details">
+                                            <iconify-icon icon="iconamoon:eye-light"></iconify-icon>
+                                        </a>
+                                        @if (Model.CanManagePrograms)
+                                        {
+                                            <a asp-action="Edit" asp-route-id="@program.Id"
+                                               class="w-32-px h-32-px bg-success-focus text-success-main rounded-circle d-inline-flex align-items-center justify-content-center"
+                                               title="Edit">
+                                                <iconify-icon icon="lucide:edit"></iconify-icon>
+                                            </a>
+                                            <button type="button" onclick="toggleProgram(@program.Id, @program.IsActive.ToString().ToLower())"
+                                                    class="w-32-px h-32-px bg-warning-focus text-warning-main rounded-circle d-inline-flex align-items-center justify-content-center border-0"
+                                                    title="@(program.IsActive ? "Deactivate" : "Activate")">
+                                                <iconify-icon icon="@(program.IsActive ? "mdi:toggle-switch" : "mdi:toggle-switch-off")"></iconify-icon>
+                                            </button>
+                                            <a asp-action="EntryRequirements" asp-route-id="@program.Id"
+                                               class="w-32-px h-32-px bg-info-focus text-info-main rounded-circle d-inline-flex align-items-center justify-content-center"
+                                               title="Entry Requirements">
+                                                <iconify-icon icon="mdi:file-document-check"></iconify-icon>
+                                            </a>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="9" class="text-center text-secondary-light py-24">
+                                    <iconify-icon icon="tabler:database-off" class="text-xxl mb-12"></iconify-icon>
+                                    <p class="mb-0">No BTEC programs found.</p>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            @if (Model.TotalPages > 1)
+            {
+                <div class="d-flex justify-content-center mt-24">
+                    <ul class="pagination">
+                        @if (Model.CurrentPage > 1)
+                        {
+                            <li class="page-item">
+                                <a class="page-link" asp-action="Index" asp-route-page="@(Model.CurrentPage - 1)" asp-route-search="@Model.Search" asp-route-isActive="@Model.IsActiveFilter" asp-route-isApproved="@Model.IsApprovedFilter">Previous</a>
+                            </li>
+                        }
+                        @for (int i = 1; i <= Model.TotalPages; i++)
+                        {
+                            <li class="page-item @(i == Model.CurrentPage ? "active" : "")">
+                                <a class="page-link" asp-action="Index" asp-route-page="@i" asp-route-search="@Model.Search" asp-route-isActive="@Model.IsActiveFilter" asp-route-isApproved="@Model.IsApprovedFilter">@i</a>
+                            </li>
+                        }
+                        @if (Model.CurrentPage < Model.TotalPages)
+                        {
+                            <li class="page-item">
+                                <a class="page-link" asp-action="Index" asp-route-page="@(Model.CurrentPage + 1)" asp-route-search="@Model.Search" asp-route-isActive="@Model.IsActiveFilter" asp-route-isApproved="@Model.IsApprovedFilter">Next</a>
+                            </li>
+                        }
+                    </ul>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        // ✅ Create a stable place to read the CSRF token from
+        // Put this once in your view (outside scripts is fine):
+        // <form id="antiForgeryForm" style="display:none;">@Html.AntiForgeryToken()</form>
+
+        function getCsrfToken() {
+            return document.querySelector('#antiForgeryForm input[name="__RequestVerificationToken"]')?.value
+                || document.querySelector('input[name="__RequestVerificationToken"]')?.value
+                || '';
+        }
+
+        function toggleProgram(id, isActive) {
+            const action = isActive ? 'deactivate' : 'activate';
+
+            Swal.fire({
+                title: 'Are you sure?',
+                text: `Do you want to ${action} this BTEC program?`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: `Yes, ${action} it!`
+            }).then((result) => {
+                if (!result.isConfirmed) return;
+
+                const token = getCsrfToken();
+                if (!token) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'CSRF Token Missing',
+                        text: 'Anti-forgery token not found on the page. Add @Html.AntiForgeryToken() inside #antiForgeryForm.'
+                    });
+                    return;
+                }
+
+                // ✅ Build correct URL (respects your attribute routes)
+                const url = '@Url.Action("Toggle", "BTECProgramManagement", new { id = "__ID__" })'.replace('__ID__', id);
+
+                // Optional: show loading
+                Swal.fire({
+                    title: 'Updating...',
+                    allowOutsideClick: false,
+                    allowEscapeKey: false,
+                    didOpen: () => Swal.showLoading()
+                });
+
+                $.ajax({
+                    url: url,
+                    type: 'POST',
+                    dataType: 'json',
+                 // ✅ Most compatible with ValidateAntiForgeryToken
+                    data: { __RequestVerificationToken: token },
+                    success: function (response) {
+                        if (response && response.success) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Done!',
+                                text: response.message,
+                                timer: 1200,
+                                showConfirmButton: false
+                            }).then(() => location.reload());
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error!',
+                                text: response?.message ?? 'Toggle failed.'
+                            });
+                        }
+                    },
+                    error: function (xhr) {
+                        // Helpful debug info
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Request Failed',
+                            text: `Status: ${xhr.status} ${xhr.statusText}`
+                        });
+                        console.log('Toggle error:', {
+                            status: xhr.status,
+                            statusText: xhr.statusText,
+                            responseText: xhr.responseText,
+                            url
+                        });
+                    }
+                });
+            });
+        }
+    </script>
+}
+
+<form id="antiForgeryForm" style="display:none;">
+    @Html.AntiForgeryToken()
+</form>

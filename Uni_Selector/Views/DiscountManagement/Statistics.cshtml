@@ -1,0 +1,412 @@
+﻿@using System.Text.Json
+@using System.Linq
+@using Uni_Selector.Models.Enums
+@model Uni_Selector.ViewModels.DiscountManagement.DiscountStatisticsViewModel
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = "Discount Statistics";
+}
+
+<div class="dashboard-main-body">
+    <!-- Breadcrumb -->
+    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-24">
+        <h6 class="fw-semibold mb-0">Discount Statistics</h6>
+        <ul class="d-flex align-items-center gap-2">
+            <li class="fw-medium">
+                <a asp-action="Index" class="d-flex align-items-center gap-1 hover-text-primary">
+                    <iconify-icon icon="solar:ticket-bold-duotone" class="icon text-lg"></iconify-icon>
+                    Discounts
+                </a>
+            </li>
+            <li>-</li>
+            <li class="fw-medium">Statistics</li>
+        </ul>
+    </div>
+
+    <!-- KPI Cards -->
+    <div class="row gy-4 mb-24">
+        <div class="col-xxl-3 col-sm-6">
+            <div class="card p-3 shadow-2 radius-8 border h-100 bg-gradient-start-1">
+                <div class="card-body p-0">
+                    <div class="d-flex flex-wrap align-items-center justify-content-between gap-1 mb-8">
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="mb-0 w-48-px h-48-px bg-primary-600 flex-shrink-0 text-white d-flex justify-content-center align-items-center radius-8 h6 mb-0">
+                                <iconify-icon icon="solar:ticket-bold-duotone" class="icon"></iconify-icon>
+                            </span>
+                            <span class="mb-0 fw-medium text-secondary-light text-md">Total Issued</span>
+                        </div>
+                    </div>
+                    <h4 class="mb-0 text-primary-light fw-bold">@Model.TotalDiscountsIssued</h4>
+                    <p class="fw-medium text-sm text-secondary-light mb-0 mt-2">@Model.TotalAmountIssued.ToString("N2") JOD</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xxl-3 col-sm-6">
+            <div class="card p-3 shadow-2 radius-8 border h-100 bg-gradient-start-2">
+                <div class="card-body p-0">
+                    <div class="d-flex flex-wrap align-items-center justify-content-between gap-1 mb-8">
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="mb-0 w-48-px h-48-px bg-success-600 flex-shrink-0 text-white d-flex justify-content-center align-items-center radius-8 h6 mb-0">
+                                <iconify-icon icon="solar:check-circle-bold" class="icon"></iconify-icon>
+                            </span>
+                            <span class="mb-0 fw-medium text-secondary-light text-md">Redeemed</span>
+                        </div>
+                    </div>
+                    <h4 class="mb-0 text-primary-light fw-bold">@Model.TotalDiscountsRedeemed</h4>
+                    <p class="fw-medium text-sm text-secondary-light mb-0 mt-2">@Model.TotalAmountRedeemed.ToString("N2") JOD</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xxl-3 col-sm-6">
+            <div class="card p-3 shadow-2 radius-8 border h-100 bg-gradient-start-3">
+                <div class="card-body p-0">
+                    <div class="d-flex flex-wrap align-items-center justify-content-between gap-1 mb-8">
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="mb-0 w-48-px h-48-px bg-danger-600 flex-shrink-0 text-white d-flex justify-content-center align-items-center radius-8 h6 mb-0">
+                                <iconify-icon icon="solar:close-circle-bold" class="icon"></iconify-icon>
+                            </span>
+                            <span class="mb-0 fw-medium text-secondary-light text-md">Expired</span>
+                        </div>
+                    </div>
+                    <h4 class="mb-0 text-primary-light fw-bold">@Model.TotalDiscountsExpired</h4>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xxl-3 col-sm-6">
+            <div class="card p-3 shadow-2 radius-8 border h-100 bg-gradient-start-4">
+                <div class="card-body p-0">
+                    <div class="d-flex flex-wrap align-items-center justify-content-between gap-1 mb-8">
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="mb-0 w-48-px h-48-px bg-warning-600 flex-shrink-0 text-white d-flex justify-content-center align-items-center radius-8 h6 mb-0">
+                                <iconify-icon icon="solar:clock-circle-bold" class="icon"></iconify-icon>
+                            </span>
+                            <span class="mb-0 fw-medium text-secondary-light text-md">Pending</span>
+                        </div>
+                    </div>
+                    <h4 class="mb-0 text-primary-light fw-bold">@Model.TotalDiscountsPending</h4>
+                    <p class="fw-medium text-sm text-secondary-light mb-0 mt-2">Avg: @Model.AverageDiscountPercentage.ToString("F1")%</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts Row -->
+    <div class="row gy-4 mb-24">
+        <!-- Pie Chart - Status Breakdown -->
+        <div class="col-lg-4">
+            <div class="card h-100 p-0">
+                <div class="card-header border-bottom bg-base py-16 px-24">
+                    <h6 class="text-lg fw-semibold mb-0">Discount Status Distribution</h6>
+                </div>
+                <div class="card-body p-24">
+                    <div id="statusPieChart"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Line Chart - Monthly Trends -->
+        <div class="col-lg-8">
+            <div class="card h-100 p-0">
+                <div class="card-header border-bottom bg-base py-16 px-24">
+                    <h6 class="text-lg fw-semibold mb-0">Monthly Trends (Last 12 Months)</h6>
+                </div>
+                <div class="card-body p-24">
+                    <div id="monthlyTrendChart"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Column Chart & Recent Activity -->
+    <div class="row gy-4">
+        <!-- Column Chart - Program Distribution -->
+        <div class="col-lg-7">
+            <div class="card h-100 p-0">
+                <div class="card-header border-bottom bg-base py-16 px-24">
+                    <h6 class="text-lg fw-semibold mb-0">Top 10 Programs by Discount Count</h6>
+                </div>
+                <div class="card-body p-24">
+                    <div id="programDistributionChart"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Activity Table -->
+        <div class="col-lg-5">
+            <div class="card h-100 p-0">
+                <div class="card-header border-bottom bg-base py-16 px-24">
+                    <h6 class="text-lg fw-semibold mb-0">Recent Discounts</h6>
+                </div>
+                <div class="card-body p-24">
+                    <div class="table-responsive">
+                        <table class="table table-sm mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Code</th>
+                                    <th>Student</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var discount in Model.RecentDiscounts)
+                                {
+                                    <tr>
+                                        <td>
+                                            <a asp-action="Details" asp-route-id="@discount.Id" class="text-primary-600 fw-medium text-sm">
+                                                @discount.Code.Substring(0, Math.Min(15, discount.Code.Length))...
+                                            </a>
+                                        </td>
+                                        <td>
+                                            <span class="text-sm">@discount.StudentName</span>
+                                        </td>
+                                        <td>
+                                            @switch (discount.Status)
+                                            {
+                                                case DiscountStatus.Issued:
+                                                    <span class="badge bg-warning-focus text-warning-main text-xs">Issued</span>
+                                                    break;
+                                                case DiscountStatus.Redeemed:
+                                                    <span class="badge bg-success-focus text-success-main text-xs">Redeemed</span>
+                                                    break;
+                                                case DiscountStatus.Expired:
+                                                    <span class="badge bg-danger-focus text-danger-main text-xs">Expired</span>
+                                                    break;
+                                            }
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="mt-16 text-center">
+                        <a asp-action="Index" class="text-primary-600 fw-semibold text-sm">View All Discounts →</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    <script>
+        // ✅ Build JS arrays safely (no Razor inside JS expressions)
+        const statusSeries = @Html.Raw(JsonSerializer.Serialize(Model.DiscountsByStatus.Values.ToArray()));
+        const statusLabels = @Html.Raw(JsonSerializer.Serialize(Model.DiscountsByStatus.Keys.ToArray()));
+
+        const monthlyCategories = @Html.Raw(JsonSerializer.Serialize(Model.MonthlyTrends.Select(m => m.MonthYear).ToArray()));
+        const monthlyIssued = @Html.Raw(JsonSerializer.Serialize(Model.MonthlyTrends.Select(m => m.Issued).ToArray()));
+        const monthlyRedeemed = @Html.Raw(JsonSerializer.Serialize(Model.MonthlyTrends.Select(m => m.Redeemed).ToArray()));
+
+        const programCategories = @Html.Raw(JsonSerializer.Serialize(Model.ProgramStats.Select(p => p.ProgramName).ToArray()));
+        const programCounts = @Html.Raw(JsonSerializer.Serialize(Model.ProgramStats.Select(p => p.Count).ToArray()));
+        const programRedeemedCounts = @Html.Raw(JsonSerializer.Serialize(Model.ProgramStats.Select(p => p.RedeemedCount).ToArray()));
+
+        // --------------------------
+        // Pie Chart - Status Breakdown
+        // --------------------------
+        var statusPieOptions = {
+            series: statusSeries,
+            labels: statusLabels,
+            colors: ['#FFC107', '#28a745', '#dc3545'],
+            chart: { type: 'pie', height: 350 },
+            legend: { position: 'bottom' },
+            dataLabels: {
+                enabled: true,
+                formatter: function (val) { return val.toFixed(1) + "%"; }
+            }
+        };
+        new ApexCharts(document.querySelector("#statusPieChart"), statusPieOptions).render();
+
+        // --------------------------
+        // Line Chart - Monthly Trends
+        // --------------------------
+        var monthlyTrendOptions = {
+            series: [
+                { name: 'Issued', data: monthlyIssued },
+                { name: 'Redeemed', data: monthlyRedeemed }
+            ],
+            chart: {
+                type: 'line',
+                height: 350,
+                toolbar: { show: true }
+            },
+            colors: ['#487FFF', '#28a745'],
+            xaxis: {
+                categories: monthlyCategories,
+                labels: { rotate: -45 }
+            },
+            yaxis: { title: { text: 'Number of Discounts' } },
+            stroke: { curve: 'smooth', width: 3 },
+            markers: { size: 5 },
+            legend: { position: 'top' },
+            grid: { borderColor: '#e7e7e7' }
+        };
+        new ApexCharts(document.querySelector("#monthlyTrendChart"), monthlyTrendOptions).render();
+
+        // --------------------------
+        // Column Chart - Program Distribution
+        // --------------------------
+        var programDistributionOptions = {
+            series: [
+                { name: 'Total Discounts', data: programCounts },
+                { name: 'Redeemed', data: programRedeemedCounts }
+            ],
+            chart: {
+                type: 'bar',
+                height: 350,
+                toolbar: { show: true }
+            },
+            colors: ['#487FFF', '#28a745'],
+            plotOptions: {
+                bar: {
+                    horizontal: false,
+                    columnWidth: '55%',
+                    endingShape: 'rounded'
+                }
+            },
+            dataLabels: { enabled: false },
+            xaxis: {
+                categories: programCategories,
+                labels: {
+                    rotate: -45,
+                    style: { fontSize: '10px' }
+                }
+            },
+            yaxis: { title: { text: 'Number of Discounts' } },
+            legend: { position: 'top' },
+            grid: { borderColor: '#e7e7e7' }
+        };
+        new ApexCharts(document.querySelector("#programDistributionChart"), programDistributionOptions).render();
+    </script>
+}
+
+
+
+@* @section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    <script>
+        // Pie Chart - Status Breakdown
+        var statusPieOptions = {
+            series: [@string.Join(",", Model.DiscountsByStatus.Values)],
+            labels: [@Html.Raw(string.Join(",", Model.DiscountsByStatus.Keys.Select(k => $"\"{k}\"")))],
+            colors: ['#FFC107', '#28a745', '#dc3545'],
+            chart: {
+                type: 'pie',
+                height: 350
+            },
+            legend: {
+                position: 'bottom'
+            },
+            dataLabels: {
+                enabled: true,
+                formatter: function (val) {
+                    return val.toFixed(1) + "%"
+                }
+            }
+        };
+        var statusPieChart = new ApexCharts(document.querySelector("#statusPieChart"), statusPieOptions);
+        statusPieChart.render();
+
+        // Line Chart - Monthly Trends
+        var monthlyTrendOptions = {
+            series: [{
+                name: 'Issued',
+                data: [@string.Join(",", Model.MonthlyTrends.Select(m => m.Issued))]
+            }, {
+                name: 'Redeemed',
+                data: [@string.Join(",", Model.MonthlyTrends.Select(m => m.Redeemed))]
+            }],
+            chart: {
+                type: 'line',
+                height: 350,
+                toolbar: {
+                    show: true
+                }
+            },
+            colors: ['#487FFF', '#28a745'],
+            xaxis: {
+                categories: [@Html.Raw(string.Join(",", Model.MonthlyTrends.Select(m => $"\"{m.MonthYear}\"")))],
+                labels: {
+                    rotate: -45
+                }
+            },
+            yaxis: {
+                title: {
+                    text: 'Number of Discounts'
+                }
+            },
+            stroke: {
+                curve: 'smooth',
+                width: 3
+            },
+            markers: {
+                size: 5
+            },
+            legend: {
+                position: 'top'
+            },
+            grid: {
+                borderColor: '#e7e7e7'
+            }
+        };
+        var monthlyTrendChart = new ApexCharts(document.querySelector("#monthlyTrendChart"), monthlyTrendOptions);
+        monthlyTrendChart.render();
+
+        // Column Chart - Program Distribution
+        var programDistributionOptions = {
+            series: [{
+                name: 'Total Discounts',
+                data: [@string.Join(",", Model.ProgramStats.Select(p => p.Count))]
+            }, {
+                name: 'Redeemed',
+                data: [@string.Join(",", Model.ProgramStats.Select(p => p.RedeemedCount))]
+            }],
+            chart: {
+                type: 'bar',
+                height: 350,
+                toolbar: {
+                    show: true
+                }
+            },
+            colors: ['#487FFF', '#28a745'],
+            plotOptions: {
+                bar: {
+                    horizontal: false,
+                    columnWidth: '55%',
+                    endingShape: 'rounded'
+                }
+            },
+            dataLabels: {
+                enabled: false
+            },
+            xaxis: {
+                categories: [@Html.Raw(string.Join(",", Model.ProgramStats.Select(p => $"\"{p.ProgramName}\"")))],
+                labels: {
+                    rotate: -45,
+                    style: {
+                        fontSize: '10px'
+                    }
+                }
+            },
+            yaxis: {
+                title: {
+                    text: 'Number of Discounts'
+                }
+            },
+            legend: {
+                position: 'top'
+            },
+            grid: {
+                borderColor: '#e7e7e7'
+            }
+        };
+        var programDistributionChart = new ApexCharts(document.querySelector("#programDistributionChart"), programDistributionOptions);
+        programDistributionChart.render();
+    </script>
+}
+ *@

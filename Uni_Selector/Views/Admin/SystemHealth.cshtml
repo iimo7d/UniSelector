@@ -1,0 +1,406 @@
+﻿@using Uni_Selector.ViewModels.Admin
+@model SystemHealthViewModel
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "System Health";
+}
+
+<div class="dashboard-main-body">
+    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-24">
+        <h6 class="fw-semibold mb-0">System Health Monitoring</h6>
+        <ul class="d-flex align-items-center gap-2">
+            <li class="fw-medium">
+                <a asp-action="Dashboard" class="d-flex align-items-center gap-1 hover-text-primary">
+                    <iconify-icon icon="solar:home-smile-angle-outline" class="icon text-lg"></iconify-icon>
+                    Dashboard
+                </a>
+            </li>
+            <li>-</li>
+            <li class="fw-medium">System Health</li>
+        </ul>
+    </div>
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            @TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <!-- Overall System Status -->
+    <div class="row mb-24">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body p-24">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <h4 class="mb-1">System Status: <span class="badge bg-@(Model.OverallSystemHealth == "Healthy" ? "success" : Model.OverallSystemHealth == "Warning" ? "warning" : "danger")">@Model.OverallSystemHealth</span></h4>
+                            <p class="text-secondary-light mb-0">Last checked: @Model.LastHealthCheckTime.ToString("MMM dd, yyyy HH:mm:ss UTC")</p>
+                        </div>
+                        <button class="btn btn-primary-600" onclick="location.reload()">
+                            <iconify-icon icon="mdi:refresh" class="icon"></iconify-icon> Refresh
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Core System Metrics -->
+    <div class="row row-cols-xxxl-4 row-cols-lg-2 row-cols-sm-2 row-cols-1 gy-4 mb-24">
+        <!-- Database Status -->
+        <div class="col">
+            <div class="card shadow-none border h-100">
+                <div class="card-body p-20">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="w-50-px h-50-px @(Model.DatabaseStatus == "Healthy" ? "bg-success-focus" : "bg-danger-focus") rounded-circle d-flex justify-content-center align-items-center">
+                            <iconify-icon icon="mdi:database" class="text-@(Model.DatabaseStatus == "Healthy" ? "success" : "danger")-main text-2xl"></iconify-icon>
+                        </div>
+                        <div>
+                            <p class="fw-medium text-primary-light mb-1">Database</p>
+                            <h6 class="mb-0">@Model.DatabaseStatus</h6>
+                            <span class="text-sm text-secondary-light">@Model.DatabaseSizeFormatted</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Server Uptime -->
+        <div class="col">
+            <div class="card shadow-none border h-100">
+                <div class="card-body p-20">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="w-50-px h-50-px bg-info-focus rounded-circle d-flex justify-content-center align-items-center">
+                            <iconify-icon icon="mdi:server" class="text-info-main text-2xl"></iconify-icon>
+                        </div>
+                        <div>
+                            <p class="fw-medium text-primary-light mb-1">Server Uptime</p>
+                            <h6 class="mb-0">@Model.ServerUptimeFormatted</h6>
+                            <span class="text-sm text-secondary-light">Running</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Memory Usage -->
+        <div class="col">
+            <div class="card shadow-none border h-100">
+                <div class="card-body p-20">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="w-50-px h-50-px @(Model.MemoryUsage < 1000 ? "bg-success-focus" : "bg-warning-focus") rounded-circle d-flex justify-content-center align-items-center">
+                            <iconify-icon icon="mdi:memory" class="text-@(Model.MemoryUsage < 1000 ? "success" : "warning")-main text-2xl"></iconify-icon>
+                        </div>
+                        <div>
+                            <p class="fw-medium text-primary-light mb-1">Memory Usage</p>
+                            <h6 class="mb-0">@Model.MemoryUsageFormatted</h6>
+                            <span class="text-sm text-secondary-light">Working Set</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Response Time -->
+        <div class="col">
+            <div class="card shadow-none border h-100">
+                <div class="card-body p-20">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="w-50-px h-50-px bg-purple-focus rounded-circle d-flex justify-content-center align-items-center">
+                            <iconify-icon icon="mdi:speedometer" class="text-purple text-2xl"></iconify-icon>
+                        </div>
+                        <div>
+                            <p class="fw-medium text-primary-light mb-1">Avg Response Time</p>
+                            <h6 class="mb-0">@Model.AverageResponseTime.ToString("F2") ms</h6>
+                            <span class="text-sm text-secondary-light">Performance</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Detailed Metrics -->
+    <div class="row gy-4">
+        <!-- User Activity Metrics -->
+        <div class="col-lg-6">
+            <div class="card h-100">
+                <div class="card-header">
+                    <h6 class="mb-0">User Activity Metrics</h6>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-borderless mb-0">
+                            <tbody>
+                                <tr>
+                                    <td class="text-secondary-light">Total Users</td>
+                                    <td class="text-end fw-semibold">@Model.TotalUsers.ToString("N0")</td>
+                                </tr>
+                                <tr>
+                                    <td class="text-secondary-light">Active Users</td>
+                                    <td class="text-end">
+                                        <span class="badge bg-success-focus text-success-main">@Model.ActiveUsers.ToString("N0")</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="text-secondary-light">Inactive Users</td>
+                                    <td class="text-end">
+                                        <span class="badge bg-danger-focus text-danger-main">@Model.InactiveUsers.ToString("N0")</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="text-secondary-light">Logged In (Last 24h)</td>
+                                    <td class="text-end fw-semibold">@Model.UsersLoggedInLast24Hours.ToString("N0")</td>
+                                </tr>
+                                <tr class="border-top">
+                                    <td class="text-secondary-light fw-semibold">Activity Rate</td>
+                                    <td class="text-end">
+                                        <div class="progress w-100" style="height: 8px;">
+                                            <div class="progress-bar bg-success" role="progressbar" style="width: @Model.UserActivityRate.ToString("F0")%" aria-valuenow="@Model.UserActivityRate" aria-valuemin="0" aria-valuemax="100"></div>
+                                        </div>
+                                        <span class="text-sm">@Model.UserActivityRate.ToString("F1")%</span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Application Metrics -->
+        <div class="col-lg-6">
+            <div class="card h-100">
+                <div class="card-header">
+                    <h6 class="mb-0">Application Metrics</h6>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-borderless mb-0">
+                            <tbody>
+                                <tr>
+                                    <td class="text-secondary-light">Total Applications</td>
+                                    <td class="text-end fw-semibold">@Model.TotalApplications.ToString("N0")</td>
+                                </tr>
+                                <tr>
+                                    <td class="text-secondary-light">Last 24 Hours</td>
+                                    <td class="text-end">
+                                        <span class="badge bg-info-focus text-info-main">@Model.ApplicationsLast24Hours.ToString("N0")</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="text-secondary-light">Last 7 Days</td>
+                                    <td class="text-end">
+                                        <span class="badge bg-primary-focus text-primary-main">@Model.ApplicationsLast7Days.ToString("N0")</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="text-secondary-light">Last 30 Days</td>
+                                    <td class="text-end fw-semibold">@Model.ApplicationsLast30Days.ToString("N0")</td>
+                                </tr>
+                                <tr class="border-top">
+                                    <td class="text-secondary-light fw-semibold">Daily Average</td>
+                                    <td class="text-end">
+                                        <span class="badge bg-success-focus text-success-main">@((Model.ApplicationsLast30Days / 30.0).ToString("F1"))</span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Notification Metrics -->
+        <div class="col-lg-6">
+            <div class="card h-100">
+                <div class="card-header">
+                    <h6 class="mb-0">Notification System</h6>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-borderless mb-0">
+                            <tbody>
+                                <tr>
+                                    <td class="text-secondary-light">Total Notifications</td>
+                                    <td class="text-end fw-semibold">@Model.TotalNotifications.ToString("N0")</td>
+                                </tr>
+                                <tr>
+                                    <td class="text-secondary-light">Unread</td>
+                                    <td class="text-end">
+                                        <span class="badge bg-warning-focus text-warning-main">@Model.UnreadNotifications.ToString("N0")</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="text-secondary-light">Sent (Last 24h)</td>
+                                    <td class="text-end">@Model.NotificationsSent24Hours.ToString("N0")</td>
+                                </tr>
+                                <tr>
+                                    <td class="text-secondary-light">Failed Emails</td>
+                                    <td class="text-end">
+                                        <span class="badge @(Model.FailedEmailNotifications > 0 ? "bg-danger-focus text-danger-main" : "bg-success-focus text-success-main")">
+                                            @Model.FailedEmailNotifications.ToString("N0")
+                                        </span>
+                                    </td>
+                                </tr>
+                                <tr class="border-top">
+                                    <td class="text-secondary-light fw-semibold">Success Rate</td>
+                                    <td class="text-end">
+                                        <div class="progress w-100" style="height: 8px;">
+                                            <div class="progress-bar bg-success" role="progressbar" style="width: @Model.NotificationSuccessRate.ToString("F0")%" aria-valuenow="@Model.NotificationSuccessRate" aria-valuemin="0" aria-valuemax="100"></div>
+                                        </div>
+                                        <span class="text-sm">@Model.NotificationSuccessRate.ToString("F1")%</span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Financial Metrics -->
+        <div class="col-lg-6">
+            <div class="card h-100">
+                <div class="card-header">
+                    <h6 class="mb-0">Financial System</h6>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-borderless mb-0">
+                            <tbody>
+                                <tr>
+                                    <td class="text-secondary-light">Total Commissions</td>
+                                    <td class="text-end fw-semibold">@Model.TotalCommissions.ToString("N0")</td>
+                                </tr>
+                                <tr>
+                                    <td class="text-secondary-light">Settled</td>
+                                    <td class="text-end">
+                                        <span class="badge bg-success-focus text-success-main">@Model.SettledCommissions.ToString("N0")</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="text-secondary-light">Pending</td>
+                                    <td class="text-end">
+                                        <span class="badge bg-warning-focus text-warning-main">@Model.PendingCommissions.ToString("N0")</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="text-secondary-light">Total Amount</td>
+                                    <td class="text-end fw-semibold">@Model.TotalCommissionAmount.ToString("C0")</td>
+                                </tr>
+                                <tr class="border-top">
+                                    <td class="text-secondary-light fw-semibold">Settlement Rate</td>
+                                    <td class="text-end">
+                                        <div class="progress w-100" style="height: 8px;">
+                                            <div class="progress-bar bg-success" role="progressbar" style="width: @Model.CommissionSettlementRate.ToString("F0")%" aria-valuenow="@Model.CommissionSettlementRate" aria-valuemin="0" aria-valuemax="100"></div>
+                                        </div>
+                                        <span class="text-sm">@Model.CommissionSettlementRate.ToString("F1")%</span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Discount System Metrics -->
+        <div class="col-lg-6">
+            <div class="card h-100">
+                <div class="card-header">
+                    <h6 class="mb-0">Discount System</h6>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-borderless mb-0">
+                            <tbody>
+                                <tr>
+                                    <td class="text-secondary-light">Total Discounts</td>
+                                    <td class="text-end fw-semibold">@Model.TotalDiscounts.ToString("N0")</td>
+                                </tr>
+                                <tr>
+                                    <td class="text-secondary-light">Issued</td>
+                                    <td class="text-end">
+                                        <span class="badge bg-info-focus text-info-main">@Model.IssuedDiscounts.ToString("N0")</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="text-secondary-light">Redeemed</td>
+                                    <td class="text-end">
+                                        <span class="badge bg-success-focus text-success-main">@Model.RedeemedDiscounts.ToString("N0")</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="text-secondary-light">Expired</td>
+                                    <td class="text-end">
+                                        <span class="badge bg-danger-focus text-danger-main">@Model.ExpiredDiscounts.ToString("N0")</span>
+                                    </td>
+                                </tr>
+                                <tr class="border-top">
+                                    <td class="text-secondary-light fw-semibold">Redemption Rate</td>
+                                    <td class="text-end">
+                                        <div class="progress w-100" style="height: 8px;">
+                                            <div class="progress-bar bg-success" role="progressbar" style="width: @Model.DiscountRedemptionRate.ToString("F0")%" aria-valuenow="@Model.DiscountRedemptionRate" aria-valuemin="0" aria-valuemax="100"></div>
+                                        </div>
+                                        <span class="text-sm">@Model.DiscountRedemptionRate.ToString("F1")%</span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recommendation System Metrics -->
+        <div class="col-lg-6">
+            <div class="card h-100">
+                <div class="card-header">
+                    <h6 class="mb-0">Recommendation System</h6>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-borderless mb-0">
+                            <tbody>
+                                <tr>
+                                    <td class="text-secondary-light">Total Recommendations</td>
+                                    <td class="text-end fw-semibold">@Model.TotalRecommendations.ToString("N0")</td>
+                                </tr>
+                                <tr>
+                                    <td class="text-secondary-light">Generated (Last 24h)</td>
+                                    <td class="text-end">
+                                        <span class="badge bg-info-focus text-info-main">@Model.RecommendationsLast24Hours.ToString("N0")</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="text-secondary-light">Viewed</td>
+                                    <td class="text-end">
+                                        <span class="badge bg-success-focus text-success-main">@Model.ViewedRecommendations.ToString("N0")</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="text-secondary-light">Pending View</td>
+                                    <td class="text-end">
+                                        @((Model.TotalRecommendations - Model.ViewedRecommendations).ToString("N0"))
+                                    </td>
+                                </tr>
+                                <tr class="border-top">
+                                    <td class="text-secondary-light fw-semibold">View Rate</td>
+                                    <td class="text-end">
+                                        <div class="progress w-100" style="height: 8px;">
+                                            <div class="progress-bar bg-success" role="progressbar" style="width: @Model.RecommendationViewRate.ToString("F0")%" aria-valuenow="@Model.RecommendationViewRate" aria-valuemin="0" aria-valuemax="100"></div>
+                                        </div>
+                                        <span class="text-sm">@Model.RecommendationViewRate.ToString("F1")%</span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

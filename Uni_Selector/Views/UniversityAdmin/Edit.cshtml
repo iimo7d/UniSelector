@@ -1,0 +1,219 @@
+﻿@model Uni_Selector.ViewModels.UniversityAdmin.EditUniversityViewModel
+
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = $"Edit {Model.NameEnglish}";
+}
+
+<div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-24">
+    <h6 class="fw-semibold mb-0">Edit University</h6>
+    <ul class="d-flex align-items-center gap-2">
+        <li class="fw-medium">
+            <a href="@Url.Action("Index", "Admin")" class="d-flex align-items-center gap-1 hover-text-primary">
+                <iconify-icon icon="solar:home-smile-angle-outline" class="icon text-lg"></iconify-icon>
+                Dashboard
+            </a>
+        </li>
+        <li>-</li>
+        <li class="fw-medium">
+            <a asp-action="Index" class="hover-text-primary">Universities</a>
+        </li>
+        <li>-</li>
+        <li class="fw-medium">Edit</li>
+    </ul>
+</div>
+
+<div class="card h-100 p-0 radius-12">
+    <div class="card-body p-24">
+        <div class="row justify-content-center">
+            <div class="col-xxl-8 col-xl-10 col-lg-12">
+                <div class="card border">
+                    <div class="card-body">
+                        <form asp-action="Edit" asp-route-id="@Model.Id" method="post" enctype="multipart/form-data">
+                            @Html.AntiForgeryToken()
+                            <input asp-for="Id" type="hidden" />
+                            <div asp-validation-summary="ModelOnly" class="text-danger mb-20"></div>
+
+                            <h6 class="text-md text-primary-light mb-16">University Images</h6>
+
+                            <div class="row mb-24">
+                                <div class="col-md-6">
+                                    <label asp-for="Logo" class="form-label fw-semibold text-primary-light text-sm mb-8"></label>
+                                    <div class="avatar-upload">
+                                        <div class="avatar-edit position-absolute bottom-0 end-0 me-24 mt-16 z-1 cursor-pointer">
+                                            <input asp-for="Logo" id="logoUpload" type="file" accept=".png, .jpg, .jpeg" hidden>
+                                            <label for="logoUpload" class="w-32-px h-32-px d-flex justify-content-center align-items-center bg-primary-50 text-primary-600 border border-primary-600 bg-hover-primary-100 text-lg rounded-circle cursor-pointer">
+                                                <iconify-icon icon="solar:camera-outline" class="icon"></iconify-icon>
+                                            </label>
+                                        </div>
+                                        <div class="avatar-preview">
+                                            <div id="logoPreview" style="background-image: url('@(!string.IsNullOrEmpty(Model.CurrentLogoPath) ? Model.CurrentLogoPath : "/images/default-logo.png")');"></div>
+                                        </div>
+                                    </div>
+                                    @if (!string.IsNullOrEmpty(Model.CurrentLogoPath))
+                                    {
+                                        <small class="text-secondary-light d-block mt-2">Current logo will be replaced if you upload a new one</small>
+                                    }
+                                    <span asp-validation-for="Logo" class="text-danger text-sm"></span>
+                                </div>
+                                <div class="col-md-6">
+                                    <label asp-for="CoverImage" class="form-label fw-semibold text-primary-light text-sm mb-8"></label>
+                                    <div class="avatar-upload">
+                                        <div class="avatar-edit position-absolute bottom-0 end-0 me-24 mt-16 z-1 cursor-pointer">
+                                            <input asp-for="CoverImage" id="coverUpload" type="file" accept=".png, .jpg, .jpeg" hidden>
+                                            <label for="coverUpload" class="w-32-px h-32-px d-flex justify-content-center align-items-center bg-primary-50 text-primary-600 border border-primary-600 bg-hover-primary-100 text-lg rounded-circle cursor-pointer">
+                                                <iconify-icon icon="solar:camera-outline" class="icon"></iconify-icon>
+                                            </label>
+                                        </div>
+                                        <div class="avatar-preview">
+                                            <div id="coverPreview" style="background-image: url('@(!string.IsNullOrEmpty(Model.CurrentImagePath) ? Model.CurrentImagePath : "/images/default-cover.png")');"></div>
+                                        </div>
+                                    </div>
+                                    @if (!string.IsNullOrEmpty(Model.CurrentImagePath))
+                                    {
+                                        <small class="text-secondary-light d-block mt-2">Current cover will be replaced if you upload a new one</small>
+                                    }
+                                    <span asp-validation-for="CoverImage" class="text-danger text-sm"></span>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-20">
+                                    <label asp-for="NameEnglish" class="form-label fw-semibold text-primary-light text-sm mb-8"></label>
+                                    <input asp-for="NameEnglish" class="form-control radius-8" placeholder="Enter English Name">
+                                    <span asp-validation-for="NameEnglish" class="text-danger text-sm"></span>
+                                </div>
+                                <div class="col-md-6 mb-20">
+                                    <label asp-for="NameArabic" class="form-label fw-semibold text-primary-light text-sm mb-8"></label>
+                                    <input asp-for="NameArabic" class="form-control radius-8" placeholder="Enter Arabic Name" dir="rtl">
+                                    <span asp-validation-for="NameArabic" class="text-danger text-sm"></span>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-20">
+                                    <label asp-for="Type" class="form-label fw-semibold text-primary-light text-sm mb-8"></label>
+                                    <select asp-for="Type" asp-items="ViewBag.UniversityTypes" class="form-control radius-8 form-select">
+                                        <option value="">Select University Type</option>
+                                    </select>
+                                    <span asp-validation-for="Type" class="text-danger text-sm"></span>
+                                </div>
+                                <div class="col-md-6 mb-20">
+                                    <label asp-for="CommissionMode" class="form-label fw-semibold text-primary-light text-sm mb-8"></label>
+                                    <select asp-for="CommissionMode" asp-items="ViewBag.CommissionModes" class="form-control radius-8 form-select">
+                                        <option value="">Select Commission Mode</option>
+                                    </select>
+                                    <span asp-validation-for="CommissionMode" class="text-danger text-sm"></span>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-20">
+                                    <label asp-for="Email" class="form-label fw-semibold text-primary-light text-sm mb-8"></label>
+                                    <input asp-for="Email" type="email" class="form-control radius-8" placeholder="Enter email address">
+                                    <span asp-validation-for="Email" class="text-danger text-sm"></span>
+                                </div>
+                                <div class="col-md-6 mb-20">
+                                    <label asp-for="PhoneNumber" class="form-label fw-semibold text-primary-light text-sm mb-8"></label>
+                                    <input asp-for="PhoneNumber" class="form-control radius-8" placeholder="Enter phone number">
+                                    <span asp-validation-for="PhoneNumber" class="text-danger text-sm"></span>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-20">
+                                    <label asp-for="Province" class="form-label fw-semibold text-primary-light text-sm mb-8"></label>
+                                    <input asp-for="Province" class="form-control radius-8" placeholder="Enter province">
+                                    <span asp-validation-for="Province" class="text-danger text-sm"></span>
+                                </div>
+                                <div class="col-md-6 mb-20">
+                                    <label asp-for="City" class="form-label fw-semibold text-primary-light text-sm mb-8"></label>
+                                    <input asp-for="City" class="form-control radius-8" placeholder="Enter city">
+                                    <span asp-validation-for="City" class="text-danger text-sm"></span>
+                                </div>
+                            </div>
+
+                            <div class="mb-20">
+                                <label asp-for="FullAddress" class="form-label fw-semibold text-primary-light text-sm mb-8"></label>
+                                <textarea asp-for="FullAddress" class="form-control radius-8" rows="3" placeholder="Enter full address"></textarea>
+                                <span asp-validation-for="FullAddress" class="text-danger text-sm"></span>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-20">
+                                    <label asp-for="Latitude" class="form-label fw-semibold text-primary-light text-sm mb-8"></label>
+                                    <input asp-for="Latitude" type="number" step="0.000001" class="form-control radius-8" placeholder="e.g., 31.9539">
+                                    <span asp-validation-for="Latitude" class="text-danger text-sm"></span>
+                                </div>
+                                <div class="col-md-6 mb-20">
+                                    <label asp-for="Longitude" class="form-label fw-semibold text-primary-light text-sm mb-8"></label>
+                                    <input asp-for="Longitude" type="number" step="0.000001" class="form-control radius-8" placeholder="e.g., 35.9106">
+                                    <span asp-validation-for="Longitude" class="text-danger text-sm"></span>
+                                </div>
+                            </div>
+
+                            <div class="mb-20">
+                                <label asp-for="OfficialWebsite" class="form-label fw-semibold text-primary-light text-sm mb-8"></label>
+                                <input asp-for="OfficialWebsite" type="url" class="form-control radius-8" placeholder="https://example.com">
+                                <span asp-validation-for="OfficialWebsite" class="text-danger text-sm"></span>
+                            </div>
+
+                            <div class="mb-20">
+                                <label asp-for="AcademicAccreditation" class="form-label fw-semibold text-primary-light text-sm mb-8"></label>
+                                <textarea asp-for="AcademicAccreditation" class="form-control radius-8" rows="2" placeholder="Enter accreditation details"></textarea>
+                                <span asp-validation-for="AcademicAccreditation" class="text-danger text-sm"></span>
+                            </div>
+
+                            <div class="d-flex align-items-center justify-content-center gap-3 mt-24">
+                                <a asp-action="Index" class="border border-danger-600 bg-hover-danger-200 text-danger-600 text-md px-56 py-11 radius-8">
+                                    Cancel
+                                </a>
+                                <button type="submit" class="btn btn-primary border border-primary-600 text-md px-56 py-12 radius-8">
+                                    <iconify-icon icon="mdi:content-save" class="icon me-1"></iconify-icon>
+                                    Update University
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function readLogoURL(input) {
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+                reader.onload = function(e) {
+                    $('#logoPreview').css('background-image', 'url('+e.target.result +')');
+                    $('#logoPreview').hide();
+                    $('#logoPreview').fadeIn(650);
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+        $("#logoUpload").change(function() {
+            readLogoURL(this);
+        });
+
+        function readCoverURL(input) {
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+                reader.onload = function(e) {
+                    $('#coverPreview').css('background-image', 'url('+e.target.result +')');
+                    $('#coverPreview').hide();
+                    $('#coverPreview').fadeIn(650);
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+        $("#coverUpload").change(function() {
+            readCoverURL(this);
+        });
+    </script>
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

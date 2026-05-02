@@ -1,0 +1,180 @@
+﻿@using Uni_Selector.ViewModels.AdminProgram
+@model ProgramDetailsViewModel
+
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = "Program Details";
+}
+
+<div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-24">
+    <h6 class="fw-semibold mb-0">Program Details</h6>
+    <ul class="d-flex align-items-center gap-2">
+        <li class="fw-medium">
+            <a href="@Url.Action("Index", "Admin")" class="d-flex align-items-center gap-1 hover-text-primary">
+                <iconify-icon icon="solar:home-smile-angle-outline" class="icon text-lg"></iconify-icon>
+                Dashboard
+            </a>
+        </li>
+        <li>-</li>
+        <li class="fw-medium">
+            <a href="@Url.Action("Index", "ProgramAdmin")" class="hover-text-primary">Programs</a>
+        </li>
+        <li>-</li>
+        <li class="fw-medium">Details</li>
+    </ul>
+</div>
+
+<div class="row gy-4">
+    <!-- Program Information Card -->
+    <div class="col-lg-4">
+        <div class="card h-100 p-0 radius-12">
+            <div class="card-body p-24">
+                <div class="text-center border-bottom pb-24 mb-24">
+                    <div class="w-80-px h-80-px rounded-circle bg-primary-600 text-white d-flex align-items-center justify-content-center mx-auto mb-16">
+                        <iconify-icon icon="solar:diploma-outline" class="icon text-48"></iconify-icon>
+                    </div>
+                    <h6 class="text-lg mb-4 fw-semibold">@Model.NameEnglish</h6>
+                    <p class="text-md text-secondary-light mb-0" dir="rtl">@Model.NameArabic</p>
+                </div>
+
+                <ul class="list-unstyled mb-0">
+                    <li class="d-flex align-items-center justify-content-between py-12 border-bottom">
+                        <span class="text-secondary-light fw-medium">Degree Level</span>
+                        <span class="badge bg-primary-focus text-primary-600 px-16 py-6 radius-4 fw-medium">@Model.DegreeText</span>
+                    </li>
+                    <li class="d-flex align-items-center justify-content-between py-12 border-bottom">
+                        <span class="text-secondary-light fw-medium">Teaching Language</span>
+                        <span class="badge bg-success-focus text-success-600 px-16 py-6 radius-4 fw-medium">@Model.LanguageText</span>
+                    </li>
+                    <li class="d-flex align-items-center justify-content-between py-12 border-bottom">
+                        <span class="text-secondary-light fw-medium">Total Credit Hours</span>
+                        <span class="text-primary-light fw-semibold">@Model.TotalCreditHours hrs</span>
+                    </li>
+                    @if (!string.IsNullOrEmpty(Model.AcademicClassification))
+                    {
+                        <li class="d-flex align-items-center justify-content-between py-12 border-bottom">
+                            <span class="text-secondary-light fw-medium">Classification</span>
+                            <span class="text-primary-light fw-semibold">@Model.AcademicClassification</span>
+                        </li>
+                    }
+                    <li class="d-flex align-items-center justify-content-between py-12">
+                        <span class="text-secondary-light fw-medium">Created</span>
+                        <span class="text-primary-light fw-semibold">@Model.CreatedAt.ToString("dd MMM yyyy")</span>
+                    </li>
+                </ul>
+
+                <div class="d-flex gap-2 mt-24">
+                    <a href="@Url.Action("Edit", "ProgramAdmin", new { id = Model.Id })" class="btn btn-primary flex-fill text-sm btn-sm px-12 py-8 radius-8">
+                        <iconify-icon icon="lucide:edit" class="icon text-lg me-4"></iconify-icon>
+                        Edit
+                    </a>
+                    <a href="@Url.Action("Index")" class="btn btn-outline-primary flex-fill text-sm btn-sm px-12 py-8 radius-8">
+                        <iconify-icon icon="ep:back" class="icon text-lg me-4"></iconify-icon>
+                        Back to List
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Description & Universities Card -->
+    <div class="col-lg-8">
+        <!-- Description Section -->
+        @if (!string.IsNullOrEmpty(Model.Description))
+        {
+            <div class="card p-0 radius-12 mb-24">
+                <div class="card-header py-16 px-24 bg-base border-bottom">
+                    <h6 class="text-lg fw-semibold mb-0">Program Description</h6>
+                </div>
+                <div class="card-body p-24">
+                    <p class="text-secondary-light mb-0">@Model.Description</p>
+                </div>
+            </div>
+        }
+
+        <!-- Universities Offering This Program -->
+        <div class="card p-0 radius-12">
+            <div class="card-header py-16 px-24 bg-base border-bottom d-flex align-items-center justify-content-between">
+                <h6 class="text-lg fw-semibold mb-0">Universities Offering This Program</h6>
+                <span class="badge bg-primary-600 text-white px-16 py-6 radius-4 fw-medium">
+                    @Model.UniversitiesOffering.Count @(Model.UniversitiesOffering.Count == 1 ? "University" : "Universities")
+                </span>
+            </div>
+            <div class="card-body p-24">
+                @if (Model.UniversitiesOffering.Any())
+                {
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead>
+                                <tr>
+                                    <th>University</th>
+                                    <th>Study System</th>
+                                    <th>Duration</th>
+                                    <th>Hour Price</th>
+                                    <th>Registration Fee</th>
+                                    <th class="text-center">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var university in Model.UniversitiesOffering)
+                                {
+                                    <tr>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                @if (!string.IsNullOrEmpty(university.UniversityLogoPath))
+                                                {
+                                                    <img src="@university.UniversityLogoPath" alt="@university.UniversityNameEnglish" class="w-40-px h-40-px rounded-circle flex-shrink-0 me-12 object-fit-cover">
+                                                }
+                                                else
+                                                {
+                                                    <div class="w-40-px h-40-px rounded-circle flex-shrink-0 me-12 bg-primary-50 d-flex align-items-center justify-content-center">
+                                                        <span class="text-primary-600 fw-bold">@university.UniversityNameEnglish[0]</span>
+                                                    </div>
+                                                }
+                                                <div class="flex-grow-1">
+                                                    <h6 class="text-md mb-0 fw-medium text-primary-light">@university.UniversityNameEnglish</h6>
+                                                    <span class="text-sm text-secondary-light" dir="rtl">@university.UniversityNameArabic</span>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-info-focus text-info-600 px-12 py-4 radius-4 fw-medium text-sm">
+                                                @university.StudySystem
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <span class="text-secondary-light fw-medium">@university.DurationInYears Year(s)</span>
+                                        </td>
+                                        <td>
+                                            <span class="text-secondary-light fw-medium">@university.HourPriceBase.ToString("N2") JOD</span>
+                                        </td>
+                                        <td>
+                                            <span class="text-secondary-light fw-medium">@university.RegistrationFeeFirstSemester.ToString("N2") JOD</span>
+                                        </td>
+                                        <td class="text-center">
+                                            @if (university.IsActive)
+                                            {
+                                                <span class="badge bg-success-focus text-success-main px-16 py-4 radius-4 fw-medium text-sm">Active</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-danger-focus text-danger-main px-16 py-4 radius-4 fw-medium text-sm">Inactive</span>
+                                            }
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <div class="text-center py-64">
+                        <iconify-icon icon="mdi:university-outline" class="icon text-64 text-secondary-light mb-12"></iconify-icon>
+                        <p class="text-secondary-light mb-0">This program is not currently being offered by any university.</p>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>

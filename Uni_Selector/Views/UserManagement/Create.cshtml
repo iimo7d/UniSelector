@@ -1,0 +1,69 @@
+﻿@model Uni_Selector.ViewModels.UserManagement.UserCreateViewModel
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = "Create User";
+}
+<div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-24"><h6 class="fw-semibold mb-0">Create New User</h6><ul class="d-flex align-items-center gap-2"><li class="fw-medium"><a href="@Url.Action("Index", "Admin")" class="d-flex align-items-center gap-1 hover-text-primary"><iconify-icon icon="solar:home-smile-angle-outline" class="icon text-lg"></iconify-icon> Dashboard</a></li><li>-</li><li class="fw-medium"><a href="@Url.Action("Index")" class="hover-text-primary">Users</a></li><li>-</li><li class="fw-medium">Create</li></ul></div>
+<div class="row justify-content-center">
+    <div class="col-xxl-9 col-xl-10">
+        <div class="card radius-12">
+            <div class="card-header py-16 px-24 bg-base border-bottom"><h6 class="text-lg fw-semibold mb-0">User Information</h6></div><div class="card-body p-24">
+                <form asp-action="Create" method="post">
+                    @Html.AntiForgeryToken()<div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+                    <h6 class="text-md text-primary-light mb-16 fw-semibold">Basic Information</h6><div class="row gy-3">
+                        <div class="col-sm-6"><label asp-for="FullName" class="form-label fw-semibold text-primary-light text-sm mb-8">Full Name <span class="text-danger-600">*</span></label><input asp-for="FullName" type="text" class="form-control radius-8" placeholder="Enter full name"><span asp-validation-for="FullName" class="text-danger text-sm"></span></div>
+                        <div class="col-sm-6"><label asp-for="Email" class="form-label fw-semibold text-primary-light text-sm mb-8">Email <span class="text-danger-600">*</span></label><input asp-for="Email" type="email" class="form-control radius-8" placeholder="Enter email address"><span asp-validation-for="Email" class="text-danger text-sm"></span></div>
+                        <div class="col-sm-6"><label asp-for="PhoneNumber" class="form-label fw-semibold text-primary-light text-sm mb-8">Phone Number</label><input asp-for="PhoneNumber" type="tel" class="form-control radius-8" placeholder="Enter phone number"><span asp-validation-for="PhoneNumber" class="text-danger text-sm"></span></div>
+                        <div class="col-sm-6">
+                            <label asp-for="Role" class="form-label fw-semibold text-primary-light text-sm mb-8">Role <span class="text-danger-600">*</span></label><select asp-for="Role" class="form-control radius-8" id="roleSelect">
+                                <option value="">Select Role</option>@foreach (var role in Model.AvailableRoles)
+                                {
+                                    <option value="@role">@role</option>
+                                }
+                            </select><span asp-validation-for="Role" class="text-danger text-sm"></span>
+                        </div>
+                        <div class="col-sm-6"><label asp-for="Password" class="form-label fw-semibold text-primary-light text-sm mb-8">Password <span class="text-danger-600">*</span></label><input asp-for="Password" type="password" class="form-control radius-8" placeholder="Enter password"><span asp-validation-for="Password" class="text-danger text-sm"></span></div>
+                        <div class="col-sm-6"><label asp-for="ConfirmPassword" class="form-label fw-semibold text-primary-light text-sm mb-8">Confirm Password <span class="text-danger-600">*</span></label><input asp-for="ConfirmPassword" type="password" class="form-control radius-8" placeholder="Confirm password"><span asp-validation-for="ConfirmPassword" class="text-danger text-sm"></span></div>
+                        <div class="col-12"><div class="form-check form-switch"><input asp-for="IsActive" class="form-check-input" type="checkbox" id="isActive"><label class="form-check-label fw-medium text-secondary-light" for="isActive">Active Account</label></div></div>
+                        <div class="col-12"><div class="form-check form-switch"><input asp-for="SendWelcomeEmail" class="form-check-input" type="checkbox" id="sendEmail"><label class="form-check-label fw-medium text-secondary-light" for="sendEmail">Send Welcome Email</label></div></div>
+                    </div>
+                    <div id="studentFields" style="display: none;">
+                        <hr class="my-24"><h6 class="text-md text-primary-light mb-16 fw-semibold">Student Information</h6><div class="row gy-3">
+                            <div class="col-sm-4"><label asp-for="DateOfBirth" class="form-label fw-semibold text-primary-light text-sm mb-8">Date of Birth</label><input asp-for="DateOfBirth" type="date" class="form-control radius-8"><span asp-validation-for="DateOfBirth" class="text-danger text-sm"></span></div>
+                            <div class="col-sm-4"><label asp-for="Gender" class="form-label fw-semibold text-primary-light text-sm mb-8">Gender</label><select asp-for="Gender" class="form-control radius-8" asp-items="Html.GetEnumSelectList<Uni_Selector.Models.Enums.Gender>()"><option value="">Select Gender</option></select><span asp-validation-for="Gender" class="text-danger text-sm"></span></div>
+                            <div class="col-sm-4"><label asp-for="GPA" class="form-label fw-semibold text-primary-light text-sm mb-8">GPA</label><input asp-for="GPA" type="number" step="0.01" min="0" max="100" class="form-control radius-8" placeholder="0.00"><span asp-validation-for="GPA" class="text-danger text-sm"></span></div>
+                            <div class="col-sm-6"><label asp-for="Province" class="form-label fw-semibold text-primary-light text-sm mb-8">Province</label><input asp-for="Province" type="text" class="form-control radius-8" placeholder="e.g., Amman"><span asp-validation-for="Province" class="text-danger text-sm"></span></div>
+                            <div class="col-sm-6"><label asp-for="City" class="form-label fw-semibold text-primary-light text-sm mb-8">City</label><input asp-for="City" type="text" class="form-control radius-8" placeholder="Enter city"><span asp-validation-for="City" class="text-danger text-sm"></span></div>
+                            <div class="col-sm-6"><label asp-for="Path" class="form-label fw-semibold text-primary-light text-sm mb-8">Path Type</label><select asp-for="Path" class="form-control radius-8" id="pathSelect" asp-items="Html.GetEnumSelectList<Uni_Selector.Models.Enums.PathType>()"><option value="">Select Path</option></select><span asp-validation-for="Path" class="text-danger text-sm"></span></div>
+                            <div class="col-sm-6" id="academicTrackField" style="display:none;"><label asp-for="AcademicTrack" class="form-label fw-semibold text-primary-light text-sm mb-8">Academic Track</label><select asp-for="AcademicTrack" class="form-control radius-8" asp-items="Html.GetEnumSelectList<Uni_Selector.Models.Enums.AcademicTrack>()"><option value="">Select Track</option></select><span asp-validation-for="AcademicTrack" class="text-danger text-sm"></span></div>
+                            <div class="col-sm-6" id="vocationalBranchField" style="display:none;"><label asp-for="VocationalBranch" class="form-label fw-semibold text-primary-light text-sm mb-8">Vocational Branch</label><select asp-for="VocationalBranch" class="form-control radius-8" asp-items="Html.GetEnumSelectList<Uni_Selector.Models.Enums.VocationalBranch>()"><option value="">Select Branch</option></select><span asp-validation-for="VocationalBranch" class="text-danger text-sm"></span></div>
+                            <div class="col-sm-6"><label asp-for="RegistrationBudget" class="form-label fw-semibold text-primary-light text-sm mb-8">Registration Budget (JOD)</label><input asp-for="RegistrationBudget" type="number" step="0.01" min="0" class="form-control radius-8" placeholder="0.00"><span asp-validation-for="RegistrationBudget" class="text-danger text-sm"></span></div>
+                        </div>
+                    </div>
+                    <div id="universityRepFields" style="display: none;">
+                        <hr class="my-24"><h6 class="text-md text-primary-light mb-16 fw-semibold">University Representative Information</h6><div class="row gy-3">
+                            <div class="col-sm-12">
+                                <label asp-for="UniversityId" class="form-label fw-semibold text-primary-light text-sm mb-8">University <span class="text-danger-600">*</span></label><select asp-for="UniversityId" class="form-control radius-8">
+                                    <option value="">Select University</option>@foreach (var uni in Model.AvailableUniversities)
+                                    {
+                                        <option value="@uni.Id">@uni.Name</option>
+                                    }
+                                </select><span asp-validation-for="UniversityId" class="text-danger text-sm"></span>
+                            </div>
+                            <div class="col-sm-6"><label asp-for="Position" class="form-label fw-semibold text-primary-light text-sm mb-8">Position/Title</label><input asp-for="Position" type="text" class="form-control radius-8" placeholder="e.g., Admissions Director"><span asp-validation-for="Position" class="text-danger text-sm"></span></div>
+                        </div>
+                    </div>
+                    <div id="adminFields" style="display: none;"><hr class="my-24"><div class="alert alert-info"><iconify-icon icon="solar:info-circle-outline" class="icon text-xl me-8"></iconify-icon>No additional information required for this role.</div></div>
+                    <div class="d-flex align-items-center justify-content-center gap-3 mt-32"><a href="@Url.Action("Index")" class="btn btn-outline-danger border border-danger-600 text-md px-56 py-11 radius-8"><iconify-icon icon="ep:back" class="icon text-lg me-4"></iconify-icon>Cancel</a><button type="submit" class="btn btn-primary border border-primary-600 text-md px-56 py-11 radius-8"><iconify-icon icon="ic:baseline-plus" class="icon text-lg me-4"></iconify-icon>Create User</button></div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        document.getElementById('roleSelect').addEventListener('change', function () { const role = this.value; document.getElementById('studentFields').style.display = 'none'; document.getElementById('universityRepFields').style.display = 'none'; document.getElementById('adminFields').style.display = 'none'; if (role === 'Student') { document.getElementById('studentFields').style.display = 'block'; } else if (role === 'UniversityRepresentative') { document.getElementById('universityRepFields').style.display = 'block'; } else if (role === 'PlatformAdmin' || role === 'BtecAuthority') { document.getElementById('adminFields').style.display = 'block'; } });
+            document.getElementById('pathSelect')?.addEventListener('change', function () { const path = parseInt(this.value); document.getElementById('academicTrackField').style.display = 'none'; document.getElementById('vocationalBranchField').style.display = 'none'; if (path === 1) { document.getElementById('academicTrackField').style.display = 'block'; } else if (path === 2) { document.getElementById('vocationalBranchField').style.display = 'block'; } });
+            window.addEventListener('DOMContentLoaded', function () { const roleSelect = document.getElementById('roleSelect'); if (roleSelect.value) { roleSelect.dispatchEvent(new Event('change')); } const pathSelect = document.getElementById('pathSelect'); if (pathSelect && pathSelect.value) { pathSelect.dispatchEvent(new Event('change')); } });</script>
+}

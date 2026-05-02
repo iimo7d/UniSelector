@@ -1,0 +1,305 @@
+﻿@model ProgramListViewModel
+
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = "Programs Management";
+}
+
+<div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-24">
+    <h6 class="fw-semibold mb-0">Programs Management</h6>
+    <ul class="d-flex align-items-center gap-2">
+        <li class="fw-medium">
+            <a href="@Url.Action("Index", "Admin")" class="d-flex align-items-center gap-1 hover-text-primary">
+                <iconify-icon icon="solar:home-smile-angle-outline" class="icon text-lg"></iconify-icon>
+                Dashboard
+            </a>
+        </li>
+        <li>-</li>
+        <li class="fw-medium">Programs</li>
+    </ul>
+</div>
+
+<div class="card h-100 p-0 radius-12">
+    <div class="card-header border-bottom bg-base py-16 px-24 d-flex align-items-center flex-wrap gap-3 justify-content-between">
+        <div class="d-flex align-items-center flex-wrap gap-3">
+            <form asp-action="Index" method="get" class="d-flex align-items-center gap-3">
+                <span class="text-md fw-medium text-secondary-light mb-0">Show</span>
+                <select name="pageSize" class="form-select form-select-sm w-auto ps-12 py-6 radius-12 h-40-px" onchange="this.form.submit()">
+                    <option value="10" selected="@(Model.PageSize == 10 ? "selected" : null)">10</option>
+                    <option value="20" selected="@(Model.PageSize == 20 ? "selected" : null)">20</option>
+                    <option value="50" selected="@(Model.PageSize == 50 ? "selected" : null)">50</option>
+                    <option value="100" selected="@(Model.PageSize == 100 ? "selected" : null)">100</option>
+                </select>
+
+                <div class="navbar-search">
+                    <input type="text" name="searchTerm" value="@Model.SearchTerm" class="bg-base h-40-px w-auto" placeholder="Search programs...">
+                    <iconify-icon icon="ion:search-outline" class="icon"></iconify-icon>
+                </div>
+
+                <select name="degree" class="form-select form-select-sm w-auto ps-12 py-6 radius-12 h-40-px" onchange="this.form.submit()">
+                    <option value="">All Degrees</option>
+                    @foreach (var degree in Model.Degrees)
+                    {
+                        <option value="@degree" selected="@(Model.Degree == degree ? "selected" : null)">@degree</option>
+                    }
+                </select>
+
+                <select name="language" class="form-select form-select-sm w-auto ps-12 py-6 radius-12 h-40-px" onchange="this.form.submit()">
+                    <option value="">All Languages</option>
+                    @foreach (var language in Model.Languages)
+                    {
+                        <option value="@language" selected="@(Model.Language == language ? "selected" : null)">@language</option>
+                    }
+                </select>
+
+                <input type="hidden" name="page" value="@Model.CurrentPage" />
+            </form>
+        </div>
+        <div class="d-flex align-items-center gap-2">
+            <a asp-action="Import" class="btn btn-outline-primary text-sm btn-sm px-12 py-12 radius-8 d-flex align-items-center gap-2">
+                <iconify-icon icon="solar:upload-outline" class="icon text-xl line-height-1"></iconify-icon>
+                Import from Excel
+            </a>
+            <a asp-action="Create" class="btn btn-primary text-sm btn-sm px-12 py-12 radius-8 d-flex align-items-center gap-2">
+                <iconify-icon icon="ic:baseline-plus" class="icon text-xl line-height-1"></iconify-icon>
+                Add New Program
+            </a>
+        </div>
+    </div>
+
+    <div class="card-body p-24">
+        <div class="table-responsive scroll-sm">
+            <table class="table bordered-table sm-table mb-0">
+                <thead>
+                    <tr>
+                        <th scope="col">
+                            <div class="d-flex align-items-center gap-10">
+                                <div class="form-check style-check d-flex align-items-center">
+                                    <input class="form-check-input radius-4 border border-neutral-400" type="checkbox" id="selectAll">
+                                </div>
+                                ID
+                            </div>
+                        </th>
+                        <th scope="col">Created</th>
+                        <th scope="col">Program Name</th>
+                        <th scope="col">Classification</th>
+                        <th scope="col">Degree</th>
+                        <th scope="col">Language</th>
+                        <th scope="col" class="text-center">Credit Hours</th>
+                        <th scope="col" class="text-center">Universities</th>
+                        <th scope="col" class="text-center">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.Programs.Any())
+                    {
+                        foreach (var program in Model.Programs)
+                        {
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center gap-10">
+                                        <div class="form-check style-check d-flex align-items-center">
+                                            <input class="form-check-input radius-4 border border-neutral-400" type="checkbox" name="checkbox">
+                                        </div>
+                                        #@program.Id
+                                    </div>
+                                </td>
+                                <td>@program.CreatedAt.ToString("dd MMM yyyy")</td>
+                                <td>
+                                    <div class="d-flex flex-column">
+                                        <h6 class="text-md mb-0 fw-medium text-secondary-light">@program.NameEnglish</h6>
+                                        <span class="text-sm text-secondary-light">@program.NameArabic</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    @if (!string.IsNullOrEmpty(program.AcademicClassification))
+                                    {
+                                        <span class="text-sm text-secondary-light">@program.AcademicClassification</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-sm text-neutral-400">N/A</span>
+                                    }
+                                </td>
+                                <td>
+                                    <span class="@program.DegreeBadgeClass px-24 py-4 radius-4 fw-medium text-sm">@program.DegreeText</span>
+                                </td>
+                                <td>
+                                    <span class="@program.LanguageBadgeClass px-24 py-4 radius-4 fw-medium text-sm">@program.LanguageText</span>
+                                </td>
+                                <td class="text-center">
+                                    <span class="badge bg-neutral-200 text-neutral-600 px-16 py-4 radius-4 fw-medium">
+                                        @program.TotalCreditHours hrs
+                                    </span>
+                                </td>
+                                <td class="text-center">
+                                    <span class="badge bg-neutral-200 text-neutral-600 px-16 py-4 radius-4 fw-medium">
+                                        @program.UniversitiesCount
+                                    </span>
+                                </td>
+                                <td class="text-center">
+                                    <div class="d-flex align-items-center gap-10 justify-content-center">
+                                        <a asp-action="Details" asp-route-id="@program.Id"
+                                           class="bg-info-focus bg-hover-info-200 text-info-600 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle"
+                                           title="View Details">
+                                            <iconify-icon icon="majesticons:eye-line" class="icon text-xl"></iconify-icon>
+                                        </a>
+                                        <a asp-action="Edit" asp-route-id="@program.Id"
+                                           class="bg-success-focus text-success-600 bg-hover-success-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle"
+                                           title="Edit">
+                                            <iconify-icon icon="lucide:edit" class="menu-icon"></iconify-icon>
+                                        </a>
+                                        <form asp-action="Delete" asp-route-id="@program.Id" method="post" class="d-inline delete-form">
+                                            @Html.AntiForgeryToken()
+                                            <input type="hidden" name="programName" value="@program.NameEnglish" />
+                                            <input type="hidden" name="universitiesCount" value="@program.UniversitiesCount" />
+                                            <button type="submit" class="bg-danger-focus bg-hover-danger-200 text-danger-600 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle border-0"
+                                                    title="Delete">
+                                                <iconify-icon icon="mingcute:delete-2-line" class="menu-icon"></iconify-icon>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="9" class="text-center py-32">
+                                <iconify-icon icon="mdi:database-off" class="icon text-64 text-secondary-light mb-12"></iconify-icon>
+                                <p class="text-secondary-light">No programs found</p>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        @if (Model.TotalPages > 1)
+        {
+            <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mt-24">
+                <span class="text-sm fw-medium text-secondary-light">
+                    Showing @((Model.CurrentPage - 1) * Model.PageSize + 1) to
+                    @Math.Min(Model.CurrentPage * Model.PageSize, Model.TotalPrograms) of @Model.TotalPrograms
+                </span>
+                <ul class="pagination d-flex flex-wrap align-items-center gap-2 justify-content-center">
+                    @if (Model.CurrentPage > 1)
+                    {
+                        <li class="page-item">
+                            <a class="page-link bg-neutral-200 text-secondary-light fw-semibold radius-8 border-0 d-flex align-items-center justify-content-center h-32-px w-32-px"
+                               href="@Url.Action("Index", new { page = Model.CurrentPage - 1, pageSize = Model.PageSize, searchTerm = Model.SearchTerm, degree = Model.Degree, language = Model.Language })">
+                                <iconify-icon icon="ep:d-arrow-left" class=""></iconify-icon>
+                            </a>
+                        </li>
+                    }
+
+                    @for (int i = Math.Max(1, Model.CurrentPage - 2); i <= Math.Min(Model.TotalPages, Model.CurrentPage + 2); i++)
+                    {
+                        <li class="page-item">
+                            <a class="page-link @(i == Model.CurrentPage ? "bg-primary-600 text-white" : "bg-neutral-200 text-secondary-light") fw-semibold radius-8 border-0 d-flex align-items-center justify-content-center h-32-px w-32-px"
+                               href="@Url.Action("Index", new { page = i, pageSize = Model.PageSize, searchTerm = Model.SearchTerm, degree = Model.Degree, language = Model.Language })">
+                                @i
+                            </a>
+                        </li>
+                    }
+
+                    @if (Model.CurrentPage < Model.TotalPages)
+                    {
+                        <li class="page-item">
+                            <a class="page-link bg-neutral-200 text-secondary-light fw-semibold radius-8 border-0 d-flex align-items-center justify-content-center h-32-px w-32-px"
+                               href="@Url.Action("Index", new { page = Model.CurrentPage + 1, pageSize = Model.PageSize, searchTerm = Model.SearchTerm, degree = Model.Degree, language = Model.Language })">
+                                <iconify-icon icon="ep:d-arrow-right" class=""></iconify-icon>
+                            </a>
+                        </li>
+                    }
+                </ul>
+            </div>
+        }
+    </div>
+</div>
+
+@using System.Text.Json
+@using Uni_Selector.ViewModels.AdminProgram
+
+@section Scripts {
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        // Select all checkbox functionality
+        document.getElementById('selectAll')?.addEventListener('change', function() {
+            const checkboxes = document.querySelectorAll('input[name="checkbox"]');
+            checkboxes.forEach(checkbox => checkbox.checked = this.checked);
+        });
+
+        // Handle Delete Form Submissions
+        document.querySelectorAll('.delete-form').forEach(form => {
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+
+                const programName = this.querySelector('input[name="programName"]').value;
+                const universitiesCount = parseInt(this.querySelector('input[name="universitiesCount"]').value);
+                const submitForm = this;
+
+                if (universitiesCount > 0) {
+                    Swal.fire({
+                        title: 'Cannot Delete Program',
+                        html: `<strong>${programName}</strong> is currently being offered by <strong>${universitiesCount}</strong> university(ies).<br><br>Please remove it from all universities first.`,
+                        icon: 'error',
+                        confirmButtonColor: '#dc3545',
+                        confirmButtonText: 'OK'
+                    });
+                } else {
+                    Swal.fire({
+                        title: 'Delete Program?',
+                        html: `Are you sure you want to delete<br><strong>${programName}</strong>?<br><br><small class="text-danger">This action cannot be undone.</small>`,
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#d33',
+                        cancelButtonColor: '#6c757d',
+                        confirmButtonText: 'Yes, Delete',
+                        cancelButtonText: 'Cancel'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            submitForm.submit();
+                        }
+                    });
+                }
+            });
+        });
+
+        // Show success/error messages from TempData
+        const successMsg = @Html.Raw(JsonSerializer.Serialize(TempData["Success"]?.ToString()));
+        if (successMsg) {
+            Swal.fire({
+                icon: 'success',
+                title: 'Success!',
+                text: successMsg,
+                confirmButtonColor: '#198754',
+                timer: 3000,
+                timerProgressBar: true
+            });
+        }
+
+        const errorMsg = @Html.Raw(JsonSerializer.Serialize(TempData["Error"]?.ToString()));
+        if (errorMsg) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error!',
+                text: errorMsg,
+                confirmButtonColor: '#dc3545'
+            });
+        }
+
+        const infoMsg = @Html.Raw(JsonSerializer.Serialize(TempData["Info"]?.ToString()));
+        if (infoMsg) {
+            Swal.fire({
+                icon: 'info',
+                title: 'Information',
+                text: infoMsg,
+                confirmButtonColor: '#0dcaf0'
+            });
+        }
+    </script>
+}

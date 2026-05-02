@@ -1,0 +1,316 @@
+﻿@model Uni_Selector.ViewModels.NotificationAdmin.NotificationHistoryViewModel
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = "Notification History";
+}
+
+<div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-24">
+    <h6 class="fw-semibold mb-0">Notification History</h6>
+    <ul class="d-flex align-items-center gap-2">
+        <li class="fw-medium">
+            <a href="@Url.Action("Index", "Admin")" class="d-flex align-items-center gap-1 hover-text-primary">
+                <iconify-icon icon="solar:home-smile-angle-outline" class="icon text-lg"></iconify-icon>
+                Dashboard
+            </a>
+        </li>
+        <li>-</li>
+        <li class="fw-medium">
+            <a href="@Url.Action("Index")" class="hover-text-primary">Notifications</a>
+        </li>
+        <li>-</li>
+        <li class="fw-medium">History</li>
+    </ul>
+</div>
+
+<!-- Summary Cards -->
+<div class="row gy-4 mb-24">
+    <div class="col-xxl-4 col-sm-6">
+        <div class="card p-0 radius-12">
+            <div class="card-body p-20">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <span class="text-secondary-light mb-4 fw-medium text-sm d-block">This Month</span>
+                        <h4 class="mb-0 fw-bold">@Model.TotalSentThisMonth</h4>
+                    </div>
+                    <div class="w-64-px h-64-px rounded-circle bg-primary-600 d-flex align-items-center justify-content-center">
+                        <iconify-icon icon="solar:letter-bold" class="text-white text-32"></iconify-icon>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xxl-4 col-sm-6">
+        <div class="card p-0 radius-12">
+            <div class="card-body p-20">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <span class="text-secondary-light mb-4 fw-medium text-sm d-block">Read This Month</span>
+                        <h4 class="mb-0 fw-bold text-success-600">@Model.TotalReadThisMonth</h4>
+                    </div>
+                    <div class="w-64-px h-64-px rounded-circle bg-success-600 d-flex align-items-center justify-content-center">
+                        <iconify-icon icon="solar:eye-bold" class="text-white text-32"></iconify-icon>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xxl-4 col-sm-6">
+        <div class="card p-0 radius-12">
+            <div class="card-body p-20">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <span class="text-secondary-light mb-4 fw-medium text-sm d-block">Read Rate</span>
+                        <h4 class="mb-0 fw-bold text-info-600">@Model.ReadRateThisMonth.ToString("N1")%</h4>
+                    </div>
+                    <div class="w-64-px h-64-px rounded-circle bg-info-600 d-flex align-items-center justify-content-center">
+                        <iconify-icon icon="solar:chart-bold" class="text-white text-32"></iconify-icon>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row gy-4 mb-24">
+    <!-- Category Distribution Chart -->
+    <div class="col-lg-6">
+        <div class="card h-100 radius-12">
+            <div class="card-header border-bottom bg-base py-16 px-24">
+                <h6 class="text-lg fw-semibold mb-0">By Category</h6>
+            </div>
+            <div class="card-body p-24">
+                <div id="categoryChart" style="min-height: 300px;"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Channel Distribution Chart -->
+    <div class="col-lg-6">
+        <div class="card h-100 radius-12">
+            <div class="card-header border-bottom bg-base py-16 px-24">
+                <h6 class="text-lg fw-semibold mb-0">By Channel</h6>
+            </div>
+            <div class="card-body p-24">
+                <div id="channelChart" style="min-height: 300px;"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Daily History Table -->
+<div class="card radius-12">
+    <div class="card-header border-bottom bg-base py-16 px-24">
+        <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+            <h6 class="text-lg fw-semibold mb-0">Daily Statistics</h6>
+            <form asp-action="History" method="get" class="d-flex align-items-center gap-2">
+                <input type="date" name="startDate" value="@Model.StartDate?.ToString("yyyy-MM-dd")" class="form-control form-control-sm radius-8" style="width: 160px;">
+                <span class="text-sm">to</span>
+                <input type="date" name="endDate" value="@Model.EndDate?.ToString("yyyy-MM-dd")" class="form-control form-control-sm radius-8" style="width: 160px;">
+                <button type="submit" class="btn btn-primary btn-sm radius-8 px-16">Filter</button>
+                <a href="@Url.Action("History")" class="btn btn-outline-secondary btn-sm radius-8 px-16">Reset</a>
+            </form>
+        </div>
+    </div>
+
+    <div class="card-body p-24">
+        <div class="table-responsive scroll-sm">
+            <table class="table bordered-table sm-table mb-0">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Total Sent</th>
+                        <th>Total Read</th>
+                        <th>Read Rate</th>
+                        <th>Emails</th>
+                        <th>Categories</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.History.Any())
+                    {
+                        foreach (var item in Model.History)
+                        {
+                            <tr>
+                                <td>
+                                    <span class="text-sm fw-semibold">@item.Date.ToString("dd MMM yyyy")</span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-primary-focus text-primary-600 px-12 py-4 radius-4">@item.TotalSent</span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-success-focus text-success-600 px-12 py-4 radius-4">@item.TotalRead</span>
+                                </td>
+                                <td>
+                                    <div class="progress w-100" style="height: 8px;">
+                                        <div class="progress-bar bg-success-600" role="progressbar" style="width: @item.ReadRate%;" aria-valuenow="@item.ReadRate" aria-valuemin="0" aria-valuemax="100"></div>
+                                    </div>
+                                    <span class="text-xs text-secondary-light">@item.ReadRate.ToString("N1")%</span>
+                                </td>
+                                <td>
+                                    <span class="text-sm">@item.EmailsSent</span>
+                                </td>
+                                <td>
+                                    <div class="d-flex flex-wrap gap-4">
+                                        @foreach (var category in item.CategoriesBreakdown.Take(3))
+                                        {
+                                            <span class="badge bg-neutral-200 text-neutral-600 px-8 py-2 radius-4 text-xs">
+                                                @category.Key: @category.Value
+                                            </span>
+                                        }
+                                        @if (item.CategoriesBreakdown.Count > 3)
+                                        {
+                                            <span class="text-xs text-secondary-light">+@(item.CategoriesBreakdown.Count - 3) more</span>
+                                        }
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="6" class="text-center py-32">
+                                <iconify-icon icon="solar:history-outline" class="icon text-64 text-secondary-light mb-12"></iconify-icon>
+                                <p class="text-secondary-light mb-0">No notification history found for selected period</p>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        @if (Model.TotalPages > 1)
+        {
+            <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mt-24">
+                <span class="text-sm fw-medium text-secondary-light">
+                    Showing @((Model.CurrentPage - 1) * Model.PageSize + 1) to @Math.Min(Model.CurrentPage * Model.PageSize, Model.TotalItems) of @Model.TotalItems days
+                </span>
+                <ul class="pagination d-flex flex-wrap align-items-center gap-2 justify-content-center">
+                    @if (Model.CurrentPage > 1)
+                    {
+                        <li class="page-item">
+                            <a class="page-link bg-neutral-200 text-secondary-light fw-semibold radius-8 border-0 d-flex align-items-center justify-content-center h-32-px w-32-px"
+                               href="@Url.Action("History", new { page = Model.CurrentPage - 1, pageSize = Model.PageSize, startDate = Model.StartDate, endDate = Model.EndDate })">
+                                <iconify-icon icon="ep:d-arrow-left"></iconify-icon>
+                            </a>
+                        </li>
+                    }
+                    @for (int i = Math.Max(1, Model.CurrentPage - 2); i <= Math.Min(Model.TotalPages, Model.CurrentPage + 2); i++)
+                    {
+                        <li class="page-item">
+                            <a class="page-link @(i == Model.CurrentPage ? "bg-primary-600 text-white" : "bg-neutral-200 text-secondary-light") fw-semibold radius-8 border-0 d-flex align-items-center justify-content-center h-32-px w-32-px"
+                               href="@Url.Action("History", new { page = i, pageSize = Model.PageSize, startDate = Model.StartDate, endDate = Model.EndDate })">
+                                @i
+                            </a>
+                        </li>
+                    }
+                    @if (Model.CurrentPage < Model.TotalPages)
+                    {
+                        <li class="page-item">
+                            <a class="page-link bg-neutral-200 text-secondary-light fw-semibold radius-8 border-0 d-flex align-items-center justify-content-center h-32-px w-32-px"
+                               href="@Url.Action("History", new { page = Model.CurrentPage + 1, pageSize = Model.PageSize, startDate = Model.StartDate, endDate = Model.EndDate })">
+                                <iconify-icon icon="ep:d-arrow-right"></iconify-icon>
+                            </a>
+                        </li>
+                    }
+                </ul>
+            </div>
+        }
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        // Category Chart
+        var categoryOptions = {
+            series: [@string.Join(",", Model.CategoryStats.Values)],
+            chart: {
+                type: 'donut',
+                height: 300
+            },
+            labels: [@Html.Raw(string.Join(",", Model.CategoryStats.Keys.Select(k => $"'{k}'")))],
+            colors: ['#487FFF', '#45B369', '#FFA500', '#EF4A00', '#8E33FF', '#FF6B9D', '#00D4D4', '#FFD700'],
+            legend: {
+                position: 'bottom',
+                horizontalAlign: 'center'
+            },
+            dataLabels: {
+                enabled: true,
+                formatter: function (val) {
+                    return val.toFixed(1) + '%'
+                }
+            },
+            plotOptions: {
+                pie: {
+                    donut: {
+                        size: '65%',
+                        labels: {
+                            show: true,
+                            total: {
+                                show: true,
+                                label: 'Total',
+                                formatter: function (w) {
+                                    return w.globals.seriesTotals.reduce((a, b) => a + b, 0)
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        };
+
+        var categoryChart = new ApexCharts(document.querySelector("#categoryChart"), categoryOptions);
+        categoryChart.render();
+
+        // Channel Chart
+        var channelOptions = {
+            series: [@string.Join(",", Model.ChannelStats.Values)],
+            chart: {
+                type: 'pie',
+                height: 300
+            },
+            labels: [@Html.Raw(string.Join(",", Model.ChannelStats.Keys.Select(k => $"'{k}'")))],
+            colors: ['#487FFF', '#45B369'],
+            legend: {
+                position: 'bottom',
+                horizontalAlign: 'center'
+            },
+            dataLabels: {
+                enabled: true,
+                formatter: function (val) {
+                    return val.toFixed(1) + '%'
+                }
+            }
+        };
+
+        var channelChart = new ApexCharts(document.querySelector("#channelChart"), channelOptions);
+        channelChart.render();
+
+        @if (TempData["Success"] != null)
+        {
+                <text>
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success!',
+                    text: '@TempData["Success"]',
+                    confirmButtonColor: '#198754',
+                    timer: 3000,
+                    timerProgressBar: true
+                });
+                </text>
+        }
+        @if (TempData["Error"] != null)
+        {
+                <text>
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error!',
+                    text: '@TempData["Error"]',
+                    confirmButtonColor: '#dc3545'
+                });
+                </text>
+        }
+    </script>
+}

@@ -1,0 +1,277 @@
+﻿@model Uni_Selector.ViewModels.BTECAuthority.UniversitiesBTECReportViewModel
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = "Universities BTEC Report";
+}
+
+<!-- Page Header -->
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h4 class="mb-1">🏢 Universities BTEC Report</h4>
+        <p class="text-muted mb-0">Universities offering BTEC programs and their performance</p>
+    </div>
+    <div>
+        <a asp-action="Index" class="btn btn-outline-secondary me-2">
+            <iconify-icon icon="solar:arrow-left-outline" width="20"></iconify-icon>
+            Back to Dashboard
+        </a>
+        <a asp-action="Export" asp-route-reportType="UniversityPerformance" asp-route-exportType="Excel" class="btn btn-primary">
+            <iconify-icon icon="solar:download-outline" width="20"></iconify-icon>
+            Export Report
+        </a>
+    </div>
+</div>
+
+<!-- Filters Card -->
+<div class="card mb-4">
+    <div class="card-header">
+        <h6 class="card-title mb-0">
+            <iconify-icon icon="solar:filter-outline" width="20"></iconify-icon>
+            Filters
+        </h6>
+    </div>
+    <div class="card-body">
+        <form method="get" asp-action="Universities">
+            <div class="row g-3">
+                <!-- Search -->
+                <div class="col-md-4">
+                    <label class="form-label">Search University</label>
+                    <input type="text" name="searchTerm" value="@Model.SearchTerm" class="form-control" placeholder="University name...">
+                </div>
+
+                <!-- Province -->
+                <div class="col-md-3">
+                    <label class="form-label">Province</label>
+                    <select name="province" class="form-select">
+                        <option value="">All Provinces</option>
+                        @foreach (var province in Model.Provinces)
+                        {
+                            <option value="@province" selected="@(Model.Province == province)">@province</option>
+                        }
+                    </select>
+                </div>
+
+                <!-- City -->
+                <div class="col-md-3">
+                    <label class="form-label">City</label>
+                    <select name="city" class="form-select">
+                        <option value="">All Cities</option>
+                        @foreach (var city in Model.Cities)
+                        {
+                            <option value="@city" selected="@(Model.City == city)">@city</option>
+                        }
+                    </select>
+                </div>
+
+                <!-- Has Approved Programs -->
+                <div class="col-md-2">
+                    <label class="form-label">Status</label>
+                    <select name="hasApprovedPrograms" class="form-select">
+                        <option value="">All</option>
+                        <option value="true" selected="@(Model.HasApprovedPrograms == true)">Has Approved</option>
+                        <option value="false" selected="@(Model.HasApprovedPrograms == false)">Pending Only</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="row mt-3">
+                <div class="col-12">
+                    <button type="submit" class="btn btn-primary">
+                        <iconify-icon icon="solar:magnifer-outline" width="18"></iconify-icon>
+                        Apply Filters
+                    </button>
+                    <a asp-action="Universities" class="btn btn-outline-secondary">
+                        <iconify-icon icon="solar:refresh-outline" width="18"></iconify-icon>
+                        Clear Filters
+                    </a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Results Card -->
+<div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h6 class="card-title mb-0">Universities Results</h6>
+        <div class="d-flex align-items-center gap-2">
+            <span class="text-muted">Show:</span>
+            <select class="form-select form-select-sm" style="width: auto;" onchange="changePageSize(this.value)">
+                <option value="10" selected="@(Model.PageSize == 10)">10</option>
+                <option value="25" selected="@(Model.PageSize == 25)">25</option>
+                <option value="50" selected="@(Model.PageSize == 50)">50</option>
+            </select>
+            <span class="text-muted">entries</span>
+        </div>
+    </div>
+    <div class="card-body">
+        @if (Model.Universities.Any())
+        {
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>University</th>
+                            <th>Location</th>
+                            <th>Contact</th>
+                            <th class="text-center">Total Programs</th>
+                            <th class="text-center">Approved</th>
+                            <th class="text-center">Pending</th>
+                            <th class="text-center">Students</th>
+                            <th class="text-center">Levels Offered</th>
+                            <th class="text-center">Since</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var uni in Model.Universities)
+                        {
+                            <tr>
+                                <td>
+                                    <div>
+                                        <strong>@uni.NameEnglish</strong>
+                                        <br />
+                                        <small class="text-muted">@uni.NameArabic</small>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <iconify-icon icon="solar:map-point-outline" width="18" class="text-primary"></iconify-icon>
+                                        <div>
+                                            <div>@uni.City</div>
+                                            <small class="text-muted">@uni.Province</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div>
+                                        <iconify-icon icon="solar:phone-outline" width="16" class="text-muted me-1"></iconify-icon>
+                                        <small>@uni.PhoneNumber</small>
+                                    </div>
+                                    <div>
+                                        <iconify-icon icon="solar:letter-outline" width="16" class="text-muted me-1"></iconify-icon>
+                                        <small>@uni.Email</small>
+                                    </div>
+                                </td>
+                                <td class="text-center">
+                                    <span class="badge bg-primary text-primary-main">@uni.TotalBtecPrograms</span>
+                                </td>
+                                <td class="text-center">
+                                    <span class="badge bg-success-focus text-success-main">@uni.ApprovedPrograms</span>
+                                </td>
+                                <td class="text-center">
+                                    @if (uni.PendingPrograms > 0)
+                                    {
+                                        <span class="badge bg-warning-focus text-warning-main">@uni.PendingPrograms</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">-</span>
+                                    }
+                                </td>
+                                <td class="text-center">
+                                    <span class="badge bg-info-focus text-info-main">@uni.TotalStudents</span>
+                                </td>
+                                <td class="text-center">
+                                    @foreach (var level in uni.LevelsOffered.Take(3))
+                                    {
+                                        <span class="badge bg-secondary text-secondary-main me-1">L@((int)level)</span>
+                                    }
+                                    @if (uni.LevelsOffered.Count > 3)
+                                    {
+                                        <span class="badge bg-secondary text-secondary-main">+@(uni.LevelsOffered.Count - 3)</span>
+                                    }
+                                </td>
+                                <td class="text-center">
+                                    @if (uni.FirstProgramDate.HasValue)
+                                    {
+                                        <small class="text-muted">@uni.FirstProgramDate.Value.ToString("MMM yyyy")</small>
+                                    }
+                                    else
+                                    {
+                                        <small class="text-muted">-</small>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            <div class="d-flex justify-content-between align-items-center mt-3">
+                <div class="text-muted">
+                    Showing @((Model.CurrentPage - 1) * Model.PageSize + 1) to @Math.Min(Model.CurrentPage * Model.PageSize, Model.TotalRecords) of @Model.TotalRecords universities
+                </div>
+
+                @if (Model.TotalPages > 1)
+                {
+                    <nav>
+                        <ul class="pagination mb-0">
+                            <!-- Previous Button -->
+                            <li class="page-item @(Model.CurrentPage == 1 ? "disabled" : "")">
+                                <a class="page-link" href="@GetPageUrl(Model.CurrentPage - 1)">Previous</a>
+                            </li>
+
+                            <!-- Page Numbers -->
+                            @for (int i = Math.Max(1, Model.CurrentPage - 2); i <= Math.Min(Model.TotalPages, Model.CurrentPage + 2); i++)
+                            {
+                                <li class="page-item @(i == Model.CurrentPage ? "active" : "")">
+                                    <a class="page-link" href="@GetPageUrl(i)">@i</a>
+                                </li>
+                            }
+
+                            <!-- Next Button -->
+                            <li class="page-item @(Model.CurrentPage == Model.TotalPages ? "disabled" : "")">
+                                <a class="page-link" href="@GetPageUrl(Model.CurrentPage + 1)">Next</a>
+                            </li>
+                        </ul>
+                    </nav>
+                }
+            </div>
+        }
+        else
+        {
+            <!-- Empty State -->
+            <div class="text-center py-5">
+                <iconify-icon icon="solar:buildings-3-outline" width="64" class="text-muted"></iconify-icon>
+                <h5 class="mt-3">No Universities Found</h5>
+                <p class="text-muted">Try adjusting your filters to see more results</p>
+                <a asp-action="Universities" class="btn btn-primary">Clear All Filters</a>
+            </div>
+        }
+    </div>
+</div>
+
+@functions {
+    string GetPageUrl(int page)
+    {
+        var routeValues = new Dictionary<string, string>
+        {
+            { "page", page.ToString() },
+            { "pageSize", Model.PageSize.ToString() }
+        };
+
+        if (!string.IsNullOrWhiteSpace(Model.SearchTerm))
+            routeValues["searchTerm"] = Model.SearchTerm;
+        if (!string.IsNullOrWhiteSpace(Model.Province))
+            routeValues["province"] = Model.Province;
+        if (!string.IsNullOrWhiteSpace(Model.City))
+            routeValues["city"] = Model.City;
+        if (Model.HasApprovedPrograms.HasValue)
+            routeValues["hasApprovedPrograms"] = Model.HasApprovedPrograms.Value.ToString().ToLower();
+
+        var queryString = string.Join("&", routeValues.Select(kv => $"{kv.Key}={Uri.EscapeDataString(kv.Value)}"));
+        return $"?{queryString}";
+    }
+}
+
+@section Scripts {
+    <script>
+        function changePageSize(newSize) {
+            var currentUrl = new URL(window.location.href);
+            currentUrl.searchParams.set('pageSize', newSize);
+            currentUrl.searchParams.set('page', '1');
+            window.location.href = currentUrl.toString();
+        }
+    </script>
+}

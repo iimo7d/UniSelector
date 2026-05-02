@@ -1,0 +1,173 @@
+﻿@*
+    WowDash - ASP.Net Core 8 & Bootstrap Admin Dashboard Multipurpose Template design by Parv Infotech
+*@
+
+
+<div class="navbar-header">
+    <div class="row align-items-center justify-content-between">
+        <div class="col-auto">
+            <div class="d-flex flex-wrap align-items-center gap-4">
+                <button type="button" class="sidebar-toggle">
+                    <iconify-icon icon="heroicons:bars-3-solid" class="icon text-2xl non-active"></iconify-icon>
+                    <iconify-icon icon="iconoir:arrow-right" class="icon text-2xl active"></iconify-icon>
+                </button>
+                <button type="button" class="sidebar-mobile-toggle">
+                    <iconify-icon icon="heroicons:bars-3-solid" class="icon"></iconify-icon>
+                </button>
+            </div>
+        </div>
+        <div class="col-auto">
+            <div class="d-flex flex-wrap align-items-center gap-3">
+                <button type="button" data-theme-toggle class="w-40-px h-40-px bg-neutral-200 rounded-circle d-flex justify-content-center align-items-center"></button>
+
+                <div class="dropdown">
+                    <button class="has-indicator w-40-px h-40-px bg-neutral-200 rounded-circle d-flex justify-content-center align-items-center"
+                            type="button"
+                            id="notificationBell"
+                            data-bs-toggle="dropdown">
+                        <iconify-icon icon="iconoir:bell" class="text-primary-light text-xl"></iconify-icon>
+                        <!-- Dynamic badge (hidden by default) -->
+                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                              id="notificationBadge"
+                              style="display: none; font-size: 10px; padding: 2px 6px;">
+                            0
+                        </span>
+                    </button>
+
+                    <div class="dropdown-menu to-top dropdown-menu-lg p-0" id="notificationDropdown">
+                        <!-- Header with dynamic count -->
+                        <div class="m-16 py-12 px-16 radius-8 bg-primary-50 mb-16 d-flex align-items-center justify-content-between gap-2">
+                            <div>
+                                <h6 class="text-lg text-primary-light fw-semibold mb-0">Notifications</h6>
+                            </div>
+                            <span class="text-primary-600 fw-semibold text-lg w-40-px h-40-px rounded-circle bg-base d-flex justify-content-center align-items-center"
+                                  id="notificationCountBadge">
+                                0
+                            </span>
+                        </div>
+
+                        <!-- Notifications Container - Dynamically Loaded -->
+                        <div class="max-h-400-px overflow-y-auto scroll-sm pe-4" id="notificationsContainer">
+                            <!-- Loading State -->
+                            <div class="text-center py-4" id="notificationLoading">
+                                <div class="spinner-border spinner-border-sm text-primary" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                                <p class="text-sm text-secondary-light mt-2 mb-0">Loading notifications...</p>
+                            </div>
+                        </div>
+
+                        <!-- Footer -->
+                        <div class="text-center py-12 px-16 border-top">
+                            <a href="/Notifications" class="text-primary-600 fw-semibold text-md" id="viewAllNotificationsLink">
+                                See All Notification
+                            </a>
+                        </div>
+                    </div>
+                </div><!-- Notification dropdown end -->
+                <!-- ===================================
+                     REQUIRED: Add this style to handle badge positioning
+                     =================================== -->
+                <style>
+                    /* Badge positioning for notification bell */
+                    .has-indicator {
+                        position: relative;
+                    }
+
+                    /* Notification badge animation */
+                    #notificationBadge {
+                        animation: fadeIn 0.3s ease-in-out;
+                    }
+
+                    @@keyframes fadeIn {
+                        from {
+                            opacity: 0;
+                            transform: translate(-50%, -50%) scale(0.5);
+                        }
+
+                        to {
+                            opacity: 1;
+                            transform: translate(-50%, -50%) scale(1);
+                        }
+                    }
+
+                    /* Unread notification highlight */
+                    .notification-unread {
+                        background-color: rgba(99, 102, 241, 0.05) !important;
+                        border-left: 3px solid #6366f1 !important;
+                    }
+
+                    /* Notification item hover effect */
+                    .notification-item:hover {
+                        background-color: rgba(0, 0, 0, 0.02);
+                        transition: background-color 0.2s ease;
+                    }
+
+                    /* Delete button styling */
+                    .notification-delete-btn {
+                        opacity: 0;
+                        transition: opacity 0.2s ease;
+                    }
+
+                    .notification-item:hover .notification-delete-btn {
+                        opacity: 1;
+                    }
+
+                    /* Smooth transitions */
+                    .notification-item {
+                        transition: all 0.3s ease;
+                    }
+
+                    /* Mark all read button */
+                    .mark-all-read-btn {
+                        cursor: pointer;
+                        opacity: 0.8;
+                        transition: opacity 0.2s ease;
+                    }
+
+                        .mark-all-read-btn:hover {
+                            opacity: 1;
+                        }
+                </style><!-- Notification dropdown end -->
+
+                <div class="dropdown">
+                    <button class="d-flex justify-content-center align-items-center rounded-circle" type="button" data-bs-toggle="dropdown">
+                        <img src="~/adminAssets/images/avatar/ic--baseline-account-circle.png" alt="image" class="w-40-px h-40-px object-fit-cover rounded-circle">
+                    </button>
+                    <div class="dropdown-menu to-top dropdown-menu-sm">
+                        <div class="py-12 px-16 radius-8 bg-primary-50 mb-16 d-flex align-items-center justify-content-between gap-2">
+                            <div>
+                                <h6 class="text-lg text-primary-light fw-semibold mb-2">Dashboard</h6>
+                            </div>
+                            <button type="button" class="hover-text-danger">
+                                <iconify-icon icon="radix-icons:cross-1" class="icon text-xl"></iconify-icon>
+                            </button>
+                        </div>
+                        <ul class="to-top-list">
+                            <li>
+                                <a  class="dropdown-item text-black px-0 py-8 hover-bg-transparent hover-text-primary d-flex align-items-center gap-3" href="@Url.Action("Me","Account")">
+                                    <iconify-icon icon="solar:user-linear" class="icon text-xl"></iconify-icon> My Profile
+                                </a>
+                            </li>
+
+                            <li>
+                                <form asp-action="Logout" asp-controller="Account" method="post" class="m-0">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit"
+                                            class="dropdown-item text-black px-0 py-8 hover-bg-transparent hover-text-danger d-flex align-items-center gap-3">
+                                        <iconify-icon icon="lucide:power" class="icon text-xl"></iconify-icon>
+                                        Log Out
+                                    </button>
+                                </form>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <!-- Profile dropdown end -->
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@*                                  href="javascript:void(0)" *@

@@ -1,0 +1,204 @@
+﻿@using Uni_Selector.ViewModels.Home
+@model UniversitiesListViewModel
+@{
+    ViewData["Title"] = "Browse Universities";
+}
+
+<!-- Banner Section -->
+<section>
+    <div class="bg-lightGrey10 dark:bg-lightGrey10-dark relative z-0 overflow-y-visible py-50px md:py-20 lg:py-100px 2xl:pb-150px 2xl:pt-40.5">
+        <!-- Animated Icons -->
+        <div>
+            <img class="absolute left-0 bottom-0 md:left-[14px] lg:left-[50px] lg:bottom-[21px] 2xl:left-[165px] 2xl:bottom-[60px] animate-move-var z-10" src="~/assets/images/herobanner/herobanner__1.png" alt="">
+            <img class="absolute left-0 top-0 lg:left-[50px] lg:top-[100px] animate-spin-slow" src="~/assets/images/herobanner/herobanner__2.png" alt="">
+            <img class="absolute right-[30px] top-0 md:right-10 lg:right-[575px] 2xl:top-20 animate-move-var2 opacity-50 hidden md:block" src="~/assets/images/herobanner/herobanner__3.png" alt="">
+            <img class="absolute right-[30px] top-[212px] md:right-10 md:top-[157px] lg:right-[45px] lg:top-[100px] animate-move-hor" src="~/assets/images/herobanner/herobanner__5.png" alt="">
+        </div>
+
+        <div class="container">
+            <div class="text-center">
+                <h1 class="text-3xl md:text-size-40 2xl:text-size-55 font-bold text-blackColor dark:text-blackColor-dark mb-7 md:mb-6 pt-3">
+                    Browse Private Universities in Jordan
+                </h1>
+                <ul class="flex gap-1 justify-center">
+                    <li>
+                        <a asp-controller="Home" asp-action="Index" class="text-lg text-blackColor2 dark:text-blackColor2-dark">
+                            Home <i class="icofont-simple-right"></i>
+                        </a>
+                    </li>
+                    <li>
+                        <span class="text-lg text-blackColor2 dark:text-blackColor2-dark">Universities</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Universities Section -->
+<div>
+    <div class="container py-10 md:py-50px lg:py-60px 2xl:py-100px">
+
+        <!-- Search & Filter Header -->
+        <div class="mb-30px" data-aos="fade-up">
+            <form asp-action="Universities" method="get" class="bg-whiteColor dark:bg-whiteColor-dark p-30px rounded-lg shadow-brand dark:shadow-brand-dark">
+                <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
+                    <!-- Search Input -->
+                    <div class="md:col-span-5">
+                        <input type="text"
+                               id="search"
+                               name="search"
+                               value="@Model.SearchQuery"
+                               placeholder="Search by name, city..."
+                               class="w-full h-52px leading-52px pl-5 bg-transparent text-sm focus:outline-none text-contentColor dark:text-contentColor-dark border border-borderColor dark:border-borderColor-dark placeholder:text-placeholder placeholder:opacity-80 font-medium rounded focus:border-primaryColor">
+                    </div>
+
+                    <!-- City Filter -->
+                    <div class="md:col-span-4">
+                        <select id="city"
+                                name="city"
+                                class="w-full h-52px pl-5 bg-transparent text-sm focus:outline-none text-contentColor dark:text-contentColor-dark border border-borderColor dark:border-borderColor-dark rounded focus:border-primaryColor">
+                            <option value="">All Cities</option>
+                            @foreach (var cityOption in Model.AvailableCities)
+                            {
+                                <option value="@cityOption" selected="@(Model.SelectedCity == cityOption)">@cityOption</option>
+                            }
+                        </select>
+                    </div>
+
+                    <!-- Search Button -->
+                    <div class="md:col-span-3">
+                        <button type="submit" class="w-full h-52px bg-primaryColor text-whiteColor hover:bg-whiteColor hover:text-primaryColor border border-primaryColor rounded font-semibold transition-all duration-300">
+                            <i class="icofont-search-2 mr-2"></i> Search
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <!-- Results Header -->
+        <div class="flex justify-between items-center px-13px py-10px border border-borderColor dark:border-borderColor-dark mb-30px" data-aos="fade-up">
+            <div>
+                <p class="text-blackColor dark:text-blackColor-dark">
+                    Showing <span class="font-bold">@Model.Universities.Count</span> of <span class="font-bold">@Model.TotalUniversities</span> Universities
+                </p>
+            </div>
+        </div>
+
+        <!-- Universities Grid -->
+        @if (Model.Universities.Any())
+        {
+            <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-30px">
+                @foreach (var university in Model.Universities)
+                {
+                    <div class="group" data-aos="fade-up">
+                        <div class="p-15px bg-whiteColor shadow-brand dark:bg-darkdeep3-dark dark:shadow-brand-dark">
+                            <!-- University Image -->
+                            <div class="relative mb-4 overflow-hidden rounded-lg">
+                                <a asp-action="University" asp-route-id="@university.Id" class="w-full block">
+                                    <img src="@university.ImagePath"
+                                         alt="@university.NameEnglish"
+                                         class="w-full h-200px object-cover transition-all duration-300 group-hover:scale-110">
+                                </a>
+                                <div class="absolute left-0 top-1 flex justify-between w-full items-center px-2">
+                                    <div>
+                                        <p class="text-xs text-whiteColor px-4 py-[3px] bg-primaryColor rounded font-semibold">
+                                            @university.City
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- University Content -->
+                            <div>
+                                <!-- Stats -->
+                                <div class="grid grid-cols-2 mb-15px">
+                                    <div class="flex items-center">
+                                        <div>
+                                            <i class="icofont-graduate-alt pr-5px text-primaryColor text-lg"></i>
+                                        </div>
+                                        <div>
+                                            <span class="text-sm text-black dark:text-blackColor-dark">
+                                                @university.ProgramsCount Programs
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center">
+                                        <div>
+                                            <i class="icofont-certificate-alt-1 pr-5px text-primaryColor text-lg"></i>
+                                        </div>
+                                        <div>
+                                            <span class="text-sm text-black dark:text-blackColor-dark">
+                                                @university.BTECProgramsCount BTEC
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- University Name -->
+                                <a asp-action="University"
+                                   asp-route-id="@university.Id"
+                                   class="text-lg font-semibold text-blackColor mb-10px font-hind dark:text-blackColor-dark hover:text-primaryColor dark:hover:text-primaryColor block">
+                                    @university.NameEnglish
+                                </a>
+                                <p class="text-sm text-contentColor dark:text-contentColor-dark mb-10px">
+                                    @university.NameArabic
+                                </p>
+
+                                <!-- Location & Price -->
+                                <div class="flex items-center justify-between mb-4">
+                                    <div class="flex items-center text-sm text-contentColor dark:text-contentColor-dark">
+                                        <i class="icofont-location-pin text-primaryColor mr-1"></i>
+                                        @university.City, @university.Province
+                                    </div>
+                                    @if (university.MinHourPrice > 0)
+                                    {
+                                        <div class="text-sm font-semibold text-primaryColor">
+                                            From @university.MinHourPrice.ToString("N0") JD/hr
+                                        </div>
+                                    }
+                                </div>
+
+                                <!-- View Details Button -->
+                                <div class="pt-15px border-t border-borderColor">
+                                    <a asp-action="University"
+                                       asp-route-id="@university.Id"
+                                       class="w-full block text-center py-10px bg-primaryColor text-whiteColor hover:bg-whiteColor hover:text-primaryColor border border-primaryColor rounded font-semibold transition-all duration-300">
+                                        <i class="icofont-eye mr-2"></i> View Details
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <!-- No Results -->
+            <div class="text-center py-100px" data-aos="fade-up">
+                <div class="mb-30px">
+                    <i class="icofont-search-1 text-size-80 text-contentColor dark:text-contentColor-dark opacity-50"></i>
+                </div>
+                <h3 class="text-size-32 font-bold text-blackColor dark:text-blackColor-dark mb-15px">
+                    No Universities Found
+                </h3>
+                <p class="text-contentColor dark:text-contentColor-dark mb-30px">
+                    Try adjusting your search or filter criteria
+                </p>
+                <a asp-action="Universities" class="inline-block bg-primaryColor text-whiteColor px-30px py-15px rounded font-semibold hover:bg-whiteColor hover:text-primaryColor border border-primaryColor transition-all duration-300">
+                    <i class="icofont-refresh mr-2"></i> Clear Filters
+                </a>
+            </div>
+        }
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Auto-submit on city change
+        document.getElementById('city').addEventListener('change', function() {
+            this.form.submit();
+        });
+    </script>
+}

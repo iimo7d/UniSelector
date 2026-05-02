@@ -1,0 +1,457 @@
+﻿@*
+    Uni Selector - Sidebar Navigation
+    Includes: PlatformAdmin, UniversityRep & BtecAuthority Roles
+*@
+
+<aside class="sidebar">
+    <button type="button" class="sidebar-close-btn">
+        <iconify-icon icon="radix-icons:cross-2"></iconify-icon>
+    </button>
+
+    <div>
+        <a href="@Url.Action("Index", "Home")" class="sidebar-logo">
+            <img src="~/assets/images/logo/logo_1.png" alt="site logo" class="light-logo">
+            <img src="~/assets/images/logo/logo_1.png" alt="site logo" class="dark-logo">
+            <img src="~/assets/images/logo/logo_1.png" alt="site logo" class="logo-icon">
+        </a>
+    </div>
+
+    <div class="sidebar-menu-area">
+        <ul class="sidebar-menu" id="sidebar-menu">
+
+            @if (User.IsInRole("PlatformAdmin"))
+            {
+                <!-- Dashboard -->
+                <li>
+                    <a asp-action="Dashboard" asp-controller="Admin">
+                        <iconify-icon icon="solar:home-smile-angle-outline" class="menu-icon"></iconify-icon>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+
+                <li>
+                    <a href="@Url.Action("SystemHealth", "Admin")">
+                        <iconify-icon icon="solar:shield-check-outline" class="menu-icon"></iconify-icon>
+                        <span>System Health</span>
+                    </a>
+                </li>
+
+                <li class="sidebar-menu-group-title">Management</li>
+
+                <!-- Applications -->
+                <li class="dropdown">
+                    <a href="javascript:void(0)">
+                        <iconify-icon icon="hugeicons:invoice-03" class="menu-icon"></iconify-icon>
+                        <span>Applications</span>
+                    </a>
+                    <ul class="sidebar-submenu">
+                        <li>
+                            <a href="@Url.Action("Index", "ApplicationAdmin")">
+                                <i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i> All Applications
+                            </a>
+                        </li>
+                        <li>
+                            <a href="@Url.Action("Statistics", "ApplicationAdmin")">
+                                <i class="ri-circle-fill circle-icon text-warning-main w-auto"></i> Statistics
+                            </a>
+                        </li>
+                        <li>
+                            <a href="@Url.Action("Export", "ApplicationAdmin")">
+                                <i class="ri-circle-fill circle-icon text-success-main w-auto"></i> Export
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+
+                <!-- Commission -->
+                <li class="dropdown">
+                    <a href="javascript:void(0)">
+                        <iconify-icon icon="hugeicons:money-send-square" class="menu-icon"></iconify-icon>
+                        <span>Commissions</span>
+                    </a>
+                    <ul class="sidebar-submenu">
+                        <li>
+                            <a href="@Url.Action("Index", "CommissionAdmin")">
+                                <i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i> All Commissions
+                            </a>
+                        </li>
+                        <li>
+                            <a href="@Url.Action("Settlements", "CommissionAdmin")">
+                                <i class="ri-circle-fill circle-icon text-warning-main w-auto"></i> Settlements
+                            </a>
+                        </li>
+                        <li>
+                            <a href="@Url.Action("CreateSettlement", "CommissionAdmin")">
+                                <i class="ri-circle-fill circle-icon text-danger-main w-auto"></i> Create Settlement
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+
+                <!-- Notification -->
+                <li class="dropdown">
+                    <a href="javascript:void(0)">
+                        <i class="ri-star-line text-xl me-14 d-flex w-auto"></i>
+                        <span>Notifications</span>
+                    </a>
+                    <ul class="sidebar-submenu">
+                        <li>
+                            <a href="@Url.Action("Index", "NotificationAdmin")">
+                                <i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i> All Notifications
+                            </a>
+                        </li>
+                        <li>
+                            <a href="@Url.Action("Send", "NotificationAdmin")">
+                                <i class="ri-circle-fill circle-icon text-warning-main w-auto"></i> Send Notifications
+                            </a>
+                        </li>
+                        <li>
+                            <a href="@Url.Action("Templates", "NotificationAdmin")">
+                                <i class="ri-circle-fill circle-icon text-success-main w-auto"></i> Notification Templates
+                            </a>
+                        </li>
+                        <li>
+                            <a href="@Url.Action("History", "NotificationAdmin")">
+                                <i class="ri-circle-fill circle-icon text-danger-main w-auto"></i> Notification History
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+
+                <!-- Programs -->
+                <li class="dropdown">
+                    <a href="javascript:void(0)">
+                        <iconify-icon icon="solar:document-text-outline" class="menu-icon"></iconify-icon>
+                        <span>Programs</span>
+                    </a>
+                    <ul class="sidebar-submenu">
+                        <li>
+                            <a href="@Url.Action("Index", "ProgramAdmin")">
+                                <i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i> Programs List
+                            </a>
+                        </li>
+                        <li>
+                            <a href="@Url.Action("Create", "ProgramAdmin")">
+                                <i class="ri-circle-fill circle-icon text-info-main w-auto"></i> Add Program
+                            </a>
+                        </li>
+                        <li>
+                            <a href="@Url.Action("Import", "ProgramAdmin")">
+                                <i class="ri-circle-fill circle-icon text-warning-main w-auto"></i> Import Programs
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+
+                <!-- Universities -->
+                <li class="dropdown">
+                    <a href="javascript:void(0)">
+                        <iconify-icon icon="mingcute:building-4-line" class="menu-icon"></iconify-icon>
+                        <span>Universities</span>
+                    </a>
+                    <ul class="sidebar-submenu">
+                        <li>
+                            <a href="@Url.Action("Index", "UniversityAdmin")">
+                                <i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i> Universities List
+                            </a>
+                        </li>
+                        <li>
+                            <a href="@Url.Action("Create", "UniversityAdmin")">
+                                <i class="ri-circle-fill circle-icon text-info-main w-auto"></i> Add University
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+
+                <!-- Users -->
+                <li class="dropdown">
+                    <a href="javascript:void(0)">
+                        <iconify-icon icon="flowbite:users-group-outline" class="menu-icon"></iconify-icon>
+                        <span>Users</span>
+                    </a>
+                    <ul class="sidebar-submenu">
+                        <li>
+                            <a href="@Url.Action("Index", "UserManagement")">
+                                <i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i> Users List
+                            </a>
+                        </li>
+                        <li>
+                            <a href="@Url.Action("Create", "UserManagement")">
+                                <i class="ri-circle-fill circle-icon text-info-main w-auto"></i> Add User
+                            </a>
+                        </li>
+                        <li>
+                            <a href="@Url.Action("Export", "UserManagement")">
+                                <i class="ri-circle-fill circle-icon text-success-main w-auto"></i> Export Users
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+            }
+
+            @if (User.IsInRole("UniversityRep"))
+            {
+                <!-- Dashboard -->
+                <li>
+                    <a href="@Url.Action("Dashboard", "UniversityRep")">
+                        <iconify-icon icon="solar:home-smile-angle-outline" class="menu-icon"></iconify-icon>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+
+                <li class="sidebar-menu-group-title">Management</li>
+
+                <!-- University -->
+                <li>
+                    <a href="@Url.Action("Index", "UniversityManagement")">
+                        <iconify-icon icon="mingcute:building-4-line" class="menu-icon"></iconify-icon>
+                        <span>My University</span>
+                    </a>
+                </li>
+
+                <!-- Programs -->
+                <li class="dropdown">
+                    <a href="javascript:void(0)">
+                        <iconify-icon icon="solar:document-text-outline" class="menu-icon"></iconify-icon>
+                        <span>Programs</span>
+                    </a>
+                    <ul class="sidebar-submenu">
+                        <li>
+                            <a href="@Url.Action("Index", "ProgramManagement")">
+                                <i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i> University Programs
+                            </a>
+                        </li>
+                        <li>
+                            <a href="@Url.Action("Create", "ProgramManagement")">
+                                <i class="ri-circle-fill circle-icon text-success-main w-auto"></i> Add Program
+                            </a>
+                        </li>
+                        <li>
+                            <a href="@Url.Action("Index", "BTECProgramManagement")">
+                                <i class="ri-circle-fill circle-icon text-warning-main w-auto"></i> BTEC Programs
+                            </a>
+                        </li>
+                        <li>
+                            <a href="@Url.Action("Create", "BTECProgramManagement")">
+                                <i class="ri-circle-fill circle-icon text-info-main w-auto"></i> Add BTEC Program
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+
+                <!-- Applications -->
+                <li class="dropdown">
+                    <a href="javascript:void(0)">
+                        <iconify-icon icon="hugeicons:invoice-03" class="menu-icon"></iconify-icon>
+                        <span>Applications</span>
+                    </a>
+                    <ul class="sidebar-submenu">
+                        <li>
+                            <a href="@Url.Action("Index", "ApplicationReview")">
+                                <i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i> All Applications
+                            </a>
+                        </li>
+                        <li>
+                            <a href="@Url.Action("Index", "ApplicationReview", new { status = Uni_Selector.Models.Enums.ApplicationStatus.Pending })">
+                                <i class="ri-circle-fill circle-icon text-warning-main w-auto"></i> Pending
+                            </a>
+                        </li>
+                        <li>
+                            <a href="@Url.Action("Index", "ApplicationReview", new { status = Uni_Selector.Models.Enums.ApplicationStatus.Approved })">
+                                <i class="ri-circle-fill circle-icon text-success-main w-auto"></i> Approved
+                            </a>
+                        </li>
+                        <li>
+                            <a href="@Url.Action("Index", "ApplicationReview", new { status = Uni_Selector.Models.Enums.ApplicationStatus.Rejected })">
+                                <i class="ri-circle-fill circle-icon text-danger-main w-auto"></i> Rejected
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+
+                <!-- Discounts -->
+                <li class="dropdown">
+                    <a href="javascript:void(0)">
+                        <iconify-icon icon="solar:tag-price-outline" class="menu-icon"></iconify-icon>
+                        <span>Discounts</span>
+                    </a>
+                    <ul class="sidebar-submenu">
+                        <li>
+                            <a href="@Url.Action("Index", "DiscountManagement")">
+                                <i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i> All Discounts
+                            </a>
+                        </li>
+                        <li>
+                            <a href="@Url.Action("Statistics", "DiscountManagement")">
+                                <i class="ri-circle-fill circle-icon text-info-main w-auto"></i> Statistics
+                            </a>
+                        </li>
+                        <li>
+                            <a href="@Url.Action("Index", "DiscountManagement", new { status = Uni_Selector.Models.Enums.DiscountStatus.Issued })">
+                                <i class="ri-circle-fill circle-icon text-warning-main w-auto"></i> Issued
+                            </a>
+                        </li>
+                        <li>
+                            <a href="@Url.Action("Index", "DiscountManagement", new { status = Uni_Selector.Models.Enums.DiscountStatus.Redeemed })">
+                                <i class="ri-circle-fill circle-icon text-success-main w-auto"></i> Redeemed
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+
+                <!-- Commissions -->
+                <li class="dropdown">
+                    <a href="javascript:void(0)">
+                        <iconify-icon icon="hugeicons:money-send-square" class="menu-icon"></iconify-icon>
+                        <span>Commissions</span>
+                    </a>
+                    <ul class="sidebar-submenu">
+                        <li>
+                            <a href="@Url.Action("Index", "Commission")">
+                                <i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i> All Commissions
+                            </a>
+                        </li>
+                        <li>
+                            <a href="@Url.Action("Index", "Commission", new { settled = false })">
+                                <i class="ri-circle-fill circle-icon text-warning-main w-auto"></i> Pending
+                            </a>
+                        </li>
+                        <li>
+                            <a href="@Url.Action("Index", "Commission", new { settled = true })">
+                                <i class="ri-circle-fill circle-icon text-success-main w-auto"></i> Settled
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+
+                <li class="sidebar-menu-group-title">Analytics</li>
+
+                <!-- Analytics -->
+                <li class="dropdown">
+                    <a href="javascript:void(0)">
+                        <iconify-icon icon="solar:chart-2-outline" class="menu-icon"></iconify-icon>
+                        <span>Analytics</span>
+                    </a>
+                    <ul class="sidebar-submenu">
+                        <li>
+                            <a href="@Url.Action("ApplicationAnalytics", "UniversityRep")">
+                                <i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i> Applications
+                            </a>
+                        </li>
+                        <li>
+                            <a href="@Url.Action("ProgramAnalytics", "UniversityRep")">
+                                <i class="ri-circle-fill circle-icon text-warning-main w-auto"></i> Programs
+                            </a>
+                        </li>
+                        <li>
+                            <a href="@Url.Action("Demographics", "UniversityRep")">
+                                <i class="ri-circle-fill circle-icon text-info-main w-auto"></i> Demographics
+                            </a>
+                        </li>
+                        <li>
+                            <a href="@Url.Action("ExportAnalytics", "UniversityRep")">
+                                <i class="ri-circle-fill circle-icon text-success-main w-auto"></i> Export Report
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+            }
+
+            @if (User.IsInRole("BtecAuthority"))
+            {
+                <!-- Dashboard -->
+                <li>
+                    <a href="@Url.Action("Dashboard", "BTECAuthority")">
+                        <iconify-icon icon="solar:home-smile-angle-outline" class="menu-icon"></iconify-icon>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+
+                <li class="sidebar-menu-group-title">Management</li>
+
+                <!-- Program Review -->
+                <li class="dropdown">
+                    <a href="javascript:void(0)">
+                        <iconify-icon icon="solar:document-text-outline" class="menu-icon"></iconify-icon>
+                        <span>Program Review</span>
+                    </a>
+                    <ul class="sidebar-submenu">
+                        <li>
+                            <a href="@Url.Action("Index", "BTECProgramReview")">
+                                <i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i> All Programs
+                            </a>
+                        </li>
+                        <li>
+                            <a href="@Url.Action("Index", "BTECProgramReview", new { approvalStatus = false })">
+                                <i class="ri-circle-fill circle-icon text-warning-main w-auto"></i> Pending Approval
+                            </a>
+                        </li>
+                        <li>
+                            <a href="@Url.Action("Index", "BTECProgramReview", new { approvalStatus = true })">
+                                <i class="ri-circle-fill circle-icon text-success-main w-auto"></i> Approved
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+
+                <!-- Standards -->
+                <li class="dropdown">
+                    <a href="javascript:void(0)">
+                        <iconify-icon icon="solar:shield-check-outline" class="menu-icon"></iconify-icon>
+                        <span>Standards</span>
+                    </a>
+                    <ul class="sidebar-submenu">
+                        <li>
+                            <a href="@Url.Action("Index", "BTECStandards")">
+                                <i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i> View Standards
+                            </a>
+                        </li>
+                        <li>
+                            <a href="@Url.Action("Manage", "BTECStandards")">
+                                <i class="ri-circle-fill circle-icon text-info-main w-auto"></i> Manage Standards
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+
+                <li class="sidebar-menu-group-title">Reports</li>
+
+                <!-- Reports -->
+                <li class="dropdown">
+                    <a href="javascript:void(0)">
+                        <iconify-icon icon="solar:chart-2-outline" class="menu-icon"></iconify-icon>
+                        <span>Reports</span>
+                    </a>
+                    <ul class="sidebar-submenu">
+                        <li>
+                            <a href="@Url.Action("Index", "BTECReports")">
+                                <i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i> Overview
+                            </a>
+                        </li>
+                        <li>
+                            <a href="@Url.Action("Programs", "BTECReports")">
+                                <i class="ri-circle-fill circle-icon text-info-main w-auto"></i> Program Compliance
+                            </a>
+                        </li>
+                        <li>
+                            <a href="@Url.Action("Students", "BTECReports")">
+                                <i class="ri-circle-fill circle-icon text-warning-main w-auto"></i> Student Statistics
+                            </a>
+                        </li>
+                        <li>
+                            <a href="@Url.Action("Universities", "BTECReports")">
+                                <i class="ri-circle-fill circle-icon text-success-main w-auto"></i> Universities
+                            </a>
+                        </li>
+                        <li>
+                            <a href="@Url.Action("Export", "BTECReports")">
+                                <i class="ri-circle-fill circle-icon text-danger-main w-auto"></i> Export Data
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+            }
+
+        </ul>
+    </div>
+</aside>

@@ -1,0 +1,329 @@
+@model Uni_Selector.ViewModels.BTECAuthority.BTECReportsDashboardViewModel
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = "BTEC Reports Dashboard";
+}
+
+<!-- Page Header -->
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h4 class="mb-1">📊 BTEC Reports Dashboard</h4>
+        <p class="text-muted mb-0">Comprehensive overview of BTEC programs and statistics</p>
+    </div>
+    <div>
+        <a asp-action="Programs" class="btn btn-outline-primary me-2">
+            <iconify-icon icon="solar:document-text-outline" width="20"></iconify-icon>
+            View Programs
+        </a>
+        <a asp-action="Export" asp-route-reportType="Overview" asp-route-exportType="Excel" class="btn btn-primary">
+            <iconify-icon icon="solar:download-outline" width="20"></iconify-icon>
+            Export Report
+        </a>
+    </div>
+</div>
+
+<!-- KPI Summary Cards -->
+<div class="row row-cols-xxxl-5 row-cols-lg-3 row-cols-sm-2 row-cols-1 gy-4 mb-4">
+    <!-- Total Programs -->
+    <div class="col">
+        <div class="card shadow-none border bg-gradient-start-1">
+            <div class="card-body">
+                <div class="d-flex align-items-center justify-content-between gap-3">
+                    <div>
+                        <h6 class="fw-semibold mb-1">Total BTEC Programs</h6>
+                        <h4 class="mb-0">@Model.TotalBtecPrograms</h4>
+                    </div>
+                    <div class="flex-shrink-0">
+                        <div class="avatar-icon bg-primary-600 text-white rounded-circle" style="width: 50px; height: 50px; display: flex; align-items: center; justify-content: center;">
+                            <iconify-icon icon="solar:document-text-outline" width="24"></iconify-icon>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Active Programs -->
+    <div class="col">
+        <div class="card shadow-none border bg-gradient-start-2">
+            <div class="card-body">
+                <div class="d-flex align-items-center justify-content-between gap-3">
+                    <div>
+                        <h6 class="fw-semibold mb-1">Active Programs</h6>
+                        <h4 class="mb-0">@Model.ActiveBtecPrograms</h4>
+                        <span class="badge bg-success-focus text-success-main">Approved</span>
+                    </div>
+                    <div class="flex-shrink-0">
+                        <div class="avatar-icon bg-success-main text-white rounded-circle" style="width: 50px; height: 50px; display: flex; align-items: center; justify-content: center;">
+                            <iconify-icon icon="solar:check-circle-outline" width="24"></iconify-icon>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Total Students -->
+    <div class="col">
+        <div class="card shadow-none border bg-gradient-start-3">
+            <div class="card-body">
+                <div class="d-flex align-items-center justify-content-between gap-3">
+                    <div>
+                        <h6 class="fw-semibold mb-1">Total BTEC Students</h6>
+                        <h4 class="mb-0">@Model.TotalBtecStudents</h4>
+                    </div>
+                    <div class="flex-shrink-0">
+                        <div class="avatar-icon bg-info-main text-white rounded-circle" style="width: 50px; height: 50px; display: flex; align-items: center; justify-content: center;">
+                            <iconify-icon icon="solar:users-group-rounded-outline" width="24"></iconify-icon>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Total Applications -->
+    <div class="col">
+        <div class="card shadow-none border bg-gradient-start-4">
+            <div class="card-body">
+                <div class="d-flex align-items-center justify-content-between gap-3">
+                    <div>
+                        <h6 class="fw-semibold mb-1">Total Applications</h6>
+                        <h4 class="mb-0">@Model.TotalBtecApplications</h4>
+                    </div>
+                    <div class="flex-shrink-0">
+                        <div class="avatar-icon bg-warning-main text-white rounded-circle" style="width: 50px; height: 50px; display: flex; align-items: center; justify-content: center;">
+                            <iconify-icon icon="solar:document-add-outline" width="24"></iconify-icon>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Universities -->
+    <div class="col">
+        <div class="card shadow-none border bg-gradient-start-5">
+            <div class="card-body">
+                <div class="d-flex align-items-center justify-content-between gap-3">
+                    <div>
+                        <h6 class="fw-semibold mb-1">Universities Offering BTEC</h6>
+                        <h4 class="mb-0">@Model.UniversitiesOfferingBtec</h4>
+                    </div>
+                    <div class="flex-shrink-0">
+                        <div class="avatar-icon bg-purple text-white rounded-circle" style="width: 50px; height: 50px; display: flex; align-items: center; justify-content: center;">
+                            <iconify-icon icon="solar:buildings-3-outline" width="24"></iconify-icon>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Charts Row -->
+<div class="row gy-4 mb-4">
+    <!-- Monthly Trends Chart -->
+    <div class="col-xxl-8 col-xl-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Monthly Application Trends</h5>
+            </div>
+            <div class="card-body">
+                <div id="monthlyTrendsChart"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Programs by Level Chart -->
+    <div class="col-xxl-4 col-xl-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Compliance by Level</h5>
+            </div>
+            <div class="card-body">
+                <div id="complianceByLevelChart"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Tables Row -->
+<div class="row gy-4">
+    <!-- Programs by Field Chart -->
+    <div class="col-xxl-8 col-xl-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Programs by Technical Field</h5>
+            </div>
+            <div class="card-body">
+                <div id="programsByFieldChart"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Top Universities -->
+    <div class="col-xxl-4 col-xl-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Top Universities</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-sm table-hover">
+                        <thead>
+                            <tr>
+                                <th>University</th>
+                                <th class="text-center">Programs</th>
+                                <th class="text-center">Approved</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var uni in Model.TopUniversities)
+                            {
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center gap-2">
+                                            <iconify-icon icon="solar:buildings-3-outline" width="18" class="text-primary"></iconify-icon>
+                                            <span>@uni.UniversityName</span>
+                                        </div>
+                                    </td>
+                                    <td class="text-center">
+                                        <span class="badge bg-primary-focus text-primary-main">@uni.TotalPrograms</span>
+                                    </td>
+                                    <td class="text-center">
+                                        <span class="badge bg-success-focus text-success-main">@uni.ApprovedPrograms</span>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+                <div class="mt-3 text-center">
+                    <a asp-action="Universities" class="btn btn-sm btn-outline-primary">
+                        View All Universities
+                        <iconify-icon icon="solar:arrow-right-outline" width="16"></iconify-icon>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts {
+    <script>
+        // Monthly Trends Chart
+        var monthlyTrendsOptions = {
+            series: [
+                {
+                    name: "Applications",
+                    data: @Json.Serialize(Model.MonthlyTrends.Select(m => m.Applications))
+                },
+                {
+                    name: "Approvals",
+                    data: @Json.Serialize(Model.MonthlyTrends.Select(m => m.Approvals))
+                },
+                {
+                    name: "Enrollments",
+                    data: @Json.Serialize(Model.MonthlyTrends.Select(m => m.Enrollments))
+                }
+            ],
+            chart: {
+                type: "line",
+                height: 350,
+                toolbar: { show: false }
+            },
+            colors: ["#667eea", "#28a745", "#17a2b8"],
+            dataLabels: { enabled: false },
+            stroke: { curve: "smooth", width: 3 },
+            xaxis: {
+                categories: @Json.Serialize(Model.MonthlyTrends.Select(m => m.Month))
+            },
+            legend: {
+                position: "top",
+                horizontalAlign: "left"
+            },
+            markers: {
+                size: 5,
+                hover: { size: 7 }
+            },
+            tooltip: {
+                shared: true,
+                intersect: false
+            }
+        };
+        var monthlyTrendsChart = new ApexCharts(document.querySelector("#monthlyTrendsChart"), monthlyTrendsOptions);
+        monthlyTrendsChart.render();
+
+        // Compliance by Level Chart
+        var complianceOptions = {
+            series: @Json.Serialize(Model.ComplianceByLevel.Select(c => c.ActiveStudents)),
+            chart: {
+                type: "donut",
+                height: 350
+            },
+            labels: @Json.Serialize(Model.ComplianceByLevel.Select(c => c.Level.ToString())),
+            colors: ["#667eea", "#764ba2", "#f093fb", "#4facfe", "#00f2fe", "#43e97b", "#38f9d7"],
+            legend: {
+                position: "bottom"
+            },
+            responsive: [{
+                breakpoint: 480,
+                options: {
+                    chart: { height: 300 },
+                    legend: { position: "bottom" }
+                }
+            }],
+            plotOptions: {
+                pie: {
+                    donut: {
+                        size: "70%"
+                    }
+                }
+            }
+        };
+        var complianceChart = new ApexCharts(document.querySelector("#complianceByLevelChart"), complianceOptions);
+        complianceChart.render();
+
+        // Programs by Field Chart
+        var fieldOptions = {
+            series: [{
+                name: "Programs",
+                data: @Json.Serialize(Model.ProgramsByField.Select(f => f.ProgramCount))
+            }],
+            chart: {
+                type: "bar",
+                height: 350,
+                toolbar: { show: false }
+            },
+            colors: ["#764ba2"],
+            plotOptions: {
+                bar: {
+                    borderRadius: 4,
+                    dataLabels: { position: "top" }
+                }
+            },
+            dataLabels: {
+                enabled: true,
+                offsetY: -20,
+                style: { fontSize: "12px", colors: ["#304758"] }
+            },
+            xaxis: {
+                categories: @Json.Serialize(Model.ProgramsByField.Select(f => f.TechnicalField)),
+                labels: {
+                    rotate: -45,
+                    style: { fontSize: "11px" }
+                }
+            },
+            fill: {
+                type: "gradient",
+                gradient: {
+                    shade: "light",
+                    type: "vertical",
+                    shadeIntensity: 0.5,
+                    opacityFrom: 0.9,
+                    opacityTo: 0.7
+                }
+            }
+        };
+        var fieldChart = new ApexCharts(document.querySelector("#programsByFieldChart"), fieldOptions);
+        fieldChart.render();
+    </script>
+}

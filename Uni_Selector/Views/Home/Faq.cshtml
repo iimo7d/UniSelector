@@ -1,0 +1,202 @@
+﻿@using Uni_Selector.ViewModels.Home
+@model FaqViewModel
+@{
+    ViewData["Title"] = "FAQ";
+}
+
+<!-- Banner Section -->
+<section>
+    <div class="bg-lightGrey10 dark:bg-lightGrey10-dark relative z-0 overflow-y-visible py-50px md:py-20 lg:py-100px 2xl:pb-150px 2xl:pt-40.5">
+        <!-- Animated Icons -->
+        <div>
+            <img class="absolute left-0 bottom-0 md:left-[14px] lg:left-[50px] lg:bottom-[21px] 2xl:left-[165px] 2xl:bottom-[60px] animate-move-var z-10" src="~/assets/images/herobanner/herobanner__1.png" alt="">
+            <img class="absolute left-0 top-0 lg:left-[50px] lg:top-[100px] animate-spin-slow" src="~/assets/images/herobanner/herobanner__2.png" alt="">
+            <img class="absolute right-[30px] top-0 md:right-10 lg:right-[575px] 2xl:top-20 animate-move-var2 opacity-50 hidden md:block" src="~/assets/images/herobanner/herobanner__3.png" alt="">
+            <img class="absolute right-[30px] top-[212px] md:right-10 md:top-[157px] lg:right-[45px] lg:top-[100px] animate-move-hor" src="~/assets/images/herobanner/herobanner__5.png" alt="">
+        </div>
+
+        <div class="container">
+            <div class="text-center">
+                <h1 class="text-3xl md:text-size-40 2xl:text-size-55 font-bold text-blackColor dark:text-blackColor-dark mb-7 md:mb-6 pt-3">
+                    @Model.Title
+                </h1>
+                <p class="text-lg text-contentColor dark:text-contentColor-dark mb-25px max-w-3xl mx-auto">
+                    @Model.Description
+                </p>
+                <ul class="flex gap-1 justify-center">
+                    <li>
+                        <a asp-controller="Home" asp-action="Index" class="text-lg text-blackColor2 dark:text-blackColor2-dark">
+                            Home <i class="icofont-simple-right"></i>
+                        </a>
+                    </li>
+                    <li>
+                        <span class="text-lg text-blackColor2 dark:text-blackColor2-dark">FAQ</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- FAQ Section -->
+<section>
+    <div class="container py-50px md:py-70px lg:py-100px">
+
+        <!-- Stats Banner -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-30px mb-50px">
+            <div class="text-center p-30px bg-primaryColor bg-opacity-10 dark:bg-primaryColor dark:bg-opacity-20 rounded-lg" data-aos="fade-up">
+                <div class="text-4xl font-bold text-primaryColor mb-10px">@Model.TotalQuestions+</div>
+                <p class="text-contentColor dark:text-contentColor-dark">Questions Answered</p>
+            </div>
+            <div class="text-center p-30px bg-secondaryColor bg-opacity-10 dark:bg-secondaryColor dark:bg-opacity-20 rounded-lg" data-aos="fade-up">
+                <div class="text-4xl font-bold text-secondaryColor mb-10px">@Model.Categories.Count</div>
+                <p class="text-contentColor dark:text-contentColor-dark">Categories</p>
+            </div>
+            <div class="text-center p-30px bg-greencolor bg-opacity-10 dark:bg-greencolor dark:bg-opacity-20 rounded-lg" data-aos="fade-up">
+                <div class="text-4xl font-bold text-greencolor mb-10px">24/7</div>
+                <p class="text-contentColor dark:text-contentColor-dark">Support Available</p>
+            </div>
+        </div>
+
+        <!-- FAQ Categories -->
+        @foreach (var category in Model.Categories)
+        {
+            <div class="mb-50px" data-aos="fade-up">
+                <!-- Category Header -->
+                <div class="flex items-center gap-4 mb-30px">
+                    <div class="w-60px h-60px leading-60px text-center rounded-full bg-@category.CategoryColor bg-opacity-10 text-@category.CategoryColor text-2xl flex-shrink-0">
+                        <i class="@category.CategoryIcon"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-2xl md:text-3xl font-bold text-blackColor dark:text-blackColor-dark">
+                            @category.CategoryName
+                        </h3>
+                        <p class="text-contentColor dark:text-contentColor-dark">
+                            @category.Questions.Count questions in this category
+                        </p>
+                    </div>
+                </div>
+
+                <!-- FAQ Accordions -->
+                <div class="space-y-4">
+                    @foreach (var question in category.Questions)
+                    {
+                        <div class="accordion-item bg-whiteColor dark:bg-whiteColor-dark shadow-brand dark:shadow-brand-dark rounded-lg overflow-hidden">
+                            <!-- Question Header -->
+                            <button type="button"
+                                    class="accordion-header w-full flex justify-between items-center p-25px text-left hover:bg-lightGrey10 dark:hover:bg-lightGrey10-dark transition-all duration-300"
+                                    data-target="faq-@question.Id">
+                                <h4 class="text-lg font-semibold text-blackColor dark:text-blackColor-dark pr-30px">
+                                    @question.Question
+                                </h4>
+                                <div class="accordion-icon flex-shrink-0">
+                                    <svg class="w-6 h-6 text-@category.CategoryColor transform transition-transform duration-300"
+                                         fill="none"
+                                         stroke="currentColor"
+                                         viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                    </svg>
+                                </div>
+                            </button>
+
+                            <!-- Answer Content -->
+                            <div id="faq-@question.Id"
+                                 class="accordion-content max-h-0 overflow-hidden transition-all duration-300">
+                                <div class="p-25px pt-0 text-contentColor dark:text-contentColor-dark leading-relaxed border-t border-borderColor dark:border-borderColor-dark">
+                                    @question.Answer
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+
+        <!-- Still Have Questions -->
+        <div class="mt-70px" data-aos="fade-up">
+            <div class="bg-gradient-to-r from-primaryColor to-secondaryColor rounded-lg p-50px text-center">
+                <div class="text-5xl mb-20px">
+                    <i class="icofont-question-circle text-whiteColor"></i>
+                </div>
+                <h3 class="text-3xl font-bold text-whiteColor mb-15px">
+                    Still Have Questions?
+                </h3>
+                <p class="text-whiteColor text-lg mb-30px opacity-90 max-w-2xl mx-auto">
+                    Can't find the answer you're looking for? Our support team is here to help!
+                </p>
+                <div class="flex flex-wrap gap-4 justify-center">
+                    <a href="mailto:support@uniselector.jo" class="inline-block bg-whiteColor text-primaryColor px-30px py-15px rounded font-semibold hover:bg-secondaryColor hover:text-whiteColor transition-all duration-300">
+                        <i class="icofont-email mr-2"></i> Email Support
+                    </a>
+                    @if (!User.Identity.IsAuthenticated)
+                    {
+                        <a asp-controller="Account" asp-action="Login" asp-route-tab="register" class="inline-block bg-transparent text-whiteColor border-2 border-whiteColor px-30px py-15px rounded font-semibold hover:bg-whiteColor hover:text-primaryColor transition-all duration-300">
+                            <i class="icofont-user-alt-3 mr-2"></i> Create Account
+                        </a>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    <script>
+        // FAQ Accordion Functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const accordionHeaders = document.querySelectorAll('.accordion-header');
+
+            accordionHeaders.forEach(header => {
+                header.addEventListener('click', function() {
+                    const targetId = this.getAttribute('data-target');
+                    const content = document.getElementById(targetId);
+                    const icon = this.querySelector('.accordion-icon svg');
+                    const allContents = document.querySelectorAll('.accordion-content');
+                    const allIcons = document.querySelectorAll('.accordion-icon svg');
+
+                    // Check if this accordion is currently open
+                    const isOpen = content.style.maxHeight && content.style.maxHeight !== '0px';
+
+                    // Close all accordions
+                    allContents.forEach(item => {
+                        item.style.maxHeight = '0px';
+                    });
+
+                    // Reset all icons
+                    allIcons.forEach(i => {
+                        i.classList.remove('rotate-180');
+                    });
+
+                    // If it wasn't open, open it
+                    if (!isOpen) {
+                        content.style.maxHeight = content.scrollHeight + 'px';
+                        icon.classList.add('rotate-180');
+                    }
+                });
+            });
+
+            // Open first question in each category by default
+            const firstQuestions = document.querySelectorAll('.accordion-item:first-child .accordion-header');
+            if (firstQuestions.length > 0) {
+                firstQuestions[0].click();
+            }
+        });
+
+        // Search functionality (optional enhancement)
+        function searchFAQ(query) {
+            const items = document.querySelectorAll('.accordion-item');
+            const searchTerm = query.toLowerCase();
+
+            items.forEach(item => {
+                const question = item.querySelector('.accordion-header h4').textContent.toLowerCase();
+                const answer = item.querySelector('.accordion-content').textContent.toLowerCase();
+
+                if (question.includes(searchTerm) || answer.includes(searchTerm)) {
+                    item.style.display = 'block';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        }
+    </script>
+}

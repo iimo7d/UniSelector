@@ -1,0 +1,285 @@
+﻿@model Uni_Selector.ViewModels.UniversityManagement.EditUniversityViewModel
+
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = $"Edit {Model.NameEnglish}";
+}
+
+<div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-24">
+    <h6 class="fw-semibold mb-0">Edit University Information</h6>
+    <ul class="d-flex align-items-center gap-2">
+        <li class="fw-medium">
+            <a asp-controller="UniversityRep" asp-action="Dashboard" class="d-flex align-items-center gap-1 hover-text-primary">
+                <iconify-icon icon="solar:home-smile-angle-outline" class="icon text-lg"></iconify-icon>
+                Dashboard
+            </a>
+        </li>
+        <li>-</li>
+        <li class="fw-medium">
+            <a asp-action="Index" class="hover-text-primary">My University</a>
+        </li>
+        <li>-</li>
+        <li class="fw-medium">Edit</li>
+    </ul>
+</div>
+
+<div class="card h-100 p-0 radius-12">
+    <div class="card-body p-24">
+        <div class="row justify-content-center">
+            <div class="col-xxl-8 col-xl-10 col-lg-12">
+                <div class="card border">
+                    <div class="card-body">
+                        <form asp-action="Edit" method="post" enctype="multipart/form-data" id="editUniversityForm">
+                            @Html.AntiForgeryToken()
+                            <input asp-for="Id" type="hidden" />
+                            <div asp-validation-summary="ModelOnly" class="text-danger mb-20"></div>
+
+                            <!-- Info Alert -->
+                            <div class="alert alert-info d-flex align-items-center mb-24" role="alert">
+                                <iconify-icon icon="mdi:information" class="text-xl me-2"></iconify-icon>
+                                <div>
+                                    <strong>Note:</strong> You can update basic information, contact details, and images.
+                                    University type, commission settings, and activation status can only be changed by platform administrators.
+                                </div>
+                            </div>
+
+                            <h6 class="text-md text-primary-light mb-16">University Images</h6>
+
+                            <div class="row mb-24">
+                                <div class="col-md-6">
+                                    <label asp-for="Logo" class="form-label fw-semibold text-primary-light text-sm mb-8"></label>
+                                    <div class="avatar-upload">
+                                        <div class="avatar-edit position-absolute bottom-0 end-0 me-24 mt-16 z-1 cursor-pointer">
+                                            <input asp-for="Logo" id="logoUpload" type="file" accept=".png, .jpg, .jpeg, .gif" hidden>
+                                            <label for="logoUpload" class="w-32-px h-32-px d-flex justify-content-center align-items-center bg-primary-50 text-primary-600 border border-primary-600 bg-hover-primary-100 text-lg rounded-circle cursor-pointer">
+                                                <iconify-icon icon="solar:camera-outline" class="icon"></iconify-icon>
+                                            </label>
+                                        </div>
+                                        <div class="avatar-preview">
+                                            <div id="logoPreview" style="background-image: url('@(!string.IsNullOrEmpty(Model.CurrentLogoPath) ? Model.CurrentLogoPath : "/images/default-logo.png")');"></div>
+                                        </div>
+                                    </div>
+                                    @if (!string.IsNullOrEmpty(Model.CurrentLogoPath))
+                                    {
+                                        <small class="text-secondary-light d-block mt-2">Current logo will be replaced if you upload a new one</small>
+                                    }
+                                    <small class="text-muted d-block mt-1">Max size: 5MB. Formats: JPG, PNG, GIF</small>
+                                    <span asp-validation-for="Logo" class="text-danger text-sm"></span>
+                                </div>
+                                <div class="col-md-6">
+                                    <label asp-for="CoverImage" class="form-label fw-semibold text-primary-light text-sm mb-8"></label>
+                                    <div class="avatar-upload">
+                                        <div class="avatar-edit position-absolute bottom-0 end-0 me-24 mt-16 z-1 cursor-pointer">
+                                            <input asp-for="CoverImage" id="coverUpload" type="file" accept=".png, .jpg, .jpeg, .gif" hidden>
+                                            <label for="coverUpload" class="w-32-px h-32-px d-flex justify-content-center align-items-center bg-primary-50 text-primary-600 border border-primary-600 bg-hover-primary-100 text-lg rounded-circle cursor-pointer">
+                                                <iconify-icon icon="solar:camera-outline" class="icon"></iconify-icon>
+                                            </label>
+                                        </div>
+                                        <div class="avatar-preview">
+                                            <div id="coverPreview" style="background-image: url('@(!string.IsNullOrEmpty(Model.CurrentImagePath) ? Model.CurrentImagePath : "/images/default-cover.png")');"></div>
+                                        </div>
+                                    </div>
+                                    @if (!string.IsNullOrEmpty(Model.CurrentImagePath))
+                                    {
+                                        <small class="text-secondary-light d-block mt-2">Current cover will be replaced if you upload a new one</small>
+                                    }
+                                    <small class="text-muted d-block mt-1">Max size: 10MB. Formats: JPG, PNG, GIF</small>
+                                    <span asp-validation-for="CoverImage" class="text-danger text-sm"></span>
+                                </div>
+                            </div>
+
+                            <h6 class="text-md text-primary-light mb-16 mt-32">Basic Information</h6>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-20">
+                                    <label asp-for="NameEnglish" class="form-label fw-semibold text-primary-light text-sm mb-8">
+                                        <span class="text-danger">*</span> Name (English)
+                                    </label>
+                                    <input asp-for="NameEnglish" class="form-control radius-8" placeholder="Enter English Name">
+                                    <span asp-validation-for="NameEnglish" class="text-danger text-sm"></span>
+                                </div>
+                                <div class="col-md-6 mb-20">
+                                    <label asp-for="NameArabic" class="form-label fw-semibold text-primary-light text-sm mb-8">
+                                        <span class="text-danger">*</span> Name (Arabic)
+                                    </label>
+                                    <input asp-for="NameArabic" class="form-control radius-8" placeholder="أدخل الاسم بالعربية" dir="rtl">
+                                    <span asp-validation-for="NameArabic" class="text-danger text-sm"></span>
+                                </div>
+                            </div>
+
+                            <h6 class="text-md text-primary-light mb-16 mt-24">Contact Information</h6>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-20">
+                                    <label asp-for="Email" class="form-label fw-semibold text-primary-light text-sm mb-8">
+                                        <span class="text-danger">*</span> Email Address
+                                    </label>
+                                    <input asp-for="Email" type="email" class="form-control radius-8" placeholder="university@example.com">
+                                    <span asp-validation-for="Email" class="text-danger text-sm"></span>
+                                </div>
+                                <div class="col-md-6 mb-20">
+                                    <label asp-for="PhoneNumber" class="form-label fw-semibold text-primary-light text-sm mb-8">
+                                        <span class="text-danger">*</span> Phone Number
+                                    </label>
+                                    <input asp-for="PhoneNumber" class="form-control radius-8" placeholder="+962-X-XXXXXXX">
+                                    <span asp-validation-for="PhoneNumber" class="text-danger text-sm"></span>
+                                </div>
+                            </div>
+
+                            <div class="mb-20">
+                                <label asp-for="OfficialWebsite" class="form-label fw-semibold text-primary-light text-sm mb-8">Official Website</label>
+                                <input asp-for="OfficialWebsite" type="url" class="form-control radius-8" placeholder="https://www.university.edu.jo">
+                                <span asp-validation-for="OfficialWebsite" class="text-danger text-sm"></span>
+                            </div>
+
+                            <h6 class="text-md text-primary-light mb-16 mt-24">Location Information</h6>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-20">
+                                    <label asp-for="Province" class="form-label fw-semibold text-primary-light text-sm mb-8">
+                                        <span class="text-danger">*</span> Province
+                                    </label>
+                                    <input asp-for="Province" class="form-control radius-8" placeholder="e.g., Amman">
+                                    <span asp-validation-for="Province" class="text-danger text-sm"></span>
+                                </div>
+                                <div class="col-md-6 mb-20">
+                                    <label asp-for="City" class="form-label fw-semibold text-primary-light text-sm mb-8">
+                                        <span class="text-danger">*</span> City
+                                    </label>
+                                    <input asp-for="City" class="form-control radius-8" placeholder="e.g., Amman">
+                                    <span asp-validation-for="City" class="text-danger text-sm"></span>
+                                </div>
+                            </div>
+
+                            <div class="mb-20">
+                                <label asp-for="FullAddress" class="form-label fw-semibold text-primary-light text-sm mb-8">
+                                    <span class="text-danger">*</span> Full Address
+                                </label>
+                                <textarea asp-for="FullAddress" class="form-control radius-8" rows="3" placeholder="Enter complete address with street name and landmarks"></textarea>
+                                <span asp-validation-for="FullAddress" class="text-danger text-sm"></span>
+                            </div>
+
+
+                            <h6 class="text-md text-primary-light mb-16 mt-24">Additional Information</h6>
+
+                            <div class="mb-20">
+                                <label asp-for="AcademicAccreditation" class="form-label fw-semibold text-primary-light text-sm mb-8">Academic Accreditation</label>
+                                <textarea asp-for="AcademicAccreditation" class="form-control radius-8" rows="2" placeholder="Enter accreditation details (e.g., Ministry of Higher Education, International accreditations)"></textarea>
+                                <span asp-validation-for="AcademicAccreditation" class="text-danger text-sm"></span>
+                            </div>
+
+                            <div class="d-flex align-items-center justify-content-center gap-3 mt-24">
+                                <a asp-action="Index" class="border border-danger-600 bg-hover-danger-200 text-danger-600 text-md px-56 py-11 radius-8">
+                                    <iconify-icon icon="mdi:close" class="icon me-1"></iconify-icon>
+                                    Cancel
+                                </a>
+                                <button type="submit" class="btn btn-primary border border-primary-600 text-md px-56 py-12 radius-8">
+                                    <iconify-icon icon="mdi:content-save" class="icon me-1"></iconify-icon>
+                                    Update University
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Logo preview
+        function readLogoURL(input) {
+            if (input.files && input.files[0]) {
+                // Check file size (5MB)
+                if (input.files[0].size > 5 * 1024 * 1024) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'File Too Large',
+                        text: 'Logo file size must be less than 5MB.',
+                        confirmButtonText: 'OK'
+                    });
+                    input.value = '';
+                    return;
+                }
+
+                var reader = new FileReader();
+                reader.onload = function(e) {
+                    $('#logoPreview').css('background-image', 'url('+e.target.result +')');
+                    $('#logoPreview').hide();
+                    $('#logoPreview').fadeIn(650);
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        $("#logoUpload").change(function() {
+            readLogoURL(this);
+        });
+
+        // Cover image preview
+        function readCoverURL(input) {
+            if (input.files && input.files[0]) {
+                // Check file size (10MB)
+                if (input.files[0].size > 10 * 1024 * 1024) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'File Too Large',
+                        text: 'Cover image file size must be less than 10MB.',
+                        confirmButtonText: 'OK'
+                    });
+                    input.value = '';
+                    return;
+                }
+
+                var reader = new FileReader();
+                reader.onload = function(e) {
+                    $('#coverPreview').css('background-image', 'url('+e.target.result +')');
+                    $('#coverPreview').hide();
+                    $('#coverPreview').fadeIn(650);
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        $("#coverUpload").change(function() {
+            readCoverURL(this);
+        });
+
+        // Form submission with SweetAlert confirmation
+        $('#editUniversityForm').on('submit', function(e) {
+            e.preventDefault();
+            var form = this; // ✅ Store form reference
+
+            Swal.fire({
+                title: 'Update University?',
+                text: "Are you sure you want to update the university information?",
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#487FFF',
+                cancelButtonColor: '#EA5455',
+                confirmButtonText: 'Yes, Update',
+                cancelButtonText: 'Cancel'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Show loading
+                    Swal.fire({
+                        title: 'Updating...',
+                        text: 'Please wait while we update the university information.',
+                        allowOutsideClick: false,
+                        allowEscapeKey: false,
+                        didOpen: () => {
+                            Swal.showLoading();
+                        }
+                    });
+
+                    // Submit form using stored reference
+                    form.submit(); // ✅ Now it works!
+                }
+            });
+        });
+    </script>
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

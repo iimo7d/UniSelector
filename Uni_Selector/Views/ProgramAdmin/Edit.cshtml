@@ -1,0 +1,154 @@
+﻿@using Uni_Selector.ViewModels.AdminProgram
+@model ProgramCreateEditViewModel
+
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = "Edit Program";
+}
+
+<div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-24">
+    <h6 class="fw-semibold mb-0">Edit Program</h6>
+    <ul class="d-flex align-items-center gap-2">
+        <li class="fw-medium">
+            <a href="@Url.Action("Index", "Admin")" class="d-flex align-items-center gap-1 hover-text-primary">
+                <iconify-icon icon="solar:home-smile-angle-outline" class="icon text-lg"></iconify-icon>
+                Dashboard
+            </a>
+        </li>
+        <li>-</li>
+        <li class="fw-medium">
+            <a href="@Url.Action("Index", "ProgramAdmin")" class="hover-text-primary">Programs</a>
+        </li>
+        <li>-</li>
+        <li class="fw-medium">Edit</li>
+    </ul>
+</div>
+
+<div class="card h-100 p-0 radius-12">
+    <div class="card-body p-24">
+        <div class="row justify-content-center">
+            <div class="col-xxl-8 col-xl-10 col-lg-12">
+                <div class="card border">
+                    <div class="card-body">
+                        <form asp-action="Edit" asp-route-id="@Model.Id" method="post">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" asp-for="Id" />
+                            <input type="hidden" asp-for="CreatedAt" />
+                            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                            <!-- Program Info Header -->
+                            <div class="d-flex align-items-center justify-content-between mb-16">
+                                <h6 class="text-md text-primary-light mb-0">Program Information</h6>
+                                @if (Model.CreatedAt.HasValue)
+                                {
+                                    <span class="text-sm text-secondary-light">Created: @Model.CreatedAt.Value.ToString("dd MMM yyyy")</span>
+                                }
+                            </div>
+
+                            <div class="row gy-3">
+                                <div class="col-md-6">
+                                    <label asp-for="NameEnglish" class="form-label fw-semibold text-primary-light text-sm mb-8">
+                                        Program Name (English) <span class="text-danger-600">*</span>
+                                    </label>
+                                    <input asp-for="NameEnglish" type="text" class="form-control radius-8" placeholder="e.g., Computer Science">
+                                    <span asp-validation-for="NameEnglish" class="text-danger text-sm"></span>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label asp-for="NameArabic" class="form-label fw-semibold text-primary-light text-sm mb-8">
+                                        Program Name (Arabic) <span class="text-danger-600">*</span>
+                                    </label>
+                                    <input asp-for="NameArabic" type="text" class="form-control radius-8" placeholder="مثال: علوم الحاسوب" dir="rtl">
+                                    <span asp-validation-for="NameArabic" class="text-danger text-sm"></span>
+                                </div>
+
+                                <div class="col-12">
+                                    <label asp-for="Description" class="form-label fw-semibold text-primary-light text-sm mb-8">
+                                        Description <span class="text-secondary-light">(Optional)</span>
+                                    </label>
+                                    <textarea asp-for="Description" class="form-control radius-8" rows="4" placeholder="Brief description of the program..."></textarea>
+                                    <span asp-validation-for="Description" class="text-danger text-sm"></span>
+                                </div>
+                            </div>
+
+                            <!-- Academic Details Section -->
+                            <h6 class="text-md text-primary-light mb-16 mt-24">Academic Details</h6>
+
+                            <div class="row gy-3">
+                                <div class="col-md-4">
+                                    <label asp-for="Degree" class="form-label fw-semibold text-primary-light text-sm mb-8">
+                                        Degree Level <span class="text-danger-600">*</span>
+                                    </label>
+                                    <select asp-for="Degree" class="form-control radius-8" asp-items="Html.GetEnumSelectList<Uni_Selector.Models.Enums.Degree>()">
+                                        <option value="">Select Degree</option>
+                                    </select>
+                                    <span asp-validation-for="Degree" class="text-danger text-sm"></span>
+                                </div>
+
+                                <div class="col-md-4">
+                                    <label asp-for="Language" class="form-label fw-semibold text-primary-light text-sm mb-8">
+                                        Teaching Language <span class="text-danger-600">*</span>
+                                    </label>
+                                    <select asp-for="Language" class="form-control radius-8" asp-items="Html.GetEnumSelectList<Uni_Selector.Models.Enums.LanguageCode>()">
+                                        <option value="">Select Language</option>
+                                    </select>
+                                    <span asp-validation-for="Language" class="text-danger text-sm"></span>
+                                </div>
+
+                                <div class="col-md-4">
+                                    <label asp-for="TotalCreditHours" class="form-label fw-semibold text-primary-light text-sm mb-8">
+                                        Total Credit Hours <span class="text-danger-600">*</span>
+                                    </label>
+                                    <input asp-for="TotalCreditHours" type="number" class="form-control radius-8" placeholder="e.g., 120" min="30" max="300">
+                                    <span asp-validation-for="TotalCreditHours" class="text-danger text-sm"></span>
+                                </div>
+
+                                <div class="col-12">
+                                    <label asp-for="AcademicClassification" class="form-label fw-semibold text-primary-light text-sm mb-8">
+                                        Academic Classification <span class="text-secondary-light">(Optional)</span>
+                                    </label>
+                                    <input asp-for="AcademicClassification" type="text" class="form-control radius-8" placeholder="e.g., Engineering, Business, Health Sciences">
+                                    <span asp-validation-for="AcademicClassification" class="text-danger text-sm"></span>
+                                </div>
+                            </div>
+
+                            <!-- Action Buttons -->
+                            <div class="d-flex align-items-center justify-content-center gap-3 mt-24">
+                                <button type="button" class="btn btn-outline-danger border border-danger-600 text-md px-56 py-11 radius-8" onclick="cancelForm()">
+                                    Cancel
+                                </button>
+                                <button type="submit" class="btn btn-primary border border-primary-600 text-md px-56 py-11 radius-8">
+                                    Update Program
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        function cancelForm() {
+            Swal.fire({
+                title: 'Cancel Changes?',
+                text: 'Are you sure you want to cancel? Any unsaved changes will be lost.',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Yes, Cancel',
+                cancelButtonText: 'Continue Editing'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = '@Url.Action("Index", "ProgramAdmin")';
+                }
+            });
+        }
+    </script>
+}

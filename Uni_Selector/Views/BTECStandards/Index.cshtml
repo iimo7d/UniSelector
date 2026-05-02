@@ -1,0 +1,183 @@
+﻿@model Uni_Selector.ViewModels.BTECAuthority.BTECStandardsViewModel
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = "BTEC Standards";
+}
+
+<!-- Page Header -->
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h4 class="mb-1">📋 BTEC Standards & Requirements</h4>
+        <p class="text-muted mb-0">Official BTEC program standards and accreditation criteria</p>
+    </div>
+    <div>
+        <a asp-action="Index" asp-controller="BTECReports" class="btn btn-outline-secondary me-2">
+            <iconify-icon icon="solar:chart-outline" width="20"></iconify-icon>
+            View Reports
+        </a>
+        @if (User.IsInRole("BTECAuthority"))
+        {
+            <a asp-action="Manage" class="btn btn-primary">
+                <iconify-icon icon="solar:settings-outline" width="20"></iconify-icon>
+                Manage Standards
+            </a>
+        }
+    </div>
+</div>
+
+<!-- Last Updated Info -->
+@if (Model.LastUpdated.HasValue)
+{
+    <div class="alert alert-info d-flex align-items-center mb-4">
+        <iconify-icon icon="solar:info-circle-outline" width="24" class="me-2"></iconify-icon>
+        <div>
+            <strong>Last Updated:</strong> @Model.LastUpdated.Value.ToString("MMMM dd, yyyy 'at' hh:mm tt")
+            @if (!string.IsNullOrWhiteSpace(Model.LastUpdatedBy))
+            {
+                <span class="ms-2">by <strong>@Model.LastUpdatedBy</strong></span>
+            }
+        </div>
+    </div>
+}
+
+<!-- Standards by Level -->
+<div class="card mb-4">
+    <div class="card-header">
+        <h5 class="card-title mb-0">
+            <iconify-icon icon="solar:diploma-outline" width="24"></iconify-icon>
+            BTEC Level Standards
+        </h5>
+    </div>
+    <div class="card-body">
+        <div class="row g-4">
+            @foreach (var standard in Model.Standards)
+            {
+                <div class="col-md-6 col-lg-4">
+                    <div class="card border-primary h-100">
+                        <div class="card-header bg-primary-focus">
+                            <h6 class="card-title mb-0 text-primary-main">
+                                <iconify-icon icon="solar:diploma-outline" width="20"></iconify-icon>
+                                @standard.Level
+                            </h6>
+                        </div>
+                        <div class="card-body">
+                            <ul class="list-unstyled mb-0">
+                                <li class="mb-2">
+                                    <iconify-icon icon="solar:chart-outline" width="18" class="text-success me-2"></iconify-icon>
+                                    <strong>Minimum GPA:</strong> @standard.MinimumGPA%
+                                </li>
+                                <li class="mb-2">
+                                    <iconify-icon icon="solar:document-text-outline" width="18" class="text-info me-2"></iconify-icon>
+                                    <strong>Credit Hours:</strong> @standard.MinimumCreditHours
+                                </li>
+                                <li class="mb-2">
+                                    <iconify-icon icon="solar:calendar-outline" width="18" class="text-warning me-2"></iconify-icon>
+                                    <strong>Duration:</strong> @standard.RecommendedDuration months
+                                </li>
+                                <li class="mb-2">
+                                    @if (standard.RequiresPreviousLevel)
+                                    {
+                                        <iconify-icon icon="solar:check-circle-outline" width="18" class="text-success me-2"></iconify-icon>
+                                        <span class="text-success">Requires Previous Level</span>
+                                    }
+                                    else
+                                    {
+                                        <iconify-icon icon="solar:close-circle-outline" width="18" class="text-muted me-2"></iconify-icon>
+                                        <span class="text-muted">Entry Level</span>
+                                    }
+                                </li>
+                            </ul>
+                            @if (!string.IsNullOrWhiteSpace(standard.Description))
+                            {
+                                <hr />
+                                <p class="text-muted small mb-0">@standard.Description</p>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<!-- Quality Requirements -->
+<div class="row gy-4 mb-4">
+    <div class="col-lg-6">
+        <div class="card h-100">
+            <div class="card-header bg-success-focus">
+                <h5 class="card-title mb-0 text-success-main">
+                    <iconify-icon icon="solar:shield-check-outline" width="24"></iconify-icon>
+                    Quality Requirements
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="list-group list-group-flush">
+                    @foreach (var requirement in Model.QualityRequirements)
+                    {
+                        <div class="list-group-item d-flex align-items-start border-0 px-0">
+                            <iconify-icon icon="solar:check-circle-bold" width="24" class="text-success me-3 mt-1"></iconify-icon>
+                            <div>
+                                <h6 class="mb-1">@requirement.Name</h6>
+                                <p class="text-muted small mb-0">@requirement.Description</p>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-6">
+        <div class="card h-100">
+            <div class="card-header bg-warning-focus">
+                <h5 class="card-title mb-0 text-warning-main">
+                    <iconify-icon icon="solar:star-outline" width="24"></iconify-icon>
+                    Accreditation Criteria
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="list-group list-group-flush">
+                    @foreach (var criteria in Model.AccreditationCriteria)
+                    {
+                        <div class="list-group-item border-0 px-0">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <h6 class="mb-0">@criteria.Name</h6>
+                                <span class="badge bg-warning-focus text-warning-main">@criteria.Weight%</span>
+                            </div>
+                            <div class="progress" style="height: 8px;">
+                                <div class="progress-bar bg-warning" role="progressbar" style="width: @criteria.Weight%" aria-valuenow="@criteria.Weight" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+                            <p class="text-muted small mb-0 mt-2">@criteria.Description</p>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Important Notes -->
+<div class="card border-danger">
+    <div class="card-header bg-danger-focus">
+        <h5 class="card-title mb-0 text-danger-main">
+            <iconify-icon icon="solar:danger-triangle-outline" width="24"></iconify-icon>
+            Important Notes for Universities
+        </h5>
+    </div>
+    <div class="card-body">
+        <ul class="mb-0">
+            <li class="mb-2">All BTEC programs must meet the minimum standards for their respective level to maintain accreditation.</li>
+            <li class="mb-2">Universities must conduct annual reviews of their BTEC programs and submit reports to the BTEC Authority.</li>
+            <li class="mb-2">Quality requirements are mandatory for all BTEC programs. Non-compliance may result in suspension of accreditation.</li>
+            <li class="mb-2">Accreditation criteria are used for program evaluation and renewal processes. Universities should maintain documentation for all criteria.</li>
+            <li class="mb-2">Any changes to BTEC standards will be communicated to universities with adequate notice for implementation.</li>
+            <li>For questions or clarifications regarding BTEC standards, please contact the BTEC Authority directly.</li>
+        </ul>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+    // Optional: Add any interactive features here
+</script>
+}

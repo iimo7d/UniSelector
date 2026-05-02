@@ -1,0 +1,82 @@
+﻿@using Uni_Selector.ViewModels.AdminCommission
+@model SettlementCreateViewModel
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = "Create Settlement";
+}
+<div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-24">
+    <h6 class="fw-semibold mb-0">Create Monthly Settlement</h6>
+    <ul class="d-flex align-items-center gap-2"><li class="fw-medium"><a href="@Url.Action("Index", "Admin")" class="d-flex align-items-center gap-1 hover-text-primary"><iconify-icon icon="solar:home-smile-angle-outline" class="icon text-lg"></iconify-icon> Dashboard</a></li><li>-</li><li class="fw-medium"><a href="@Url.Action("Settlements")" class="hover-text-primary">Settlements</a></li><li>-</li><li class="fw-medium">Create</li></ul>
+</div>
+<div class="row justify-content-center">
+    <div class="col-xxl-8 col-xl-10">
+        <div class="alert alert-info d-flex align-items-start gap-12 mb-24" role="alert"><iconify-icon icon="solar:info-circle-outline" class="icon text-xl flex-shrink-0 mt-4"></iconify-icon><div><h6 class="mb-8">Settlement Creation</h6><p class="mb-0 text-sm">Create a monthly settlement to group and finalize all unsettled commissions for a university. This will mark all pending commissions for the selected university as settled and link them to this settlement.</p></div></div>
+        <div class="card radius-12">
+            <div class="card-header py-16 px-24 bg-base border-bottom"><h6 class="text-lg fw-semibold mb-0">Settlement Information</h6></div>
+            <div class="card-body p-24">
+                <form asp-action="CreateSettlement" method="post">
+                    @Html.AntiForgeryToken()<div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+                    <div class="row gy-3">
+                        <div class="col-12">
+                            <label asp-for="UniversityId" class="form-label fw-semibold text-primary-light text-sm mb-8">University <span class="text-danger-600">*</span></label>
+                            <select asp-for="UniversityId" class="form-control radius-8">
+                                <option value="">Select University</option>@foreach (var uni in Model.Universities)
+                                {
+                                    <option value="@uni.Id">@uni.Name (@uni.PendingCommissionsCount pending - @uni.PendingCommissionsTotal.ToString("N2") JOD)</option>
+                                }
+                            </select>
+                            <span asp-validation-for="UniversityId" class="text-danger text-sm"></span>
+                        </div>
+                        <div class="col-md-6"><label asp-for="Year" class="form-label fw-semibold text-primary-light text-sm mb-8">Year <span class="text-danger-600">*</span></label><input asp-for="Year" type="number" class="form-control radius-8" min="2020" max="2100"><span asp-validation-for="Year" class="text-danger text-sm"></span></div>
+                        <div class="col-md-6">
+                            <label asp-for="Month" class="form-label fw-semibold text-primary-light text-sm mb-8">Month <span class="text-danger-600">*</span></label>
+                            <select asp-for="Month" class="form-control radius-8">
+                                @for (int m = 1; m <= 12; m++)
+                                {
+                                    <option value="@m" selected="@(Model.Month == m)">@(new DateTime(2000, m, 1).ToString("MMMM"))</option>
+                                }
+                            </select>
+                            <span asp-validation-for="Month" class="text-danger text-sm"></span>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-center justify-content-center gap-3 mt-32">
+                        <a href="@Url.Action("Settlements")" class="btn btn-outline-danger border border-danger-600 text-md px-56 py-11 radius-8"><iconify-icon icon="ep:back" class="icon text-lg me-4"></iconify-icon>Cancel</a>
+                        <button type="submit" class="btn btn-primary border border-primary-600 text-md px-56 py-11 radius-8"><iconify-icon icon="ic:baseline-plus" class="icon text-lg me-4"></iconify-icon>Create Settlement</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="card radius-12 mt-24">
+            <div class="card-header py-16 px-24 bg-base border-bottom"><h6 class="text-lg fw-semibold mb-0">Available Pending Commissions by University</h6></div>
+            <div class="card-body p-24">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead><tr><th>University</th><th class="text-center">Pending Commissions</th><th class="text-end">Total Amount</th></tr></thead>
+                        <tbody>
+                            @foreach (var uni in Model.Universities.Where(u => u.PendingCommissionsCount > 0))
+                            {
+                                <tr><td><span class="text-sm fw-medium">@uni.Name</span></td><td class="text-center"><span class="badge bg-warning-focus text-warning-600 px-16 py-6 fw-semibold">@uni.PendingCommissionsCount</span></td><td class="text-end"><span class="text-md fw-bold text-success-600">@uni.PendingCommissionsTotal.ToString("N2") JOD</span></td></tr>
+                            }
+                            @if (!Model.Universities.Any(u => u.PendingCommissionsCount > 0))
+                            {
+                                <tr><td colspan="3" class="text-center py-24"><iconify-icon icon="solar:check-circle-outline" class="icon text-48 text-success-600 mb-8"></iconify-icon><p class="text-secondary-light mb-0">All commissions are settled</p></td></tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>@if (TempData["Error"] != null){
+    <text>Swal.fire({icon: 'error',title: 'Error!',text: '@TempData["Error"]',confirmButtonColor: '#dc3545'});</text>
+}
+@if (TempData["Warning"] != null)
+{
+    <text>Swal.fire({icon: 'warning',title: 'Warning!',text: '@TempData["Warning"]',confirmButtonColor: '#fd7e14'});</text>
+}
+</script>
+}

@@ -1,0 +1,38 @@
+﻿@keyframes fade-in {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.animate-fade-in {
+    animation: fade-in 0.3s ease-out;
+}
+
+.notification-toast {
+    position: fixed;
+    top: 20px;
+    right: -400px;
+    min-width: 300px;
+    max-width: 400px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    padding: 16px;
+    transition: right 0.3s ease-out;
+    z-index: 9999;
+}
+
+    .notification-toast.show {
+        right: 20px;
+    }
+
+.dark .notification-toast {
+    background: #1e293b;
+    color: white;
+}

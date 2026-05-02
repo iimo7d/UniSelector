@@ -1,0 +1,172 @@
+﻿@model Uni_Selector.ViewModels.NotificationAdmin.NotificationTemplatesViewModel
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = "Notification Templates";
+}
+
+<div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-24">
+    <h6 class="fw-semibold mb-0">Notification Templates</h6>
+    <ul class="d-flex align-items-center gap-2">
+        <li class="fw-medium">
+            <a href="@Url.Action("Index", "Admin")" class="d-flex align-items-center gap-1 hover-text-primary">
+                <iconify-icon icon="solar:home-smile-angle-outline" class="icon text-lg"></iconify-icon>
+                Dashboard
+            </a>
+        </li>
+        <li>-</li>
+        <li class="fw-medium">
+            <a href="@Url.Action("Index")" class="hover-text-primary">Notifications</a>
+        </li>
+        <li>-</li>
+        <li class="fw-medium">Templates</li>
+    </ul>
+</div>
+
+<div class="card radius-12">
+    <div class="card-header py-16 px-24 bg-base border-bottom">
+        <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+            <div>
+                <h6 class="text-lg fw-semibold mb-4">Available Templates</h6>
+                <p class="text-sm text-secondary-light mb-0">Pre-defined notification templates for common scenarios</p>
+            </div>
+            <a href="@Url.Action("Send")" class="btn btn-primary text-sm btn-sm px-12 py-12 radius-8">
+                <iconify-icon icon="solar:letter-outline" class="icon text-xl me-4"></iconify-icon>
+                Send Notification
+            </a>
+        </div>
+    </div>
+
+    <div class="card-body p-24">
+        <div class="row gy-4">
+            @foreach (var template in Model.Templates)
+            {
+                <div class="col-md-6 col-lg-4">
+                    <div class="card border border-neutral-200 radius-8 h-100">
+                        <div class="card-body p-20">
+                            <div class="d-flex align-items-start justify-content-between mb-12">
+                                <div class="w-48-px h-48-px rounded-circle bg-@GetCategoryColor(template.Category)-focus d-flex align-items-center justify-content-center">
+                                    <iconify-icon icon="@GetCategoryIcon(template.Category)" class="text-@GetCategoryColor(template.Category)-600 text-xl"></iconify-icon>
+                                </div>
+                                <span class="badge bg-@GetCategoryColor(template.Category)-focus text-@GetCategoryColor(template.Category)-600 px-12 py-6 radius-4 text-xs">
+                                    @template.CategoryText
+                                </span>
+                            </div>
+
+                            <h6 class="text-md fw-semibold mb-8">@template.Name</h6>
+                            <p class="text-sm text-secondary-light mb-12">@template.Description</p>
+
+                            <div class="border-top pt-12">
+                                <p class="text-sm mb-8"><strong>Title:</strong> @template.Title</p>
+                                <p class="text-sm mb-0"><strong>Message:</strong> @template.Message</p>
+                            </div>
+
+                            <div class="d-flex gap-2 mt-16">
+                                <button type="button" class="btn btn-outline-primary btn-sm flex-fill radius-8 use-template"
+                                        data-title="@template.Title"
+                                        data-message="@template.Message"
+                                        data-category="@((int)template.Category)">
+                                    <iconify-icon icon="solar:copy-outline" class="icon text-lg me-4"></iconify-icon>
+                                    Use Template
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        // Use template functionality
+        document.querySelectorAll('.use-template').forEach(button => {
+            button.addEventListener('click', function() {
+                const title = this.getAttribute('data-title');
+                const message = this.getAttribute('data-message');
+                const category = this.getAttribute('data-category');
+
+                Swal.fire({
+                    title: 'Use This Template?',
+                    html: `This will redirect you to the send notification page with this template pre-filled.<br><br><strong>Title:</strong> ${title}`,
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonColor: '#487FFF',
+                    cancelButtonColor: '#6c757d',
+                    confirmButtonText: 'Yes, Use Template',
+                    cancelButtonText: 'Cancel'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // Redirect to Send page with query parameters
+                        const params = new URLSearchParams({
+                            title: title,
+                            message: message,
+                            category: category
+                        });
+                        window.location.href = '@Url.Action("Send")?' + params.toString();
+                    }
+                });
+            });
+        });
+
+        @if (TempData["Success"] != null)
+        {
+                <text>
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success!',
+                    text: '@TempData["Success"]',
+                    confirmButtonColor: '#198754',
+                    timer: 3000,
+                    timerProgressBar: true
+                });
+                </text>
+        }
+        @if (TempData["Error"] != null)
+        {
+                <text>
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error!',
+                    text: '@TempData["Error"]',
+                    confirmButtonColor: '#dc3545'
+                });
+                </text>
+        }
+    </script>
+}
+
+@functions {
+    string GetCategoryColor(Uni_Selector.Models.Enums.NotificationCategory category)
+    {
+        return category switch
+        {
+            Uni_Selector.Models.Enums.NotificationCategory.NewRecommendation => "info",
+            Uni_Selector.Models.Enums.NotificationCategory.ApplicationSubmitted => "warning",
+            Uni_Selector.Models.Enums.NotificationCategory.ApplicationApproved => "success",
+            Uni_Selector.Models.Enums.NotificationCategory.ApplicationRejected => "danger",
+            Uni_Selector.Models.Enums.NotificationCategory.PromoCodeGenerated => "primary",
+            Uni_Selector.Models.Enums.NotificationCategory.SystemAlert => "danger",
+            Uni_Selector.Models.Enums.NotificationCategory.CommissionGenerated => "success",
+            Uni_Selector.Models.Enums.NotificationCategory.DiscountApplied => "success",
+            _ => "neutral"
+        };
+    }
+
+    string GetCategoryIcon(Uni_Selector.Models.Enums.NotificationCategory category)
+    {
+        return category switch
+        {
+            Uni_Selector.Models.Enums.NotificationCategory.NewRecommendation => "solar:star-bold",
+            Uni_Selector.Models.Enums.NotificationCategory.ApplicationSubmitted => "solar:document-text-bold",
+            Uni_Selector.Models.Enums.NotificationCategory.ApplicationApproved => "solar:check-circle-bold",
+            Uni_Selector.Models.Enums.NotificationCategory.ApplicationRejected => "solar:close-circle-bold",
+            Uni_Selector.Models.Enums.NotificationCategory.PromoCodeGenerated => "solar:ticket-bold",
+            Uni_Selector.Models.Enums.NotificationCategory.SystemAlert => "solar:bell-bold",
+            Uni_Selector.Models.Enums.NotificationCategory.CommissionGenerated => "solar:dollar-bold",
+            Uni_Selector.Models.Enums.NotificationCategory.DiscountApplied => "solar:tag-bold",
+            _ => "solar:letter-bold"
+        };
+    }
+}

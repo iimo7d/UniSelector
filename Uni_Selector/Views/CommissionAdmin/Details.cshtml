@@ -1,0 +1,120 @@
+﻿@using Uni_Selector.ViewModels.AdminCommission
+@model CommissionDetailsViewModel
+
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = "Commission Details";
+}
+
+<div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-24">
+    <h6 class="fw-semibold mb-0">Commission Details</h6>
+    <ul class="d-flex align-items-center gap-2">
+        <li class="fw-medium"><a href="@Url.Action("Index", "Admin")" class="d-flex align-items-center gap-1 hover-text-primary"><iconify-icon icon="solar:home-smile-angle-outline" class="icon text-lg"></iconify-icon> Dashboard</a></li>
+        <li>-</li>
+        <li class="fw-medium"><a href="@Url.Action("Index")" class="hover-text-primary">Commissions</a></li>
+        <li>-</li>
+        <li class="fw-medium">#@Model.Id</li>
+    </ul>
+</div>
+
+<div class="row gy-4">
+    <div class="col-lg-4">
+        <div class="card h-100 radius-12">
+            <div class="card-body p-24">
+                <div class="text-center border-bottom pb-24 mb-24">
+                    <div class="w-80-px h-80-px rounded-circle @(Model.Settled ? "bg-success-focus" : "bg-warning-focus") d-flex align-items-center justify-content-center mx-auto mb-16">
+                        <iconify-icon icon="solar:money-bag-bold" class="text-48 @(Model.Settled ? "text-success-600" : "text-warning-600")"></iconify-icon>
+                    </div>
+                    <h4 class="mb-8 fw-bold">@Model.AmountEstimated.ToString("N2") JOD</h4>
+                    <span class="badge @(Model.Settled ? "bg-success-focus text-success-600" : "bg-warning-focus text-warning-600") px-24 py-8 radius-4 fw-medium">@(Model.Settled ? "Settled" : "Pending")</span>
+                </div>
+                <div class="mb-20">
+                    <h6 class="text-lg mb-16 fw-semibold">Commission Info</h6>
+                    <ul class="list-unstyled">
+                        <li class="d-flex align-items-center gap-1 mb-12"><span class="w-40 text-sm fw-semibold text-secondary-light">ID:</span><span class="w-60 text-sm">#@Model.Id</span></li>
+                        <li class="d-flex align-items-center gap-1 mb-12"><span class="w-40 text-sm fw-semibold text-secondary-light">Mode:</span><span class="w-60 text-sm"><span class="badge bg-info-focus text-info-600 px-12 py-4">@Model.ModeText</span></span></li>
+                        <li class="d-flex align-items-center gap-1 mb-12"><span class="w-40 text-sm fw-semibold text-secondary-light">Percentage:</span><span class="w-60 text-sm fw-bold">@Model.Percentage%</span></li>
+                        <li class="d-flex align-items-center gap-1 mb-12"><span class="w-40 text-sm fw-semibold text-secondary-light">Base Amount:</span><span class="w-60 text-sm">@Model.BaseAmount.ToString("N2") JOD</span></li>
+                        <li class="d-flex align-items-center gap-1 mb-12"><span class="w-40 text-sm fw-semibold text-secondary-light">Created:</span><span class="w-60 text-sm">@Model.CreatedAt.ToString("dd MMM yyyy")</span></li>
+                        @if (Model.CalculatedAt.HasValue)
+                        {
+                            <li class="d-flex align-items-center gap-1 mb-12"><span class="w-40 text-sm fw-semibold text-secondary-light">Calculated:</span><span class="w-60 text-sm">@Model.CalculatedAt.Value.ToString("dd MMM yyyy")</span></li>
+                        }
+                    </ul>
+                </div>
+                @if (!string.IsNullOrEmpty(Model.ModeDescription))
+                {
+                    <div class="alert alert-info-focus mb-20"><p class="text-xs mb-0">@Model.ModeDescription</p></div>
+                }
+                <div class="d-flex gap-2"><a href="@Url.Action("Index")" class="btn btn-outline-secondary flex-fill text-sm btn-sm px-12 py-8 radius-8"><iconify-icon icon="ep:back" class="icon text-lg me-4"></iconify-icon>Back</a></div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-8">
+        <div class="card radius-12">
+            <div class="card-body p-24">
+                <div class="mb-24 pb-24 border-bottom">
+                    <h6 class="text-lg mb-16 fw-semibold d-flex align-items-center gap-8"><iconify-icon icon="solar:user-outline" class="text-primary-600 text-xl"></iconify-icon> Student Information</h6>
+                    <div class="row">
+                        <div class="col-md-6 mb-12"><span class="text-sm text-secondary-light d-block mb-4">Name</span><span class="text-md fw-semibold">@Model.StudentName</span></div>
+                        <div class="col-md-6 mb-12"><span class="text-sm text-secondary-light d-block mb-4">Email</span><span class="text-md">@Model.StudentEmail</span></div>
+                    </div>
+                </div>
+                <div class="mb-24 pb-24 border-bottom">
+                    <h6 class="text-lg mb-16 fw-semibold d-flex align-items-center gap-8"><iconify-icon icon="solar:buildings-outline" class="text-primary-600 text-xl"></iconify-icon> University</h6>
+                    <div class="row">
+                        <div class="col-md-8 mb-12"><span class="text-sm text-secondary-light d-block mb-4">Name</span><h6 class="text-md fw-semibold mb-0">@Model.UniversityName</h6></div>
+                        <div class="col-md-4 mb-12"><span class="text-sm text-secondary-light d-block mb-4">Email</span><span class="text-md">@Model.UniversityEmail</span></div>
+                    </div>
+                </div>
+                <div class="mb-24 pb-24 border-bottom">
+                    <h6 class="text-lg mb-16 fw-semibold d-flex align-items-center gap-8"><iconify-icon icon="solar:diploma-outline" class="text-primary-600 text-xl"></iconify-icon> Program</h6>
+                    <div class="row">
+                        <div class="col-md-8 mb-12"><span class="text-sm text-secondary-light d-block mb-4">Program Name</span><span class="text-md fw-medium">@Model.ProgramName</span></div>
+                        <div class="col-md-4 mb-12"><span class="text-sm text-secondary-light d-block mb-4">Degree</span><span class="badge bg-success-focus text-success-600 px-12 py-6">@Model.Degree</span></div>
+                    </div>
+                </div>
+                <div class="mb-24 pb-24 border-bottom">
+                    <h6 class="text-lg mb-16 fw-semibold d-flex align-items-center gap-8"><iconify-icon icon="solar:calculator-outline" class="text-primary-600 text-xl"></iconify-icon> Calculation Details</h6>
+                    <div class="row">
+                        @if (Model.RegistrationFeeUsed.HasValue)
+                        {
+                            <div class="col-md-4 mb-12"><span class="text-sm text-secondary-light d-block mb-4">Registration Fee</span><span class="text-md fw-semibold">@Model.RegistrationFeeUsed.Value.ToString("N2") JOD</span></div>
+                        }
+                        @if (Model.HoursCountUsed.HasValue)
+                        {
+                            <div class="col-md-4 mb-12"><span class="text-sm text-secondary-light d-block mb-4">Hours Count</span><span class="text-md fw-semibold">@Model.HoursCountUsed.Value hrs</span></div>
+                        }
+                        @if (Model.HourPriceUsed.HasValue)
+                        {
+                            <div class="col-md-4 mb-12"><span class="text-sm text-secondary-light d-block mb-4">Hour Price</span><span class="text-md fw-semibold">@Model.HourPriceUsed.Value.ToString("N2") JOD</span></div>
+                        }
+                        @if (Model.DiscountPercentApplied.HasValue)
+                        {
+                            <div class="col-md-4 mb-12"><span class="text-sm text-secondary-light d-block mb-4">Discount Applied</span><span class="badge bg-success-focus text-success-600 px-16 py-8 fw-semibold">@Model.DiscountPercentApplied.Value% OFF</span></div>
+                        }
+                    </div>
+                </div>
+                @if (Model.MonthlySettlementId.HasValue)
+                {
+                    <div>
+                        <h6 class="text-lg mb-16 fw-semibold d-flex align-items-center gap-8"><iconify-icon icon="solar:checklist-outline" class="text-primary-600 text-xl"></iconify-icon> Settlement</h6>
+                        <div class="row">
+                            <div class="col-md-6 mb-12"><span class="text-sm text-secondary-light d-block mb-4">Settlement Period</span><span class="text-md fw-semibold">@Model.SettlementPeriod</span></div>
+                            <div class="col-md-6 mb-12"><span class="text-sm text-secondary-light d-block mb-4">Status</span>@if(Model.SettlementClosed == true){
+                            <span class="badge bg-success-focus text-success-600 px-16 py-6">Closed</span>
+                        }
+                        else
+                        {
+
+                            <span class="badge bg-warning-focus text-warning-600 px-16 py-6">Open</span>
+                        }
+</div>
+                        <div class="col-12"><a href="@Url.Action("SettlementDetails", new { id = Model.MonthlySettlementId })" class="btn btn-outline-primary btn-sm radius-8">View Settlement</a></div>
+                    </div>
+                </div>
+                                }
+            </div>
+        </div>
+    </div>
+</div>

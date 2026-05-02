@@ -1,0 +1,368 @@
+﻿@using Uni_Selector.ViewModels.Applications
+@model CreateApplicationViewModel
+@{
+    ViewData["Title"] = "Submit Application";
+}
+
+<!-- Breadcrumb -->
+<section class="py-50px bg-lightGrey10 dark:bg-lightGrey10-dark relative z-0">
+    <div class="container">
+        <div class="text-center">
+            <h1 class="text-3xl md:text-4xl lg:text-5xl font-bold text-blackColor dark:text-blackColor-dark mb-15px">
+                Submit Application
+            </h1>
+            <ul class="flex gap-1 justify-center">
+                <li>
+                    <a asp-controller="Dashboard" asp-action="Index" class="text-lg text-blackColor2 dark:text-blackColor2-dark hover:text-primaryColor dark:hover:text-primaryColor">
+                        <i class="icofont-home"></i> Home
+                    </a>
+                </li>
+                <li><i class="icofont-simple-right text-blackColor2 dark:text-blackColor2-dark"></i></li>
+                <li>
+                    <a asp-action="Index" class="text-lg text-blackColor2 dark:text-blackColor2-dark hover:text-primaryColor dark:hover:text-primaryColor">
+                        Applications
+                    </a>
+                </li>
+                <li><i class="icofont-simple-right text-blackColor2 dark:text-blackColor2-dark"></i></li>
+                <li><span class="text-lg text-blackColor2 dark:text-blackColor2-dark">Submit Application</span></li>
+            </ul>
+        </div>
+    </div>
+</section>
+
+<!-- Application Form Section -->
+<section class="py-50px md:py-70px lg:py-20 2xl:py-100px">
+    <div class="container">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-30px">
+
+            <!-- Main Form Column -->
+            <div class="lg:col-span-2">
+                <div class="p-30px md:p-40px bg-whiteColor dark:bg-whiteColor-dark shadow-brand rounded-lg2">
+
+                    <!-- Form Header -->
+                    <div class="mb-30px">
+                        <h3 class="text-2xl font-bold text-blackColor dark:text-blackColor-dark mb-10px">
+                            <i class="icofont-file-document text-primaryColor mr-10px"></i>
+                            Application Form
+                        </h3>
+                        <p class="text-contentColor dark:text-contentColor-dark">
+                            Please review the program details and complete the form below to submit your application.
+                        </p>
+                    </div>
+
+                    <form asp-action="Create" method="post" id="applicationForm">
+                        <input type="hidden" asp-for="RecommendationId" />
+                        <input type="hidden" asp-for="UniversityProgramId" />
+                        <input type="hidden" asp-for="BtecProgramId" />
+
+                        <!-- Student Information (Read-only) -->
+                        <div class="mb-30px p-20px bg-lightGrey10 dark:bg-lightGrey10-dark rounded-lg">
+                            <h4 class="text-lg font-semibold text-blackColor dark:text-blackColor-dark mb-15px flex items-center">
+                                <i class="icofont-user text-primaryColor mr-10px"></i>
+                                Your Information
+                            </h4>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-15px">
+                                <div>
+                                    <label class="text-sm font-medium text-blackColor dark:text-blackColor-dark block mb-5px">
+                                        Full Name
+                                    </label>
+                                    <p class="text-base text-contentColor dark:text-contentColor-dark">
+                                        @Model.StudentFullName
+                                    </p>
+                                </div>
+                                <div>
+                                    <label class="text-sm font-medium text-blackColor dark:text-blackColor-dark block mb-5px">
+                                        Email Address
+                                    </label>
+                                    <p class="text-base text-contentColor dark:text-contentColor-dark">
+                                        @Model.StudentEmail
+                                    </p>
+                                </div>
+                                <div>
+                                    <label class="text-sm font-medium text-blackColor dark:text-blackColor-dark block mb-5px">
+                                        GPA
+                                    </label>
+                                    <p class="text-base text-contentColor dark:text-contentColor-dark">
+                                        <span class="px-3 py-1 bg-greencolor2 text-whiteColor rounded-full text-sm font-semibold">
+                                            @Model.StudentGPA
+                                        </span>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Program Selection (if not from recommendation) -->
+                        @if (!Model.UniversityProgramId.HasValue && !Model.BtecProgramId.HasValue)
+                        {
+                            <div class="mb-30px">
+                                <div class="alert alert-warning p-20px bg-yellow bg-opacity-10 border border-yellow rounded-lg mb-20px">
+                                    <i class="icofont-warning text-yellow text-xl mr-10px"></i>
+                                    <span class="text-contentColor dark:text-contentColor-dark">
+                                        Please select a program from your recommendations or browse available programs.
+                                    </span>
+                                </div>
+                                <a asp-controller="Recommendations" asp-action="Index" class="w-full px-30px py-15px bg-primaryColor text-whiteColor rounded-md hover:bg-primaryColor-dark transition-all duration-300 inline-block text-center">
+                                    <i class="icofont-search-document"></i> Browse Recommendations
+                                </a>
+                            </div>
+                        }
+                        else
+                        {
+                            <!-- Application Details -->
+                            <div class="mb-30px">
+                                <h4 class="text-lg font-semibold text-blackColor dark:text-blackColor-dark mb-15px flex items-center">
+                                    <i class="icofont-education text-primaryColor mr-10px"></i>
+                                    Application Details
+                                </h4>
+
+                                <!-- Planned First Semester Hours -->
+                                <div class="mb-20px">
+                                    <label asp-for="PlannedFirstSemesterHours" class="text-sm font-medium text-blackColor dark:text-blackColor-dark block mb-10px">
+                                        Planned Credit Hours for First Semester <span class="text-red">*</span>
+                                    </label>
+                                    <div class="relative">
+                                        <i class="icofont-clock-time absolute left-4 top-1/2 -translate-y-1/2 text-primaryColor"></i>
+                                        <input asp-for="PlannedFirstSemesterHours" type="number" min="12" max="18"
+                                               class="w-full pl-45px pr-15px py-12px border border-borderColor dark:border-borderColor-dark rounded-md focus:outline-none focus:border-primaryColor dark:bg-whiteColor-dark dark:text-blackColor-dark"
+                                               placeholder="15" />
+                                    </div>
+                                    <span asp-validation-for="PlannedFirstSemesterHours" class="text-red text-sm mt-5px block"></span>
+                                    <p class="text-xs text-contentColor dark:text-contentColor-dark mt-5px">
+                                        <i class="icofont-info-circle"></i> Typically 12-18 credit hours (recommended: 15)
+                                    </p>
+                                </div>
+
+                                <!-- Additional Notes -->
+                                <div class="mb-20px">
+                                    <label asp-for="Notes" class="text-sm font-medium text-blackColor dark:text-blackColor-dark block mb-10px">
+                                        Additional Notes (Optional)
+                                    </label>
+                                    <textarea asp-for="Notes" rows="4"
+                                              class="w-full px-15px py-12px border border-borderColor dark:border-borderColor-dark rounded-md focus:outline-none focus:border-primaryColor dark:bg-whiteColor-dark dark:text-blackColor-dark resize-none"
+                                              placeholder="Add any additional information about your application..."></textarea>
+                                    <span asp-validation-for="Notes" class="text-red text-sm mt-5px block"></span>
+                                </div>
+                            </div>
+
+                            <!-- Terms & Conditions -->
+                            <div class="mb-30px">
+                                <div class="p-20px bg-lightGrey10 dark:bg-lightGrey10-dark rounded-lg border-l-4 border-primaryColor">
+                                    <h5 class="text-base font-semibold text-blackColor dark:text-blackColor-dark mb-10px">
+                                        <i class="icofont-info-circle text-primaryColor mr-5px"></i>
+                                        Important Information
+                                    </h5>
+                                    <ul class="text-sm text-contentColor dark:text-contentColor-dark space-y-5px list-disc list-inside">
+                                        <li>Your application will be reviewed by the university within 3-5 business days</li>
+                                        <li>You will receive a 5% platform discount code upon application submission</li>
+                                        <li>You can track your application status in the Applications section</li>
+                                        <li>You can cancel your application before it's reviewed by the university</li>
+                                        <li>Ensure all information in your profile is accurate before submitting</li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <!-- Agreement Checkbox -->
+                            <div class="mb-30px">
+                                <label class="flex items-start cursor-pointer">
+                                    <input type="checkbox" id="agreeTerms" required
+                                           class="mt-5px mr-10px w-5 h-5 border border-borderColor rounded focus:outline-none focus:ring-2 focus:ring-primaryColor" />
+                                    <span class="text-sm text-contentColor dark:text-contentColor-dark">
+                                        I confirm that all information provided is accurate and I agree to the
+                                        <a href="#" class="text-primaryColor hover:underline">terms and conditions</a>
+                                        of the Uni_Selector platform and the selected university.
+                                    </span>
+                                </label>
+                            </div>
+
+                            <!-- Action Buttons -->
+                            <div class="flex gap-3">
+                                <button type="submit" id="submitBtn"
+                                        class="flex-1 px-30px py-15px bg-primaryColor text-whiteColor rounded-md hover:bg-primaryColor-dark transition-all duration-300 font-semibold">
+                                    <i class="icofont-paper-plane"></i> Submit Application
+                                </button>
+                                <a asp-action="Index"
+                                   class="px-30px py-15px bg-gray-200 dark:bg-gray-700 text-blackColor dark:text-whiteColor rounded-md hover:bg-gray-300 dark:hover:bg-gray-600 transition-all duration-300 font-semibold">
+                                    <i class="icofont-close"></i> Cancel
+                                </a>
+                            </div>
+                        }
+
+                        @Html.AntiForgeryToken()
+                    </form>
+                </div>
+            </div>
+
+            <!-- Sidebar Column -->
+            <div class="lg:col-span-1">
+
+                @if (Model.UniversityProgramId.HasValue || Model.BtecProgramId.HasValue)
+                {
+                    <!-- Program Summary Card -->
+                    <div class="p-25px bg-whiteColor dark:bg-whiteColor-dark shadow-brand rounded-lg2 mb-30px sticky top-100px">
+                        <h4 class="text-lg font-semibold text-blackColor dark:text-blackColor-dark mb-20px flex items-center">
+                            <i class="icofont-graduate text-primaryColor mr-10px"></i>
+                            Program Summary
+                        </h4>
+
+                        <!-- University Logo -->
+                        @if (!string.IsNullOrEmpty(Model.UniversityLogo))
+                        {
+                            <div class="text-center mb-20px">
+                                <img src="@Model.UniversityLogo" alt="@Model.UniversityName" class="h-20 mx-auto object-contain" />
+                            </div>
+                        }
+
+                        <!-- University Name -->
+                        <div class="mb-15px pb-15px border-b border-borderColor dark:border-borderColor-dark">
+                            <p class="text-xs text-contentColor dark:text-contentColor-dark mb-5px">University</p>
+                            <p class="text-base font-semibold text-blackColor dark:text-blackColor-dark">
+                                @Model.UniversityName
+                            </p>
+                        </div>
+
+                        <!-- Program Name -->
+                        <div class="mb-15px pb-15px border-b border-borderColor dark:border-borderColor-dark">
+                            <p class="text-xs text-contentColor dark:text-contentColor-dark mb-5px">Program</p>
+                            <p class="text-base font-semibold text-blackColor dark:text-blackColor-dark">
+                                @Model.ProgramName
+                            </p>
+                            @if (Model.IsBtec)
+                            {
+                                <span class="inline-block mt-5px px-3 py-1 bg-purple text-whiteColor rounded-full text-xs font-semibold">
+                                    BTEC Program
+                                </span>
+                            }
+                        </div>
+
+                        <!-- Estimated Cost -->
+                        @if (Model.EstimatedCost.HasValue)
+                        {
+                            <div class="mb-20px">
+                                <p class="text-xs text-contentColor dark:text-contentColor-dark mb-5px">Estimated First Semester Cost</p>
+                                <p class="text-2xl font-bold text-primaryColor">
+                                    @Model.EstimatedCost.Value.ToString("N2") <span class="text-sm">JOD</span>
+                                </p>
+                                <p class="text-xs text-greencolor2 mt-5px">
+                                    <i class="icofont-sale-discount"></i> Includes 5% platform discount
+                                </p>
+                            </div>
+                        }
+
+                        <!-- Benefits -->
+                        <div class="p-15px bg-greencolor2 bg-opacity-10 rounded-lg border border-greencolor2 border-opacity-30">
+                            <h5 class="text-sm font-semibold text-blackColor dark:text-blackColor-dark mb-10px flex items-center">
+                                <i class="icofont-gift text-greencolor2 mr-5px"></i>
+                                What You Get
+                            </h5>
+                            <ul class="text-xs text-contentColor dark:text-contentColor-dark space-y-5px">
+                                <li class="flex items-start">
+                                    <i class="icofont-check-circled text-greencolor2 mr-5px mt-3px"></i>
+                                    <span>5% automatic discount on tuition</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="icofont-check-circled text-greencolor2 mr-5px mt-3px"></i>
+                                    <span>Priority application processing</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="icofont-check-circled text-greencolor2 mr-5px mt-3px"></i>
+                                    <span>Application status tracking</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="icofont-check-circled text-greencolor2 mr-5px mt-3px"></i>
+                                    <span>Dedicated support team</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Need Help Card -->
+                    <div class="p-25px bg-primaryColor bg-opacity-10 border border-primaryColor border-opacity-30 rounded-lg2">
+                        <h5 class="text-base font-semibold text-blackColor dark:text-blackColor-dark mb-10px flex items-center">
+                            <i class="icofont-question-circle text-primaryColor mr-5px"></i>
+                            Need Help?
+                        </h5>
+                        <p class="text-sm text-contentColor dark:text-contentColor-dark mb-15px">
+                            Our support team is here to assist you with your application.
+                        </p>
+                        <a href="#" class="w-full px-20px py-10px bg-primaryColor text-whiteColor rounded-md hover:bg-primaryColor-dark transition-all duration-300 inline-block text-center text-sm">
+                            <i class="icofont-support"></i> Contact Support
+                        </a>
+                    </div>
+                }
+                else
+                {
+                    <!-- Browse Programs Card -->
+                    <div class="p-25px bg-whiteColor dark:bg-whiteColor-dark shadow-brand rounded-lg2">
+                        <div class="text-center">
+                            <i class="icofont-search-document text-6xl text-primaryColor mb-20px"></i>
+                            <h4 class="text-lg font-semibold text-blackColor dark:text-blackColor-dark mb-10px">
+                                Browse Programs
+                            </h4>
+                            <p class="text-sm text-contentColor dark:text-contentColor-dark mb-20px">
+                                Explore our recommendations to find the perfect program for you.
+                            </p>
+                            <a asp-controller="Recommendations" asp-action="Index"
+                               class="w-full px-20px py-12px bg-primaryColor text-whiteColor rounded-md hover:bg-primaryColor-dark transition-all duration-300 inline-block">
+                                View Recommendations
+                            </a>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        document.getElementById('applicationForm').addEventListener('submit', function(e) {
+            const agreeCheckbox = document.getElementById('agreeTerms');
+
+            if (!agreeCheckbox.checked) {
+                e.preventDefault();
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Terms & Conditions',
+                    text: 'Please agree to the terms and conditions before submitting your application.',
+                    confirmButtonColor: '#3b82f6'
+                });
+                return false;
+            }
+
+            // Show confirmation before submit
+            e.preventDefault();
+            Swal.fire({
+                title: 'Submit Application?',
+                html: 'Are you sure you want to submit this application to <strong>@Model.UniversityName</strong>?<br><br>You will receive a confirmation email and discount code upon submission.',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#3b82f6',
+                cancelButtonColor: '#6b7280',
+                confirmButtonText: 'Yes, submit it!',
+                cancelButtonText: 'Review again'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Disable submit button to prevent double submission
+                    document.getElementById('submitBtn').disabled = true;
+                    document.getElementById('submitBtn').innerHTML = '<i class="icofont-spinner-alt-4 animate-spin"></i> Submitting...';
+                    this.submit();
+                }
+            });
+        });
+
+        // Show error messages
+        @if (TempData["Error"] != null)
+        {
+                <text>
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error!',
+                    text: '@TempData["Error"]',
+                    confirmButtonColor: '#3b82f6'
+                });
+                </text>
+        }
+    </script>
+}

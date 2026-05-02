@@ -1,0 +1,260 @@
+﻿@model Uni_Selector.ViewModels.ProgramManagement.ProgramListViewModel
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = "University Programs";
+}
+
+<div class="dashboard-main-body">
+    <!-- Breadcrumb -->
+    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-24">
+        <h6 class="fw-semibold mb-0">University Programs</h6>
+        <ul class="d-flex align-items-center gap-2">
+            <li class="fw-medium">
+                <a asp-controller="UniversityRep" asp-action="Index" class="d-flex align-items-center gap-1 hover-text-primary">
+                    <iconify-icon icon="solar:home-smile-angle-outline" class="icon text-lg"></iconify-icon>
+                    Dashboard
+                </a>
+            </li>
+            <li>-</li>
+            <li class="fw-medium">Programs</li>
+        </ul>
+    </div>
+
+    <div class="card h-100 p-0 radius-12">
+        <div class="card-header border-bottom bg-base py-16 px-24 d-flex align-items-center justify-content-between">
+            <h6 class="text-lg fw-semibold mb-0">Program List</h6>
+            @if (Model.CanManagePrograms)
+            {
+                <a asp-action="Create" class="btn btn-primary text-sm btn-sm px-12 py-12 radius-8 d-flex align-items-center gap-2">
+                    <iconify-icon icon="ic:baseline-plus" class="icon text-xl line-height-1"></iconify-icon>
+                    Add New Program
+                </a>
+            }
+        </div>
+
+        <div class="card-body p-24">
+            <!-- Filters -->
+            <form method="get" class="row mb-20 gy-3">
+                <div class="col-md-4">
+                    <input type="text" name="search" value="@Model.Search" class="form-control radius-8" placeholder="Search by program name...">
+                </div>
+                <div class="col-md-3">
+                    <select name="isActive" class="form-control radius-8 form-select">
+                        <option value="">All Status</option>
+                        <option value="true" selected="@(Model.IsActiveFilter == true)">Active</option>
+                        <option value="false" selected="@(Model.IsActiveFilter == false)">Inactive</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-primary w-100 radius-8">
+                        <iconify-icon icon="ic:baseline-search" class="icon"></iconify-icon> Search
+                    </button>
+                </div>
+                <div class="col-md-3">
+                    <a asp-action="Index" class="btn btn-outline-secondary w-100 radius-8">Clear Filters</a>
+                </div>
+            </form>
+
+            <!-- Results count -->
+            <div class="d-flex justify-content-between align-items-center mb-16">
+                <span class="text-md text-secondary-light">Showing @Model.Programs.Count of @Model.TotalCount programs</span>
+            </div>
+
+            <!-- Table -->
+            <div class="table-responsive">
+                <table class="table bordered-table mb-0" id="dataTable">
+                    <thead>
+                        <tr>
+                            <th scope="col">Program Name</th>
+                            <th scope="col">Degree</th>
+                            <th scope="col">Study System</th>
+                            <th scope="col">Duration</th>
+                            <th scope="col">Hour Price</th>
+                            <th scope="col">Capacity</th>
+                            <th scope="col">Status</th>
+                            <th scope="col" class="text-center">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.Programs.Any())
+                        {
+                            @foreach (var program in Model.Programs)
+                            {
+                                <tr>
+                                    <td>
+                                        <div>
+                                            <h6 class="text-md mb-0 fw-medium">@program.ProgramNameEnglish</h6>
+                                            <span class="text-sm text-secondary-light">@program.ProgramNameArabic</span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-info-focus text-info-main px-16 py-4 radius-4">
+                                            @program.Degree
+                                        </span>
+                                    </td>
+                                    <td>@program.StudySystem</td>
+                                    <td>@program.DurationInYears Years</td>
+                                    <td>@program.HourPriceBase.ToString("N2") JOD</td>
+                                    <td>@program.Capacity</td>
+                                    <td>
+                                        @if (program.IsActive)
+                                        {
+                                            <span class="bg-success-focus text-success-main px-24 py-4 rounded-pill fw-medium text-sm">Active</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="bg-danger-focus text-danger-main px-24 py-4 rounded-pill fw-medium text-sm">Inactive</span>
+                                        }
+                                    </td>
+                                    <td class="text-center">
+                                        <a asp-action="Details" asp-route-id="@program.Id"
+                                           class="w-32-px h-32-px bg-primary-light text-primary-600 rounded-circle d-inline-flex align-items-center justify-content-center"
+                                           title="View Details">
+                                            <iconify-icon icon="iconamoon:eye-light"></iconify-icon>
+                                        </a>
+                                        @if (Model.CanManagePrograms)
+                                        {
+                                            <a asp-action="Edit" asp-route-id="@program.Id"
+                                               class="w-32-px h-32-px bg-success-focus text-success-main rounded-circle d-inline-flex align-items-center justify-content-center"
+                                               title="Edit">
+                                                <iconify-icon icon="lucide:edit"></iconify-icon>
+                                            </a>
+                                            <button type="button" onclick="toggleProgram(@program.Id, @program.IsActive.ToString().ToLower())"
+                                                    class="w-32-px h-32-px bg-warning-focus text-warning-main rounded-circle d-inline-flex align-items-center justify-content-center border-0"
+                                                    title="@(program.IsActive ? "Deactivate" : "Activate")">
+                                                <iconify-icon icon="@(program.IsActive ? "mdi:toggle-switch" : "mdi:toggle-switch-off")"></iconify-icon>
+                                            </button>
+                                            <a asp-action="EntryRequirements" asp-route-id="@program.Id"
+                                               class="w-32-px h-32-px bg-info-focus text-info-main rounded-circle d-inline-flex align-items-center justify-content-center"
+                                               title="Entry Requirements">
+                                                <iconify-icon icon="mdi:file-document-check"></iconify-icon>
+                                            </a>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="8" class="text-center text-secondary-light py-24">
+                                    <iconify-icon icon="tabler:database-off" class="text-xxl mb-12"></iconify-icon>
+                                    <p class="mb-0">No programs found.</p>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            @if (Model.TotalPages > 1)
+            {
+                <div class="d-flex justify-content-center mt-24">
+                    <ul class="pagination">
+                        @if (Model.CurrentPage > 1)
+                        {
+                            <li class="page-item">
+                                <a class="page-link" asp-action="Index" asp-route-page="@(Model.CurrentPage - 1)" asp-route-search="@Model.Search" asp-route-isActive="@Model.IsActiveFilter">Previous</a>
+                            </li>
+                        }
+                        @for (int i = 1; i <= Model.TotalPages; i++)
+                        {
+                            <li class="page-item @(i == Model.CurrentPage ? "active" : "")">
+                                <a class="page-link" asp-action="Index" asp-route-page="@i" asp-route-search="@Model.Search" asp-route-isActive="@Model.IsActiveFilter">@i</a>
+                            </li>
+                        }
+                        @if (Model.CurrentPage < Model.TotalPages)
+                        {
+                            <li class="page-item">
+                                <a class="page-link" asp-action="Index" asp-route-page="@(Model.CurrentPage + 1)" asp-route-search="@Model.Search" asp-route-isActive="@Model.IsActiveFilter">Next</a>
+                            </li>
+                        }
+                    </ul>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        function toggleProgram(id, isActive) {
+                const action = isActive ? 'deactivate' : 'activate';
+
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: `Do you want to ${action} this program?`,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: `Yes, ${action} it!`
+                }).then((result) => {
+                    if (!result.isConfirmed) return;
+
+                    const token = $('#antiForgeryForm input[name="__RequestVerificationToken"]').val();
+
+                    $.ajax({
+                        url: `/UniversityRep/Programs/${id}/Toggle`,
+                        type: 'POST',
+                        headers: {
+                            'RequestVerificationToken': token
+                        },
+                        success: function (response) {
+                            if (response.success) {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Done!',
+                                    text: response.message,
+                                    timer: 1500,
+                                    showConfirmButton: false
+                                }).then(() => location.reload()); // or update row without reload
+                            } else {
+                                Swal.fire({ icon: 'error', title: 'Error!', text: response.message });
+                            }
+                        },
+                        error: function (xhr) {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error!',
+                                text: `Toggle failed. Status: ${xhr.status}`
+                            });
+                        }
+                    });
+                });
+            }
+
+        @if (TempData["Success"] != null)
+        {
+                <text>
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success!',
+                    text: '@TempData["Success"]',
+                    timer: 3000,
+                    showConfirmButton: false
+                });
+                </text>
+        }
+
+        @if (TempData["Error"] != null)
+        {
+                <text>
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error!',
+                    text: '@TempData["Error"]',
+                    timer: 3000,
+                    showConfirmButton: false
+                });
+                </text>
+        }
+    </script>
+}
+
+<form id="antiForgeryForm" style="display:none;">
+    @Html.AntiForgeryToken()
+</form>
+

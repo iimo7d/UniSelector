@@ -1,0 +1,235 @@
+﻿@model Uni_Selector.ViewModels.NotificationAdmin.SendNotificationViewModel
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = "Send Notification";
+}
+
+<div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-24">
+    <h6 class="fw-semibold mb-0">Send Bulk Notification</h6>
+    <ul class="d-flex align-items-center gap-2">
+        <li class="fw-medium">
+            <a href="@Url.Action("Index", "Admin")" class="d-flex align-items-center gap-1 hover-text-primary">
+                <iconify-icon icon="solar:home-smile-angle-outline" class="icon text-lg"></iconify-icon>
+                Dashboard
+            </a>
+        </li>
+        <li>-</li>
+        <li class="fw-medium">
+            <a href="@Url.Action("Index")" class="hover-text-primary">Notifications</a>
+        </li>
+        <li>-</li>
+        <li class="fw-medium">Send</li>
+    </ul>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-xxl-9 col-xl-10">
+        <div class="card radius-12">
+            <div class="card-header py-16 px-24 bg-base border-bottom">
+                <h6 class="text-lg fw-semibold mb-0">Notification Details</h6>
+            </div>
+            <div class="card-body p-24">
+                <form asp-action="Send" method="post">
+                    @Html.AntiForgeryToken()
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                    <h6 class="text-md text-primary-light mb-16 fw-semibold">Message Content</h6>
+
+                    <div class="row gy-3">
+                        <!-- Title -->
+                        <div class="col-12">
+                            <label asp-for="Title" class="form-label fw-semibold text-primary-light text-sm mb-8">
+                                Title <span class="text-danger-600">*</span>
+                            </label>
+                            <input asp-for="Title" type="text" class="form-control radius-8" placeholder="Enter notification title">
+                            <span asp-validation-for="Title" class="text-danger text-sm"></span>
+                        </div>
+
+                        <!-- Message -->
+                        <div class="col-12">
+                            <label asp-for="Message" class="form-label fw-semibold text-primary-light text-sm mb-8">
+                                Message <span class="text-danger-600">*</span>
+                            </label>
+                            <textarea asp-for="Message" class="form-control radius-8" rows="5" placeholder="Enter notification message"></textarea>
+                            <span asp-validation-for="Message" class="text-danger text-sm"></span>
+                            <small class="text-secondary-light">Maximum 1000 characters</small>
+                        </div>
+
+                        <!-- Category -->
+                        <div class="col-sm-6">
+                            <label asp-for="Category" class="form-label fw-semibold text-primary-light text-sm mb-8">
+                                Category <span class="text-danger-600">*</span>
+                            </label>
+                            <select asp-for="Category" class="form-control radius-8" asp-items="Html.GetEnumSelectList<Uni_Selector.Models.Enums.NotificationCategory>()">
+                                <option value="">Select Category</option>
+                            </select>
+                            <span asp-validation-for="Category" class="text-danger text-sm"></span>
+                        </div>
+
+                        <!-- Channel -->
+                        <div class="col-sm-6">
+                            <label asp-for="Channel" class="form-label fw-semibold text-primary-light text-sm mb-8">
+                                Channel <span class="text-danger-600">*</span>
+                            </label>
+                            <select asp-for="Channel" class="form-control radius-8" asp-items="Html.GetEnumSelectList<Uni_Selector.Models.Enums.NotificationChannel>()">
+                                <option value="">Select Channel</option>
+                            </select>
+                            <span asp-validation-for="Channel" class="text-danger text-sm"></span>
+                        </div>
+
+                        <!-- Action URL -->
+                        <div class="col-12">
+                            <label asp-for="ActionUrl" class="form-label fw-semibold text-primary-light text-sm mb-8">
+                                Action URL (Optional)
+                            </label>
+                            <input asp-for="ActionUrl" type="url" class="form-control radius-8" placeholder="https://example.com/action">
+                            <span asp-validation-for="ActionUrl" class="text-danger text-sm"></span>
+                            <small class="text-secondary-light">Optional link for users to click</small>
+                        </div>
+                    </div>
+
+                    <hr class="my-24">
+                    <h6 class="text-md text-primary-light mb-16 fw-semibold">Recipients</h6>
+
+                    <div class="row gy-3">
+                        <!-- Recipient Type -->
+                        <div class="col-12">
+                            <label asp-for="RecipientType" class="form-label fw-semibold text-primary-light text-sm mb-8">
+                                Send To <span class="text-danger-600">*</span>
+                            </label>
+                            <select asp-for="RecipientType" class="form-control radius-8" id="recipientTypeSelect">
+                                <option value="">Select Recipient Type</option>
+                                @foreach (var type in Model.RecipientTypes)
+                                {
+                                    <option value="@type.Value" data-description="@type.Description">@type.Text</option>
+                                }
+                            </select>
+                            <span asp-validation-for="RecipientType" class="text-danger text-sm"></span>
+                            <small id="recipientDescription" class="text-secondary-light d-block mt-4"></small>
+                        </div>
+
+                        <!-- Specific Role (shown when Role is selected) -->
+                        <div class="col-12" id="specificRoleField" style="display: none;">
+                            <label asp-for="SpecificRole" class="form-label fw-semibold text-primary-light text-sm mb-8">
+                                Select Role <span class="text-danger-600">*</span>
+                            </label>
+                            <select asp-for="SpecificRole" class="form-control radius-8">
+                                <option value="">Select Role</option>
+                                @foreach (var role in Model.AvailableRoles)
+                                {
+                                    <option value="@role">@role</option>
+                                }
+                            </select>
+                            <span asp-validation-for="SpecificRole" class="text-danger text-sm"></span>
+                        </div>
+
+                        <!-- Specific User IDs (shown when Specific is selected) -->
+                        <div class="col-12" id="specificUserIdsField" style="display: none;">
+                            <label asp-for="SpecificUserIds" class="form-label fw-semibold text-primary-light text-sm mb-8">
+                                User IDs <span class="text-danger-600">*</span>
+                            </label>
+                            <textarea asp-for="SpecificUserIds" class="form-control radius-8" rows="3" placeholder="Enter user IDs separated by commas&#10;Example: user-id-1, user-id-2, user-id-3"></textarea>
+                            <span asp-validation-for="SpecificUserIds" class="text-danger text-sm"></span>
+                            <small class="text-secondary-light">Enter comma-separated user IDs</small>
+                        </div>
+                    </div>
+
+                    <!-- Preview Box -->
+                    <div class="alert alert-info-focus mt-24">
+                        <div class="d-flex align-items-start gap-12">
+                            <iconify-icon icon="solar:info-circle-outline" class="icon text-xl mt-4"></iconify-icon>
+                            <div>
+                                <h6 class="mb-8">Preview</h6>
+                                <p class="mb-0"><strong>Title:</strong> <span id="previewTitle" class="text-secondary-light">Enter title above</span></p>
+                                <p class="mb-0"><strong>Message:</strong> <span id="previewMessage" class="text-secondary-light">Enter message above</span></p>
+                                <p class="mb-0"><strong>Recipients:</strong> <span id="previewRecipients" class="text-secondary-light">Select recipients above</span></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="d-flex align-items-center justify-content-center gap-3 mt-32">
+                        <a href="@Url.Action("Index")" class="btn btn-outline-danger border border-danger-600 text-md px-56 py-11 radius-8">
+                            <iconify-icon icon="ep:back" class="icon text-lg me-4"></iconify-icon>
+                            Cancel
+                        </a>
+                        <button type="submit" class="btn btn-primary border border-primary-600 text-md px-56 py-11 radius-8" id="sendButton">
+                            <iconify-icon icon="solar:letter-outline" class="icon text-lg me-4"></iconify-icon>
+                            Send Notification
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        // Recipient type change handler
+        document.getElementById('recipientTypeSelect').addEventListener('change', function() {
+            const selectedOption = this.options[this.selectedIndex];
+            const description = selectedOption.getAttribute('data-description');
+            const value = this.value;
+
+            // Update description
+            document.getElementById('recipientDescription').textContent = description || '';
+
+            // Show/hide conditional fields
+            document.getElementById('specificRoleField').style.display = value === 'Role' ? 'block' : 'none';
+            document.getElementById('specificUserIdsField').style.display = value === 'Specific' ? 'block' : 'none';
+
+            // Update preview
+            updatePreview();
+        });
+
+        // Preview update function
+        function updatePreview() {
+            const title = document.getElementById('Title').value || 'Enter title above';
+            const message = document.getElementById('Message').value || 'Enter message above';
+            const recipientType = document.getElementById('recipientTypeSelect');
+            const recipientText = recipientType.options[recipientType.selectedIndex]?.text || 'Select recipients above';
+
+            document.getElementById('previewTitle').textContent = title;
+            document.getElementById('previewMessage').textContent = message;
+            document.getElementById('previewRecipients').textContent = recipientText;
+        }
+
+        // Update preview on input
+        document.getElementById('Title').addEventListener('input', updatePreview);
+        document.getElementById('Message').addEventListener('input', updatePreview);
+
+        // Confirm before sending
+        document.querySelector('form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const recipientType = document.getElementById('recipientTypeSelect');
+            const recipientText = recipientType.options[recipientType.selectedIndex]?.text || 'selected recipients';
+
+            Swal.fire({
+                title: 'Send Notification?',
+                html: `Are you sure you want to send this notification to <strong>${recipientText}</strong>?<br><small class="text-secondary-light">This action cannot be undone.</small>`,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#487FFF',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Yes, Send Notification',
+                cancelButtonText: 'Cancel'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    this.submit();
+                }
+            });
+        });
+
+        // Initialize on page load
+        window.addEventListener('DOMContentLoaded', function() {
+            const recipientTypeSelect = document.getElementById('recipientTypeSelect');
+            if (recipientTypeSelect.value) {
+                recipientTypeSelect.dispatchEvent(new Event('change'));
+            }
+        });
+    </script>
+}

@@ -1,0 +1,369 @@
+﻿@using Uni_Selector.Models.Enums
+@model Uni_Selector.ViewModels.Commission.MonthlySettlementDetailsViewModel
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = "Monthly Settlement";
+}
+
+<div class="dashboard-main-body">
+    <!-- Breadcrumb -->
+    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-24">
+        <h6 class="fw-semibold mb-0">Monthly Settlement</h6>
+        <ul class="d-flex align-items-center gap-2">
+            <li class="fw-medium">
+                <a asp-controller="Commission" asp-action="Index" class="d-flex align-items-center gap-1 hover-text-primary">
+                    <iconify-icon icon="solar:home-smile-angle-outline" class="icon text-lg"></iconify-icon>
+                    Commissions
+                </a>
+            </li>
+            <li>-</li>
+            <li class="fw-medium">Settlement</li>
+        </ul>
+    </div>
+
+    <!-- Settlement Header Card -->
+    <div class="card mb-24 radius-12">
+        <div class="card-header border-bottom bg-base py-16 px-24">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h5 class="text-xl fw-bold mb-8">@Model.PeriodDisplay Settlement</h5>
+                    <p class="text-secondary-light mb-0">Settlement ID: #@Model.SettlementId</p>
+                </div>
+                <div class="text-end">
+                    @if (Model.Closed)
+                    {
+                        <span class="badge bg-success-focus text-success-main px-24 py-8 text-md mb-8">Closed</span>
+                        @if (Model.ClosedAt.HasValue)
+                        {
+                            <p class="text-sm text-secondary-light mb-0">
+                                Closed on @Model.ClosedAt.Value.ToString("MMM dd, yyyy")<br />
+                                @if (!string.IsNullOrWhiteSpace(Model.ClosedByUserName))
+                                {
+                                    <text>by @Model.ClosedByUserName</text>
+                                }
+                            </p>
+                        }
+                    }
+                    else
+                    {
+                        <span class="badge bg-warning-focus text-warning-main px-24 py-8 text-md">Open</span>
+                    }
+                </div>
+            </div>
+        </div>
+        <div class="card-body p-24">
+            @if (!string.IsNullOrWhiteSpace(Model.Notes))
+            {
+                <div class="alert alert-info d-flex align-items-start mb-0">
+                    <iconify-icon icon="solar:info-circle-bold" class="text-info-main me-12 text-xl mt-4"></iconify-icon>
+                    <div>
+                        <strong>Notes:</strong>
+                        <p class="mb-0 mt-8">@Model.Notes</p>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+
+    <!-- Summary Stats -->
+    <div class="row gy-4 mb-24">
+        <div class="col-xxl-3 col-sm-6">
+            <div class="card p-3 shadow-2 radius-8 border h-100 bg-gradient-start-1">
+                <div class="card-body p-0">
+                    <div class="d-flex flex-wrap align-items-center justify-content-between gap-1 mb-8">
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="mb-0 w-48-px h-48-px bg-primary-600 flex-shrink-0 text-white d-flex justify-content-center align-items-center radius-8 h6 mb-0">
+                                <iconify-icon icon="solar:dollar-bold-duotone" class="icon"></iconify-icon>
+                            </span>
+                            <span class="mb-0 fw-medium text-secondary-light text-md">Total Commission</span>
+                        </div>
+                    </div>
+                    <h4 class="mb-0 text-primary-light fw-bold">@Model.TotalCommission.ToString("N2") JOD</h4>
+                    <p class="fw-medium text-sm text-secondary-light mb-0 mt-2">For @Model.PeriodDisplay</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xxl-3 col-sm-6">
+            <div class="card p-3 shadow-2 radius-8 border h-100 bg-gradient-start-2">
+                <div class="card-body p-0">
+                    <div class="d-flex flex-wrap align-items-center justify-content-between gap-1 mb-8">
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="mb-0 w-48-px h-48-px bg-success-600 flex-shrink-0 text-white d-flex justify-content-center align-items-center radius-8 h6 mb-0">
+                                <iconify-icon icon="solar:user-bold" class="icon"></iconify-icon>
+                            </span>
+                            <span class="mb-0 fw-medium text-secondary-light text-md">Students</span>
+                        </div>
+                    </div>
+                    <h4 class="mb-0 text-primary-light fw-bold">@Model.StudentCount</h4>
+                    <p class="fw-medium text-sm text-secondary-light mb-0 mt-2">Total applications</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xxl-3 col-sm-6">
+            <div class="card p-3 shadow-2 radius-8 border h-100 bg-gradient-start-3">
+                <div class="card-body p-0">
+                    <div class="d-flex flex-wrap align-items-center justify-content-between gap-1 mb-8">
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="mb-0 w-48-px h-48-px bg-info-600 flex-shrink-0 text-white d-flex justify-content-center align-items-center radius-8 h6 mb-0">
+                                <iconify-icon icon="solar:chart-bold" class="icon"></iconify-icon>
+                            </span>
+                            <span class="mb-0 fw-medium text-secondary-light text-md">Average Amount</span>
+                        </div>
+                    </div>
+                    <h4 class="mb-0 text-primary-light fw-bold">@Model.AverageCommissionAmount.ToString("N2") JOD</h4>
+                    <p class="fw-medium text-sm text-secondary-light mb-0 mt-2">Per commission</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xxl-3 col-sm-6">
+            <div class="card p-3 shadow-2 radius-8 border h-100 bg-gradient-start-4">
+                <div class="card-body p-0">
+                    <div class="d-flex flex-wrap align-items-center justify-content-between gap-1 mb-8">
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="mb-0 w-48-px h-48-px bg-warning-600 flex-shrink-0 text-white d-flex justify-content-center align-items-center radius-8 h6 mb-0">
+                                <iconify-icon icon="solar:settings-bold" class="icon"></iconify-icon>
+                            </span>
+                            <span class="mb-0 fw-medium text-secondary-light text-md">Most Common Mode</span>
+                        </div>
+                    </div>
+                    <h6 class="mb-0 text-primary-light fw-bold">
+                        @(Model.MostCommonMode == CommissionMode.FirstSemesterRegistration2Percent ? "1st Semester" :
+                                                Model.MostCommonMode == CommissionMode.ProgramTotalHours2Percent ? "Total Hours" : "1st Sem + Hours")
+                    </h6>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts & Breakdown -->
+    <div class="row gy-4 mb-24">
+        <!-- Commission Mode Distribution -->
+        <div class="col-lg-6">
+            <div class="card h-100 p-0">
+                <div class="card-header border-bottom bg-base py-16 px-24">
+                    <h6 class="text-lg fw-semibold mb-0">Commission by Mode</h6>
+                </div>
+                <div class="card-body p-24">
+                    <div class="table-responsive">
+                        <table class="table table-bordered mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Mode</th>
+                                    <th>Count</th>
+                                    <th>Total Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var kvp in Model.CommissionsByMode)
+                                {
+                                    <tr>
+                                        <td>
+                                            @switch (kvp.Key)
+                                            {
+                                                case CommissionMode.FirstSemesterRegistration2Percent:
+                                                    <span class="badge bg-info-focus text-info-main">1st Semester</span>
+                                                    break;
+                                                case CommissionMode.ProgramTotalHours2Percent:
+                                                    <span class="badge bg-purple-focus text-purple-main">Total Hours</span>
+                                                    break;
+                                                case CommissionMode.FirstSemesterRegPlusHours2Percent:
+                                                    <span class="badge bg-primary-focus text-primary-main">1st Sem + Hours</span>
+                                                    break;
+                                            }
+                                        </td>
+                                        <td><span class="fw-semibold">@kvp.Value</span></td>
+                                        <td><span class="fw-bold text-primary-600">@Model.AmountByMode[kvp.Key].ToString("N2") JOD</span></td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Settlement Timeline -->
+        <div class="col-lg-6">
+            <div class="card h-100 p-0">
+                <div class="card-header border-bottom bg-base py-16 px-24">
+                    <h6 class="text-lg fw-semibold mb-0">Settlement Timeline</h6>
+                </div>
+                <div class="card-body p-24">
+                    <div class="timeline">
+                        <div class="timeline-item mb-16">
+                            <div class="d-flex align-items-start gap-12">
+                                <div class="w-40-px h-40-px rounded-circle bg-primary-50 d-flex align-items-center justify-content-center flex-shrink-0">
+                                    <iconify-icon icon="solar:document-add-bold" class="text-primary-600 text-xl"></iconify-icon>
+                                </div>
+                                <div>
+                                    <h6 class="fw-semibold mb-4">Settlement Created</h6>
+                                    <p class="text-sm text-secondary-light mb-0">@Model.CreatedAt.ToString("MMM dd, yyyy HH:mm")</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        @if (Model.Closed && Model.ClosedAt.HasValue)
+                        {
+                            <div class="timeline-item">
+                                <div class="d-flex align-items-start gap-12">
+                                    <div class="w-40-px h-40-px rounded-circle bg-success-50 d-flex align-items-center justify-content-center flex-shrink-0">
+                                        <iconify-icon icon="solar:check-circle-bold" class="text-success-600 text-xl"></iconify-icon>
+                                    </div>
+                                    <div>
+                                        <h6 class="fw-semibold mb-4">Settlement Closed</h6>
+                                        <p class="text-sm text-secondary-light mb-0">
+                                            @Model.ClosedAt.Value.ToString("MMM dd, yyyy HH:mm")<br />
+                                            @if (!string.IsNullOrWhiteSpace(Model.ClosedByUserName))
+                                            {
+                                                <text>by @Model.ClosedByUserName</text>
+                                            }
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="timeline-item">
+                                <div class="d-flex align-items-start gap-12">
+                                    <div class="w-40-px h-40-px rounded-circle bg-warning-50 d-flex align-items-center justify-content-center flex-shrink-0">
+                                        <iconify-icon icon="solar:clock-circle-bold" class="text-warning-600 text-xl"></iconify-icon>
+                                    </div>
+                                    <div>
+                                        <h6 class="fw-semibold mb-4">Settlement Open</h6>
+                                        <p class="text-sm text-secondary-light mb-0">Waiting for closure</p>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Commissions List -->
+    <div class="card h-100 p-0 radius-12">
+        <div class="card-header border-bottom bg-base py-16 px-24">
+            <h6 class="text-lg fw-semibold mb-0">Commissions in This Settlement (@Model.Commissions.Count)</h6>
+        </div>
+
+        <div class="card-body p-24">
+            <div class="table-responsive">
+                <table class="table bordered-table mb-0">
+                    <thead>
+                        <tr>
+                            <th>Student</th>
+                            <th>Application</th>
+                            <th>Mode</th>
+                            <th>Base Amount</th>
+                            <th>Commission</th>
+                            <th>Date</th>
+                            <th class="text-center">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.Commissions.Any())
+                        {
+                            @foreach (var c in Model.Commissions)
+                            {
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="flex-shrink-0 me-12 radius-8 bg-primary-50 d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                                                <iconify-icon icon="solar:user-bold" class="text-primary-600 text-xl"></iconify-icon>
+                                            </div>
+                                            <div>
+                                                <h6 class="text-md mb-0 fw-medium">@c.StudentName</h6>
+                                                <span class="text-sm text-secondary-light">@c.StudentEmail</span>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="fw-medium d-block">@c.ApplicationNumber</span>
+                                        @if (!string.IsNullOrWhiteSpace(c.AdmissionNumber))
+                                        {
+                                            <span class="text-sm text-success-600">@c.AdmissionNumber</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        @switch (c.Mode)
+                                        {
+                                            case CommissionMode.FirstSemesterRegistration2Percent:
+                                                <span class="badge bg-info-focus text-info-main">1st Semester</span>
+                                                break;
+                                            case CommissionMode.ProgramTotalHours2Percent:
+                                                <span class="badge bg-purple-focus text-purple-main">Total Hours</span>
+                                                break;
+                                            case CommissionMode.FirstSemesterRegPlusHours2Percent:
+                                                <span class="badge bg-primary-focus text-primary-main">1st Sem + Hours</span>
+                                                break;
+                                        }
+                                    </td>
+                                    <td><span class="fw-medium">@c.BaseAmount.ToString("N2") JOD</span></td>
+                                    <td><span class="fw-bold text-primary-600">@c.AmountEstimated.ToString("N2") JOD</span></td>
+                                    <td>@c.CreatedAt.ToString("MMM dd, yyyy")</td>
+                                    <td class="text-center">
+                                        <a asp-action="Details" asp-route-id="@c.Id" class="w-32-px h-32-px bg-primary-light text-primary-600 rounded-circle d-inline-flex align-items-center justify-content-center">
+                                            <iconify-icon icon="iconamoon:eye-light"></iconify-icon>
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="7" class="text-center text-secondary-light py-24">
+                                    <iconify-icon icon="tabler:database-off" class="text-xxl mb-12"></iconify-icon>
+                                    <p class="mb-0">No commissions in this settlement.</p>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="mt-24">
+                <a asp-action="Index" class="btn btn-outline-secondary px-24 py-12 radius-8">
+                    <iconify-icon icon="solar:arrow-left-bold" class="icon text-lg"></iconify-icon>
+                    Back to Commissions
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        @if (TempData["Success"] != null)
+        {
+                <text>
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success!',
+                    text: '@TempData["Success"]',
+                    timer: 3000,
+                    showConfirmButton: false
+                });
+                </text>
+        }
+
+        @if (TempData["Error"] != null)
+        {
+                <text>
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error!',
+                    text: '@TempData["Error"]',
+                    timer: 3000,
+                    showConfirmButton: false
+                });
+                </text>
+        }
+    </script>
+}

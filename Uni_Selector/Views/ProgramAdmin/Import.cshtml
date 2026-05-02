@@ -1,0 +1,331 @@
+﻿@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = "Import Programs";
+}
+
+<div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-24">
+    <h6 class="fw-semibold mb-0">Import Programs</h6>
+    <ul class="d-flex align-items-center gap-2">
+        <li class="fw-medium">
+            <a href="@Url.Action("Index", "Admin")" class="d-flex align-items-center gap-1 hover-text-primary">
+                <iconify-icon icon="solar:home-smile-angle-outline" class="icon text-lg"></iconify-icon>
+                Dashboard
+            </a>
+        </li>
+        <li>-</li>
+        <li class="fw-medium">
+            <a href="@Url.Action("Index", "ProgramAdmin")" class="hover-text-primary">Programs</a>
+        </li>
+        <li>-</li>
+        <li class="fw-medium">Import</li>
+    </ul>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-xxl-8 col-xl-10">
+        <!-- Import Instructions Card -->
+        <div class="card mb-24 radius-12">
+            <div class="card-header py-16 px-24 bg-base border-bottom d-flex align-items-center">
+                <iconify-icon icon="solar:document-text-outline" class="icon text-xl me-8 text-primary-600"></iconify-icon>
+                <h6 class="text-lg fw-semibold mb-0">Import Instructions</h6>
+            </div>
+            <div class="card-body p-24">
+                <div class="alert alert-info d-flex align-items-start gap-12 mb-20" role="alert">
+                    <iconify-icon icon="solar:info-circle-outline" class="icon text-xl flex-shrink-0 mt-4"></iconify-icon>
+                    <div>
+                        <h6 class="mb-8">Excel File Format Requirements</h6>
+                        <p class="mb-0">Please ensure your Excel file follows the exact format below. The first row must contain headers.</p>
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-bordered mb-20">
+                        <thead class="bg-neutral-100">
+                            <tr>
+                                <th class="text-sm fw-semibold">Column</th>
+                                <th class="text-sm fw-semibold">Header Name</th>
+                                <th class="text-sm fw-semibold">Required</th>
+                                <th class="text-sm fw-semibold">Valid Values</th>
+                                <th class="text-sm fw-semibold">Example</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="text-center">A</td>
+                                <td><code>Name (English)</code></td>
+                                <td><span class="badge bg-danger-focus text-danger-600 px-12 py-4">Required</span></td>
+                                <td>Max 200 characters</td>
+                                <td>Computer Science</td>
+                            </tr>
+                            <tr>
+                                <td class="text-center">B</td>
+                                <td><code>Name (Arabic)</code></td>
+                                <td><span class="badge bg-danger-focus text-danger-600 px-12 py-4">Required</span></td>
+                                <td>Max 200 characters</td>
+                                <td>علوم الحاسوب</td>
+                            </tr>
+                            <tr>
+                                <td class="text-center">C</td>
+                                <td><code>Description</code></td>
+                                <td><span class="badge bg-success-focus text-success-600 px-12 py-4">Optional</span></td>
+                                <td>Max 1000 characters</td>
+                                <td>Program focuses on...</td>
+                            </tr>
+                            <tr>
+                                <td class="text-center">D</td>
+                                <td><code>Degree</code></td>
+                                <td><span class="badge bg-danger-focus text-danger-600 px-12 py-4">Required</span></td>
+                                <td>Diploma, Bachelor, Master, PhD</td>
+                                <td>Bachelor</td>
+                            </tr>
+                            <tr>
+                                <td class="text-center">E</td>
+                                <td><code>Language</code></td>
+                                <td><span class="badge bg-danger-focus text-danger-600 px-12 py-4">Required</span></td>
+                                <td>English, Arabic, Both</td>
+                                <td>English</td>
+                            </tr>
+                            <tr>
+                                <td class="text-center">F</td>
+                                <td><code>Academic Classification</code></td>
+                                <td><span class="badge bg-success-focus text-success-600 px-12 py-4">Optional</span></td>
+                                <td>Max 100 characters</td>
+                                <td>Engineering</td>
+                            </tr>
+                            <tr>
+                                <td class="text-center">G</td>
+                                <td><code>Total Credit Hours</code></td>
+                                <td><span class="badge bg-danger-focus text-danger-600 px-12 py-4">Required</span></td>
+                                <td>Number between 30-300</td>
+                                <td>120</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="alert alert-warning d-flex align-items-start gap-12" role="alert">
+                    <iconify-icon icon="solar:danger-triangle-outline" class="icon text-xl flex-shrink-0 mt-4"></iconify-icon>
+                    <div>
+                        <h6 class="mb-8">Important Notes</h6>
+                        <ul class="mb-0 ps-20">
+                            <li>The first row must contain the exact header names shown above</li>
+                            <li>Duplicate programs (same English or Arabic name) will be skipped</li>
+                            <li>Empty rows will be ignored</li>
+                            <li>Valid file formats: .xlsx, .xls</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="mt-20">
+                    <a href="#" onclick="downloadTemplate()" class="btn btn-outline-primary text-sm btn-sm px-16 py-8 radius-8">
+                        <iconify-icon icon="solar:download-outline" class="icon text-lg me-4"></iconify-icon>
+                        Download Excel Template
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Upload Form Card -->
+        <div class="card radius-12">
+            <div class="card-header py-16 px-24 bg-base border-bottom d-flex align-items-center">
+                <iconify-icon icon="solar:upload-outline" class="icon text-xl me-8 text-primary-600"></iconify-icon>
+                <h6 class="text-lg fw-semibold mb-0">Upload Excel File</h6>
+            </div>
+            <div class="card-body p-24">
+                <form asp-action="Import" method="post" enctype="multipart/form-data" id="importForm">
+                    @Html.AntiForgeryToken()
+
+                    <div class="upload-card-wrapper">
+                        <div class="upload-area" id="uploadArea">
+                            <div class="upload-icon-wrapper">
+                                <iconify-icon icon="solar:cloud-upload-outline" class="icon text-64 text-primary-600"></iconify-icon>
+                            </div>
+                            <h6 class="text-md mb-8 fw-semibold">Drag & drop your Excel file here</h6>
+                            <p class="text-sm text-secondary-light mb-16">or click to browse</p>
+                            <input type="file" name="file" id="fileInput" accept=".xlsx,.xls" hidden>
+                            <button type="button" class="btn btn-primary text-sm btn-sm px-24 py-8 radius-8" onclick="document.getElementById('fileInput').click()">
+                                Choose File
+                            </button>
+                        </div>
+
+                        <div id="fileInfo" class="file-info d-none">
+                            <div class="d-flex align-items-center justify-content-between">
+                                <div class="d-flex align-items-center gap-12">
+                                    <div class="w-48-px h-48-px rounded-circle bg-success-focus text-success-600 d-flex align-items-center justify-content-center">
+                                        <iconify-icon icon="solar:file-check-outline" class="icon text-xl"></iconify-icon>
+                                    </div>
+                                    <div>
+                                        <h6 class="text-md mb-0 fw-medium" id="fileName"></h6>
+                                        <p class="text-sm text-secondary-light mb-0" id="fileSize"></p>
+                                    </div>
+                                </div>
+                                <button type="button" class="btn btn-outline-danger text-sm btn-sm px-16 py-8 radius-8" onclick="clearFile()">
+                                    <iconify-icon icon="solar:trash-bin-trash-outline" class="icon text-lg"></iconify-icon>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-flex align-items-center justify-content-center gap-3 mt-24">
+                        <a href="@Url.Action("Index")" class="btn btn-outline-danger border border-danger-600 text-md px-56 py-11 radius-8">
+                            Cancel
+                        </a>
+                        <button type="submit" id="submitBtn" class="btn btn-primary border border-primary-600 text-md px-56 py-11 radius-8" disabled>
+                            <iconify-icon icon="solar:upload-outline" class="icon text-lg me-4"></iconify-icon>
+                            Import Programs
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        const fileInput = document.getElementById('fileInput');
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInfo = document.getElementById('fileInfo');
+        const submitBtn = document.getElementById('submitBtn');
+
+        // Drag and drop functionality
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('drag-over');
+        });
+
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('drag-over');
+        });
+
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('drag-over');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                fileInput.files = files;
+                handleFileSelect();
+            }
+        });
+
+        // File input change
+        fileInput.addEventListener('change', handleFileSelect);
+
+        function handleFileSelect() {
+            const file = fileInput.files[0];
+            if (file) {
+                // Validate file type
+                const validTypes = ['.xlsx', '.xls'];
+                const fileExt = '.' + file.name.split('.').pop().toLowerCase();
+
+                if (!validTypes.includes(fileExt)) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Invalid File Type',
+                        text: 'Please select an Excel file (.xlsx or .xls)',
+                        confirmButtonColor: '#dc3545'
+                    });
+                    clearFile();
+                    return;
+                }
+
+                // Show file info
+                document.getElementById('fileName').textContent = file.name;
+                document.getElementById('fileSize').textContent = formatFileSize(file.size);
+                uploadArea.classList.add('d-none');
+                fileInfo.classList.remove('d-none');
+                submitBtn.disabled = false;
+            }
+        }
+
+        function clearFile() {
+            fileInput.value = '';
+            uploadArea.classList.remove('d-none');
+            fileInfo.classList.add('d-none');
+            submitBtn.disabled = true;
+        }
+
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
+        }
+
+        function downloadTemplate() {
+            Swal.fire({
+                title: 'Download Template',
+                html: 'Create an Excel file with the following headers in the first row:<br><br>' +
+                      '<code>Name (English) | Name (Arabic) | Description | Degree | Language | Academic Classification | Total Credit Hours</code><br><br>' +
+                      'Then fill in your program data starting from row 2.',
+                icon: 'info',
+                confirmButtonColor: '#198754',
+                confirmButtonText: 'Got it!'
+            });
+        }
+
+        // Form submission with loading
+        document.getElementById('importForm').addEventListener('submit', function(e) {
+            if (!fileInput.files.length) {
+                e.preventDefault();
+                Swal.fire({
+                    icon: 'error',
+                    title: 'No File Selected',
+                    text: 'Please select an Excel file to import',
+                    confirmButtonColor: '#dc3545'
+                });
+                return;
+            }
+
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-8"></span> Processing...';
+        });
+
+        // Show TempData messages
+        @if (TempData["Error"] != null)
+        {
+                <text>
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error!',
+                    text: '@TempData["Error"]',
+                    confirmButtonColor: '#dc3545'
+                });
+                </text>
+        }
+    </script>
+
+    <style>
+        .upload-area {
+            border: 2px dashed #ccc;
+            border-radius: 12px;
+            padding: 48px 24px;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+            .upload-area:hover, .upload-area.drag-over {
+                border-color: #487FFF;
+                background-color: #F8F9FA;
+            }
+
+        .upload-icon-wrapper {
+            margin-bottom: 16px;
+        }
+
+        .file-info {
+            padding: 24px;
+            border: 1px solid #E5E7EB;
+            border-radius: 12px;
+            background-color: #F9FAFB;
+        }
+
+        .upload-card-wrapper {
+            min-height: 200px;
+        }
+    </style>
+}

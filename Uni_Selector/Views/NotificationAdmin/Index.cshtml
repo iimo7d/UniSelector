@@ -1,0 +1,114 @@
+﻿@model Uni_Selector.ViewModels.NotificationAdmin.NotificationListViewModel
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml"; ViewData["Title"] = "Notifications";
+}
+<div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-24"><h6 class="fw-semibold mb-0">Notification Management</h6><ul class="d-flex align-items-center gap-2"><li class="fw-medium"><a href="@Url.Action("Index", "Admin")" class="d-flex align-items-center gap-1 hover-text-primary"><iconify-icon icon="solar:home-smile-angle-outline" class="icon text-lg"></iconify-icon> Dashboard</a></li><li>-</li><li class="fw-medium">Notifications</li></ul></div>
+<div class="row gy-4 mb-24">
+    <div class="col-xxl-4 col-sm-6"><div class="card p-0 radius-12"><div class="card-body p-20"><div class="d-flex align-items-center justify-content-between"><div><span class="text-secondary-light mb-4 fw-medium text-sm d-block">Total Sent</span><h4 class="mb-0 fw-bold">@Model.TotalSent</h4></div><div class="w-64-px h-64-px rounded-circle bg-primary-600 d-flex align-items-center justify-content-center"><iconify-icon icon="solar:letter-bold" class="text-white text-32"></iconify-icon></div></div></div></div></div>
+    <div class="col-xxl-4 col-sm-6"><div class="card p-0 radius-12"><div class="card-body p-20"><div class="d-flex align-items-center justify-content-between"><div><span class="text-secondary-light mb-4 fw-medium text-sm d-block">Read</span><h4 class="mb-0 fw-bold text-success-600">@Model.TotalRead</h4></div><div class="w-64-px h-64-px rounded-circle bg-success-600 d-flex align-items-center justify-content-center"><iconify-icon icon="solar:eye-bold" class="text-white text-32"></iconify-icon></div></div></div></div></div>
+    <div class="col-xxl-4 col-sm-6"><div class="card p-0 radius-12"><div class="card-body p-20"><div class="d-flex align-items-center justify-content-between"><div><span class="text-secondary-light mb-4 fw-medium text-sm d-block">Unread</span><h4 class="mb-0 fw-bold text-warning-600">@Model.TotalUnread</h4></div><div class="w-64-px h-64-px rounded-circle bg-warning-600 d-flex align-items-center justify-content-center"><iconify-icon icon="solar:bell-bold" class="text-white text-32"></iconify-icon></div></div></div></div></div>
+</div>
+<div class="card h-100 p-0 radius-12">
+    <div class="card-header border-bottom bg-base py-16 px-24"><div class="d-flex align-items-center justify-content-between flex-wrap gap-3"><h6 class="text-lg fw-semibold mb-0">All Notifications</h6><div class="d-flex align-items-center gap-2"><a href="@Url.Action("Send")" class="btn btn-primary text-sm btn-sm px-12 py-12 radius-8"><iconify-icon icon="solar:letter-outline" class="icon text-xl me-4"></iconify-icon>Send Notification</a><a href="@Url.Action("Templates")" class="btn btn-outline-info text-sm btn-sm px-12 py-12 radius-8"><iconify-icon icon="solar:clipboard-list-outline" class="icon text-xl me-4"></iconify-icon>Templates</a><a href="@Url.Action("History")" class="btn btn-outline-secondary text-sm btn-sm px-12 py-12 radius-8"><iconify-icon icon="solar:history-outline" class="icon text-xl me-4"></iconify-icon>History</a></div></div></div>
+    <div class="card-body p-24">
+        <form asp-action="Index" method="get" class="mb-24">
+            <div class="row align-items-end gy-3">
+                <div class="col-md-2"><label class="form-label fw-medium text-sm mb-8">Show</label><select name="pageSize" class="form-select form-select-sm radius-8" onchange="this.form.submit()"><option value="10" selected="@(Model.PageSize == 10)">10</option><option value="20" selected="@(Model.PageSize == 20)">20</option><option value="50" selected="@(Model.PageSize == 50)">50</option></select></div>
+                <div class="col-md-2"><label class="form-label fw-medium text-sm mb-8">Search</label><input type="text" name="searchTerm" value="@Model.SearchTerm" class="form-control form-control-sm radius-8" placeholder="Title, Message, User"></div>
+                <div class="col-md-2">
+                    <label class="form-label fw-medium text-sm mb-8">Category</label><select name="category" class="form-select form-select-sm radius-8">
+                        <option value="">All</option>@foreach (var cat in Model.AllCategories)
+                        {
+                            <option value="@cat" selected="@(Model.Category == cat)">@cat</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label fw-medium text-sm mb-8">Channel</label><select name="channel" class="form-select form-select-sm radius-8">
+                        <option value="">All</option>@foreach (var ch in Model.AllChannels)
+                        {
+                            <option value="@ch" selected="@(Model.Channel == ch)">@ch</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-2"><label class="form-label fw-medium text-sm mb-8">Status</label><select name="isRead" class="form-select form-select-sm radius-8"><option value="">All</option><option value="true" selected="@(Model.IsRead == true)">Read</option><option value="false" selected="@(Model.IsRead == false)">Unread</option></select></div>
+                <div class="col-auto"><button type="submit" class="btn btn-primary btn-sm radius-8 px-20">Filter</button><a href="@Url.Action("Index")" class="btn btn-outline-secondary btn-sm radius-8 px-16">Clear</a></div>
+            </div>
+        </form>
+        <div class="table-responsive scroll-sm">
+            <table class="table bordered-table sm-table mb-0">
+                <thead><tr><th>Recipient</th><th>Title</th><th>Message</th><th>Category</th><th>Channel</th><th>Status</th><th>Created</th></tr></thead>
+                <tbody>
+                    @if (Model.Notifications.Any())
+                    {
+                        foreach (var notif in Model.Notifications)
+                        {
+                            <tr>
+                                <td><div class="d-flex flex-column"><span class="text-sm fw-semibold">@notif.RecipientName</span><span class="text-xs text-secondary-light">@notif.RecipientEmail</span></div></td>
+                                <td><span class="text-sm fw-medium">@notif.Title</span></td>
+                                <td><span class="text-sm">@(notif.Message.Length > 50 ? notif.Message.Substring(0, 50) + "..." : notif.Message)</span></td>
+                                <td><span class="badge bg-info-focus text-info-600 px-12 py-4 radius-4 text-xs">@notif.CategoryText</span></td>
+                                <td><span class="badge bg-primary-focus text-primary-600 px-12 py-4 radius-4 text-xs">@notif.ChannelText</span></td>
+                                <td>
+                                    @if (notif.IsRead)
+                                    {
+                                        <span class="badge bg-success-focus text-success-600 px-16 py-4 radius-4">Read</span>
+                                    }
+                                    else
+                                    {
+
+                                        <span class="badge bg-warning-focus text-warning-600 px-16 py-4 radius-4">Unread</span>
+                                    }
+                                    @if (notif.EmailSent)
+                                    {
+                                        <span class="badge bg-info-focus text-info-600 px-12 py-4 radius-4 ms-4">Email</span>
+                                    }
+                                </td>
+                                <td><div class="d-flex flex-column"><span class="text-sm">@notif.CreatedAt.ToString("dd MMM yyyy")</span><span class="text-xs text-secondary-light">@notif.CreatedAt.ToString("HH:mm")</span></div></td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr><td colspan="7" class="text-center py-32"><iconify-icon icon="solar:bell-outline" class="icon text-64 text-secondary-light mb-12"></iconify-icon><p class="text-secondary-light mb-0">No notifications found</p></td></tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        @if (Model.TotalPages > 1)
+        {
+            <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mt-24">
+                <span class="text-sm fw-medium text-secondary-light">Showing @((Model.CurrentPage - 1) * Model.PageSize + 1) to @Math.Min(Model.CurrentPage * Model.PageSize, Model.TotalNotifications) of @Model.TotalNotifications</span>
+                <ul class="pagination d-flex flex-wrap align-items-center gap-2 justify-content-center">
+                    @if (Model.CurrentPage > 1)
+                    {
+                        <li class="page-item"><a class="page-link bg-neutral-200 text-secondary-light fw-semibold radius-8 border-0 d-flex align-items-center justify-content-center h-32-px w-32-px" href="@Url.Action("Index", new { page = Model.CurrentPage - 1, pageSize = Model.PageSize, searchTerm = Model.SearchTerm, category = Model.Category, channel = Model.Channel, isRead = Model.IsRead })"><iconify-icon icon="ep:d-arrow-left"></iconify-icon></a></li>
+                    }
+                    @for (int i = Math.Max(1, Model.CurrentPage - 2); i <= Math.Min(Model.TotalPages, Model.CurrentPage + 2); i++)
+                    {
+                        <li class="page-item"><a class="page-link @(i == Model.CurrentPage ? "bg-primary-600 text-white" : "bg-neutral-200 text-secondary-light") fw-semibold radius-8 border-0 d-flex align-items-center justify-content-center h-32-px w-32-px" href="@Url.Action("Index", new { page = i, pageSize = Model.PageSize, searchTerm = Model.SearchTerm, category = Model.Category, channel = Model.Channel, isRead = Model.IsRead })">@i</a></li>
+                    }
+                    @if (Model.CurrentPage < Model.TotalPages)
+                    {
+                        <li class="page-item"><a class="page-link bg-neutral-200 text-secondary-light fw-semibold radius-8 border-0 d-flex align-items-center justify-content-center h-32-px w-32-px" href="@Url.Action("Index", new { page = Model.CurrentPage + 1, pageSize = Model.PageSize, searchTerm = Model.SearchTerm, category = Model.Category, channel = Model.Channel, isRead = Model.IsRead })"><iconify-icon icon="ep:d-arrow-right"></iconify-icon></a></li>
+                    }
+                </ul>
+            </div>
+        }
+    </div>
+</div>
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>@if (TempData["Success"] != null){
+    <text>Swal.fire({icon: 'success',title: 'Success!',text: '@TempData["Success"]',confirmButtonColor: '#198754',timer: 3000,timerProgressBar: true});</text>
+}
+@if (TempData["Error"] != null)
+{
+    <text>Swal.fire({icon: 'error',title: 'Error!',text: '@TempData["Error"]',confirmButtonColor: '#dc3545'});</text>
+}
+@if (TempData["Warning"] != null)
+{
+    <text>Swal.fire({icon: 'warning',title: 'Warning!',text: '@TempData["Warning"]',confirmButtonColor: '#fd7e14'});</text>
+}
+</script>
+}

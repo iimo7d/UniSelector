@@ -1,0 +1,132 @@
+﻿@using Uni_Selector.ViewModels.AdminCommission
+@model SettlementDetailsViewModel
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = "Settlement Details";
+}
+<div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-24">
+    <h6 class="fw-semibold mb-0">Settlement Details</h6>
+    <ul class="d-flex align-items-center gap-2"><li class="fw-medium"><a href="@Url.Action("Index", "Admin")" class="d-flex align-items-center gap-1 hover-text-primary"><iconify-icon icon="solar:home-smile-angle-outline" class="icon text-lg"></iconify-icon> Dashboard</a></li><li>-</li><li class="fw-medium"><a href="@Url.Action("Settlements")" class="hover-text-primary">Settlements</a></li><li>-</li><li class="fw-medium">#@Model.Id</li></ul>
+</div>
+<div class="row gy-4">
+    <div class="col-lg-4">
+        <div class="card h-100 radius-12">
+            <div class="card-body p-24">
+                <div class="text-center border-bottom pb-24 mb-24">
+                    <div class="w-80-px h-80-px rounded-circle @(Model.Closed ? "bg-success-focus" : "bg-warning-focus") d-flex align-items-center justify-content-center mx-auto mb-16"><iconify-icon icon="solar:checklist-bold" class="text-48 @(Model.Closed ? "text-success-600" : "text-warning-600")"></iconify-icon></div>
+                    <h5 class="mb-8">@Model.Period</h5><span class="badge @(Model.Closed ? "bg-success-focus text-success-600" : "bg-warning-focus text-warning-600") px-24 py-8 radius-4 fw-medium">@(Model.Closed ? "Closed" : "Open")</span>
+                </div>
+                <div class="mb-20">
+                    <h6 class="text-lg mb-16 fw-semibold">Settlement Info</h6>
+                    <ul class="list-unstyled">
+                        <li class="d-flex align-items-center gap-1 mb-12"><span class="w-40 text-sm fw-semibold text-secondary-light">ID:</span><span class="w-60 text-sm">#@Model.Id</span></li>
+                        <li class="d-flex align-items-center gap-1 mb-12"><span class="w-40 text-sm fw-semibold text-secondary-light">Total:</span><span class="w-60 text-lg fw-bold text-success-600">@Model.TotalCommission.ToString("N2") JOD</span></li>
+                        <li class="d-flex align-items-center gap-1 mb-12"><span class="w-40 text-sm fw-semibold text-secondary-light">Students:</span><span class="w-60 text-sm"><span class="badge bg-neutral-200 text-neutral-600 px-12 py-4">@Model.StudentCount</span></span></li>
+                        <li class="d-flex align-items-center gap-1 mb-12"><span class="w-40 text-sm fw-semibold text-secondary-light">Created:</span><span class="w-60 text-sm">@Model.CreatedAt.ToString("dd MMM yyyy")</span></li>
+                        @if (Model.Closed)
+                        {
+                            <li class="d-flex align-items-center gap-1 mb-12"><span class="w-40 text-sm fw-semibold text-secondary-light">Closed:</span><span class="w-60 text-sm">@Model.ClosedAt.Value.ToString("dd MMM yyyy")</span></li>
+                            <li class="d-flex align-items-center gap-1 mb-12"><span class="w-40 text-sm fw-semibold text-secondary-light">Closed By:</span><span class="w-60 text-sm">@Model.ClosedByUserName</span></li>
+                        }
+                    </ul>
+                </div>
+                <div class="mb-20">
+                    <h6 class="text-md fw-semibold mb-12">Statistics</h6><div class="d-flex flex-column gap-8">
+                        <div class="d-flex justify-content-between"><span class="text-sm text-secondary-light">Average/Student:</span><span class="text-sm fw-semibold">@Model.AverageCommissionPerStudent.ToString("N2") JOD</span></div>
+                        <div class="d-flex justify-content-between"><span class="text-sm text-secondary-light">Highest:</span><span class="text-sm fw-semibold text-success-600">@Model.HighestCommission.ToString("N2") JOD</span></div>
+                        <div class="d-flex justify-content-between"><span class="text-sm text-secondary-light">Lowest:</span><span class="text-sm fw-semibold">@Model.LowestCommission.ToString("N2") JOD</span></div>
+                    </div>
+                </div>
+                <div class="d-flex flex-column gap-2">
+                    @if (!Model.Closed)
+                    {
+                        <form asp-action="CloseSettlement" asp-route-id="@Model.Id" method="post" id="closeForm">@Html.AntiForgeryToken()<button type="submit" class="btn btn-success flex-fill text-sm btn-sm px-12 py-8 radius-8"><iconify-icon icon="solar:check-circle-outline" class="icon text-lg me-4"></iconify-icon>Close Settlement</button></form>
+                    }
+                    <form asp-action="ExportSettlement" asp-route-id="@Model.Id" method="post">@Html.AntiForgeryToken()<button type="submit" class="btn btn-outline-primary flex-fill text-sm btn-sm px-12 py-8 radius-8"><iconify-icon icon="solar:download-outline" class="icon text-lg me-4"></iconify-icon>Export to Excel</button></form>
+                    <a href="@Url.Action("Settlements")" class="btn btn-outline-secondary flex-fill text-sm btn-sm px-12 py-8 radius-8"><iconify-icon icon="ep:back" class="icon text-lg me-4"></iconify-icon>Back</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-8">
+        <div class="card radius-12 mb-24">
+            <div class="card-body p-24">
+                <div class="mb-24 pb-24 border-bottom">
+                    <h6 class="text-lg mb-16 fw-semibold d-flex align-items-center gap-8"><iconify-icon icon="solar:buildings-outline" class="text-primary-600 text-xl"></iconify-icon> University Information</h6>
+                    <div class="row">
+                        <div class="col-md-8 mb-12"><span class="text-sm text-secondary-light d-block mb-4">Name</span><h6 class="text-md fw-semibold mb-0">@Model.UniversityName</h6></div>
+                        <div class="col-md-4 mb-12"><span class="text-sm text-secondary-light d-block mb-4">Email</span><span class="text-md">@Model.UniversityEmail</span></div>
+                        <div class="col-md-4 mb-12"><span class="text-sm text-secondary-light d-block mb-4">Phone</span><span class="text-md">@Model.UniversityPhone</span></div>
+                    </div>
+                </div>
+                @if (Model.ModeDistribution.Any())
+                {
+                    <div>
+                        <h6 class="text-lg mb-16 fw-semibold d-flex align-items-center gap-8"><iconify-icon icon="solar:pie-chart-outline" class="text-primary-600 text-xl"></iconify-icon> Commission Mode Distribution</h6>
+                        <div class="row">
+                            <div class="col-md-6"><div id="modeDistributionChart" class="d-flex justify-content-center" style="height: 250px;"></div></div>
+                            <div class="col-md-6">
+                                <div class="d-flex flex-column gap-12">
+                                    @foreach (var mode in Model.ModeDistribution.OrderByDescending(m => m.Value))
+                                    {
+                                        <div class="d-flex align-items-center justify-content-between">
+                                            <span class="text-sm d-flex align-items-center gap-8"><span class="w-12-px h-12-px rounded-circle bg-primary-600"></span> @mode.Key</span>
+                                            <div class="d-flex align-items-center gap-12"><span class="text-sm fw-semibold">@mode.Value</span><span class="text-xs text-secondary-light">(@Model.ModeAmounts[mode.Key].ToString("N2") JOD)</span></div>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+        <div class="card radius-12">
+            <div class="card-header py-16 px-24 bg-base border-bottom d-flex align-items-center justify-content-between"><h6 class="text-lg fw-semibold mb-0">Commission Breakdown (@Model.Commissions.Count)</h6></div>
+            <div class="card-body p-24">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead><tr><th>Application #</th><th>Student</th><th>Program</th><th>Mode</th><th>Base Amount</th><th>Commission</th><th>Date</th></tr></thead>
+                        <tbody>
+                            @foreach (var comm in Model.Commissions.OrderByDescending(c => c.CommissionCreatedAt))
+                            {
+                                <tr>
+                                    <td><span class="text-sm fw-semibold text-primary-600">@comm.ApplicationNumber</span></td>
+                                    <td><div class="d-flex flex-column"><span class="text-sm fw-medium">@comm.StudentName</span><span class="text-xs text-secondary-light">@comm.StudentEmail</span></div></td>
+                                    <td><div class="d-flex flex-column"><span class="text-sm">@comm.ProgramName</span><span class="badge bg-neutral-200 text-neutral-600 px-8 py-2 radius-4 text-xs w-fit-content mt-4">@comm.Degree</span></div></td>
+                                    <td><span class="badge bg-info-focus text-info-600 px-12 py-4 radius-4 text-xs">@comm.CommissionMode</span></td>
+                                    <td><span class="text-sm">@comm.BaseAmount.ToString("N2") JOD</span></td>
+                                    <td><span class="text-sm fw-bold text-success-600">@comm.CommissionAmount.ToString("N2") JOD</span></td>
+                                    <td><span class="text-sm">@comm.CommissionCreatedAt.ToString("dd MMM yyyy")</span></td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        @if (Model.ModeDistribution.Any())
+        {
+            <text>var modeOptions = {series: [@string.Join(",", Model.ModeDistribution.Values)],labels: [@Html.Raw(string.Join(",", Model.ModeDistribution.Keys.Select(k => $"'{k}'")))],chart: {type: 'donut',height: 250},colors: ['#487FFF', '#28A745', '#FFA500', '#DC3545'],plotOptions: {pie: {donut: {size: '70%'}}},legend: {show: false},dataLabels: {enabled: true,formatter: function (val) {return Math.round(val) + "%"}}};
+                        var modeChart = new ApexCharts(document.querySelector("#modeDistributionChart"), modeOptions);modeChart.render();</text>
+        }
+                @if (!Model.Closed)
+                {
+                    <text>document.getElementById('closeForm').addEventListener('submit', function(e) {e.preventDefault();const form = this;Swal.fire({title: 'Close Settlement?',html: '<p>Closing this settlement will finalize all commissions. This action cannot be undone.</p><div class="alert alert-warning mt-3"><small>Total: <strong>@Model.TotalCommission.ToString("N2") JOD</strong> | Students: <strong>@Model.StudentCount</strong></small></div>',icon: 'warning',showCancelButton: true,confirmButtonColor: '#198754',cancelButtonColor: '#6c757d',confirmButtonText: 'Yes, Close Settlement',cancelButtonText: 'Cancel'}).then((result) => {if (result.isConfirmed) {form.submit();}});});</text>
+                }
+                @if (TempData["Success"] != null)
+                {
+                    <text>Swal.fire({icon: 'success',title: 'Success!',text: '@TempData["Success"]',confirmButtonColor: '#198754',timer: 3000,timerProgressBar: true});</text>
+                }
+                @if (TempData["Error"] != null)
+                {
+                    <text>Swal.fire({icon: 'error',title: 'Error!',text: '@TempData["Error"]',confirmButtonColor: '#dc3545'});</text>
+                }
+    </script>
+}

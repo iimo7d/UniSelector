@@ -1,0 +1,296 @@
+﻿@using Uni_Selector.ViewModels.AdminProgram
+@model ProgramImportResultViewModel
+
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = "Import Results";
+}
+
+<div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-24">
+    <h6 class="fw-semibold mb-0">Import Results</h6>
+    <ul class="d-flex align-items-center gap-2">
+        <li class="fw-medium">
+            <a href="@Url.Action("Index", "Admin")" class="d-flex align-items-center gap-1 hover-text-primary">
+                <iconify-icon icon="solar:home-smile-angle-outline" class="icon text-lg"></iconify-icon>
+                Dashboard
+            </a>
+        </li>
+        <li>-</li>
+        <li class="fw-medium">
+            <a href="@Url.Action("Index", "ProgramAdmin")" class="hover-text-primary">Programs</a>
+        </li>
+        <li>-</li>
+        <li class="fw-medium">Import Results</li>
+    </ul>
+</div>
+
+<div class="row gy-4">
+    <!-- Summary Cards -->
+    <div class="col-lg-3 col-sm-6">
+        <div class="card p-0 radius-12 h-100">
+            <div class="card-body p-24">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <h2 class="mb-8 fw-bold text-success-600">@Model.SuccessCount</h2>
+                        <span class="text-secondary-light fw-medium">Imported</span>
+                    </div>
+                    <div class="w-64-px h-64-px rounded-circle bg-success-focus text-success-600 d-flex align-items-center justify-content-center">
+                        <iconify-icon icon="solar:check-circle-outline" class="icon text-32"></iconify-icon>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-3 col-sm-6">
+        <div class="card p-0 radius-12 h-100">
+            <div class="card-body p-24">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <h2 class="mb-8 fw-bold text-danger-600">@Model.ErrorCount</h2>
+                        <span class="text-secondary-light fw-medium">Errors</span>
+                    </div>
+                    <div class="w-64-px h-64-px rounded-circle bg-danger-focus text-danger-600 d-flex align-items-center justify-content-center">
+                        <iconify-icon icon="solar:close-circle-outline" class="icon text-32"></iconify-icon>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-3 col-sm-6">
+        <div class="card p-0 radius-12 h-100">
+            <div class="card-body p-24">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <h2 class="mb-8 fw-bold text-warning-600">@Model.DuplicateCount</h2>
+                        <span class="text-secondary-light fw-medium">Duplicates</span>
+                    </div>
+                    <div class="w-64-px h-64-px rounded-circle bg-warning-focus text-warning-600 d-flex align-items-center justify-content-center">
+                        <iconify-icon icon="solar:copy-outline" class="icon text-32"></iconify-icon>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-3 col-sm-6">
+        <div class="card p-0 radius-12 h-100">
+            <div class="card-body p-24">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <h2 class="mb-8 fw-bold text-primary-600">@(Model.SuccessCount + Model.ErrorCount + Model.DuplicateCount)</h2>
+                        <span class="text-secondary-light fw-medium">Total Rows</span>
+                    </div>
+                    <div class="w-64-px h-64-px rounded-circle bg-primary-focus text-primary-600 d-flex align-items-center justify-content-center">
+                        <iconify-icon icon="solar:document-outline" class="icon text-32"></iconify-icon>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Success Message -->
+@if (Model.SuccessCount > 0)
+{
+    <div class="alert alert-success d-flex align-items-start gap-12 mt-24" role="alert">
+        <iconify-icon icon="solar:check-circle-outline" class="icon text-xl flex-shrink-0 mt-4"></iconify-icon>
+        <div>
+            <h6 class="mb-4">Import Successful!</h6>
+            <p class="mb-0">Successfully imported <strong>@Model.SuccessCount</strong> program(s) into the database.</p>
+        </div>
+    </div>
+}
+
+<!-- Imported Programs -->
+@if (Model.ImportedPrograms.Any())
+{
+    <div class="card mt-24 radius-12">
+        <div class="card-header py-16 px-24 bg-base border-bottom d-flex align-items-center justify-content-between">
+            <div class="d-flex align-items-center gap-8">
+                <iconify-icon icon="solar:check-circle-outline" class="icon text-xl text-success-600"></iconify-icon>
+                <h6 class="text-lg fw-semibold mb-0">Successfully Imported Programs</h6>
+            </div>
+            <span class="badge bg-success-600 text-white px-16 py-6 radius-4 fw-medium">@Model.ImportedPrograms.Count</span>
+        </div>
+        <div class="card-body p-24">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Program Name</th>
+                            <th>Degree</th>
+                            <th>Language</th>
+                            <th class="text-center">Credit Hours</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (int i = 0; i < Model.ImportedPrograms.Count; i++)
+                        {
+                            var program = Model.ImportedPrograms[i];
+                            <tr>
+                                <td>@(i + 1)</td>
+                                <td>
+                                    <div class="d-flex flex-column">
+                                        <h6 class="text-md mb-0 fw-medium text-primary-light">@program.NameEnglish</h6>
+                                        <span class="text-sm text-secondary-light" dir="rtl">@program.NameArabic</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="badge bg-primary-focus text-primary-600 px-16 py-4 radius-4 fw-medium">@program.Degree</span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-success-focus text-success-600 px-16 py-4 radius-4 fw-medium">@program.Language</span>
+                                </td>
+                                <td class="text-center">
+                                    <span class="badge bg-neutral-200 text-neutral-600 px-16 py-4 radius-4 fw-medium">@program.TotalCreditHours hrs</span>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+}
+
+<!-- Errors -->
+@if (Model.Errors.Any())
+{
+    <div class="card mt-24 radius-12">
+        <div class="card-header py-16 px-24 bg-base border-bottom d-flex align-items-center justify-content-between">
+            <div class="d-flex align-items-center gap-8">
+                <iconify-icon icon="solar:close-circle-outline" class="icon text-xl text-danger-600"></iconify-icon>
+                <h6 class="text-lg fw-semibold mb-0">Import Errors</h6>
+            </div>
+            <span class="badge bg-danger-600 text-white px-16 py-6 radius-4 fw-medium">@Model.Errors.Count</span>
+        </div>
+        <div class="card-body p-24">
+            <div class="alert alert-danger mb-16" role="alert">
+                <strong>The following rows could not be imported due to validation errors:</strong>
+            </div>
+            <ul class="list-group">
+                @foreach (var error in Model.Errors)
+                {
+                    <li class="list-group-item d-flex align-items-start gap-12">
+                        <iconify-icon icon="solar:danger-circle-outline" class="icon text-lg text-danger-600 flex-shrink-0 mt-4"></iconify-icon>
+                        <span class="text-sm">@error</span>
+                    </li>
+                }
+            </ul>
+        </div>
+    </div>
+}
+
+<!-- Skipped (Duplicates) -->
+@if (Model.SkippedPrograms.Any())
+{
+    <div class="card mt-24 radius-12">
+        <div class="card-header py-16 px-24 bg-base border-bottom d-flex align-items-center justify-content-between">
+            <div class="d-flex align-items-center gap-8">
+                <iconify-icon icon="solar:copy-outline" class="icon text-xl text-warning-600"></iconify-icon>
+                <h6 class="text-lg fw-semibold mb-0">Skipped Programs (Duplicates)</h6>
+            </div>
+            <span class="badge bg-warning-600 text-white px-16 py-6 radius-4 fw-medium">@Model.SkippedPrograms.Count</span>
+        </div>
+        <div class="card-body p-24">
+            <div class="alert alert-warning mb-16" role="alert">
+                <strong>The following programs already exist in the database and were skipped:</strong>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Program Name</th>
+                            <th>Degree</th>
+                            <th>Language</th>
+                            <th>Reason</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (int i = 0; i < Model.SkippedPrograms.Count; i++)
+                        {
+                            var program = Model.SkippedPrograms[i];
+                            <tr>
+                                <td>@(i + 1)</td>
+                                <td>
+                                    <div class="d-flex flex-column">
+                                        <h6 class="text-md mb-0 fw-medium text-primary-light">@program.NameEnglish</h6>
+                                        <span class="text-sm text-secondary-light" dir="rtl">@program.NameArabic</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="badge bg-primary-focus text-primary-600 px-16 py-4 radius-4 fw-medium">@program.Degree</span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-success-focus text-success-600 px-16 py-4 radius-4 fw-medium">@program.Language</span>
+                                </td>
+                                <td>
+                                    <span class="text-sm text-warning-600">@program.Reason</span>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+}
+
+<!-- Action Buttons -->
+<div class="d-flex align-items-center justify-content-center gap-3 mt-24">
+    <a href="@Url.Action("Import")" class="btn btn-outline-primary border border-primary-600 text-md px-56 py-11 radius-8">
+        <iconify-icon icon="solar:upload-outline" class="icon text-lg me-4"></iconify-icon>
+        Import More
+    </a>
+    <a href="@Url.Action("Index")" class="btn btn-primary border border-primary-600 text-md px-56 py-11 radius-8">
+        <iconify-icon icon="solar:list-check-outline" class="icon text-lg me-4"></iconify-icon>
+        View All Programs
+    </a>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        // Show success message on page load if import was successful
+        @if (Model.SuccessCount > 0 && Model.ErrorCount == 0)
+        {
+                <text>
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Import Complete!',
+                    text: 'Successfully imported @Model.SuccessCount program(s).',
+                    confirmButtonColor: '#198754',
+                    timer: 3000,
+                    timerProgressBar: true
+                });
+                </text>
+        }
+        else if (Model.SuccessCount > 0 && Model.ErrorCount > 0)
+        {
+                <text>
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Partial Import',
+                    html: 'Imported <strong>@Model.SuccessCount</strong> program(s) with <strong>@Model.ErrorCount</strong> error(s).',
+                    confirmButtonColor: '#fd7e14'
+                });
+                </text>
+        }
+        else if (Model.ErrorCount > 0 && Model.SuccessCount == 0)
+        {
+                <text>
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Import Failed',
+                    text: 'No programs were imported. Please check the errors and try again.',
+                    confirmButtonColor: '#dc3545'
+                });
+                </text>
+        }
+    </script>
+}

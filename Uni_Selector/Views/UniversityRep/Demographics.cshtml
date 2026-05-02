@@ -1,0 +1,402 @@
+﻿@model Uni_Selector.ViewModels.UniversityReps.DemographicsAnalyticsViewModel
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = "Student Demographics";
+}
+
+<div class="dashboard-main-body">
+    <!-- Page Header -->
+    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-24">
+        <h6 class="fw-semibold mb-0">Student Demographics</h6>
+        <ul class="d-flex align-items-center gap-2">
+            <li class="fw-medium">
+                <a asp-action="Dashboard" class="d-flex align-items-center gap-1 hover-text-primary">
+                    <iconify-icon icon="solar:home-smile-angle-outline" class="icon text-lg"></iconify-icon>
+                    Dashboard
+                </a>
+            </li>
+            <li>-</li>
+            <li class="fw-medium">Analytics / Demographics</li>
+        </ul>
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="row gy-4">
+        <div class="col-xxl-6 col-sm-6">
+            <div class="card shadow-none border bg-gradient-start-1 h-100">
+                <div class="card-body p-20">
+                    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
+                        <div>
+                            <p class="fw-medium text-primary-light mb-1">Total Students</p>
+                            <h6 class="mb-0">@Model.TotalStudents</h6>
+                        </div>
+                        <div class="w-50-px h-50-px bg-primary-600 rounded-circle d-flex justify-content-center align-items-center">
+                            <iconify-icon icon="solar:users-group-rounded-bold" class="text-white text-2xl mb-0"></iconify-icon>
+                        </div>
+                    </div>
+                    <p class="fw-medium text-sm text-primary-light mt-12 mb-0">
+                        <span class="text-primary-600">Unique applicants</span>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xxl-6 col-sm-6">
+            <div class="card shadow-none border bg-gradient-start-3 h-100">
+                <div class="card-body p-20">
+                    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
+                        <div>
+                            <p class="fw-medium text-primary-light mb-1">Average GPA</p>
+                            <h6 class="mb-0">@Model.AverageGPA.ToString("F2")</h6>
+                        </div>
+                        <div class="w-50-px h-50-px bg-success-main rounded-circle d-flex justify-content-center align-items-center">
+                            <iconify-icon icon="solar:star-bold" class="text-white text-2xl mb-0"></iconify-icon>
+                        </div>
+                    </div>
+                    <p class="fw-medium text-sm text-primary-light mt-12 mb-0">
+                        <span class="text-success-main">Out of 100</span>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Distribution Charts Row 1 -->
+    <div class="row gy-4 mt-1">
+        <!-- Gender Distribution -->
+        <div class="col-md-4">
+            <div class="card h-100 p-0">
+                <div class="card-header border-bottom bg-base py-16 px-24">
+                    <h6 class="text-lg fw-semibold mb-0">Gender Distribution</h6>
+                </div>
+                <div class="card-body p-24 text-center">
+                    <div id="genderDistributionChart" class="apexcharts-tooltip-z-none"></div>
+                    <ul class="d-flex flex-wrap align-items-center justify-content-center mt-3 gap-3">
+                        @{
+                            var genderIndex = 0;
+                            var genderColors = new[] { "primary-600", "danger-600" };
+                        }
+                        @foreach (var gender in Model.GenderDistribution)
+                        {
+                            <li class="d-flex align-items-center gap-2">
+                                <span class="w-12-px h-12-px radius-2 bg-@genderColors[genderIndex % genderColors.Length]"></span>
+                                <span class="text-secondary-light text-sm fw-normal">
+                                    @gender.Key:
+                                    <span class="text-primary-light fw-semibold">@gender.Value</span>
+                                </span>
+                            </li>
+                            genderIndex++;
+                        }
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Path Distribution -->
+        <div class="col-md-4">
+            <div class="card h-100 p-0">
+                <div class="card-header border-bottom bg-base py-16 px-24">
+                    <h6 class="text-lg fw-semibold mb-0">Educational Path</h6>
+                </div>
+                <div class="card-body p-24">
+                    <div id="pathDistributionChart"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Academic Track Distribution -->
+        <div class="col-md-4">
+            <div class="card h-100 p-0">
+                <div class="card-header border-bottom bg-base py-16 px-24">
+                    <h6 class="text-lg fw-semibold mb-0">Academic Track</h6>
+                </div>
+                <div class="card-body p-24 text-center">
+                    <div id="trackDistributionChart" class="apexcharts-tooltip-z-none"></div>
+                    <ul class="d-flex flex-wrap align-items-center justify-content-center mt-3 gap-3">
+                        @{
+                            var trackIndex = 0;
+                            var trackColors = new[] { "success-600", "warning-600", "info-600" };
+                        }
+                        @foreach (var track in Model.AcademicTrackDistribution)
+                        {
+                            <li class="d-flex align-items-center gap-2">
+                                <span class="w-12-px h-12-px radius-2 bg-@trackColors[trackIndex % trackColors.Length]"></span>
+                                <span class="text-secondary-light text-sm fw-normal">
+                                    @track.Key:
+                                    <span class="text-primary-light fw-semibold">@track.Value</span>
+                                </span>
+                            </li>
+                            trackIndex++;
+                        }
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- GPA Analysis Row -->
+    <div class="row gy-4 mt-1">
+        <!-- GPA Range Distribution -->
+        <div class="col-md-6">
+            <div class="card h-100 p-0">
+                <div class="card-header border-bottom bg-base py-16 px-24">
+                    <h6 class="text-lg fw-semibold mb-0">GPA Range Distribution</h6>
+                </div>
+                <div class="card-body p-24">
+                    <div id="gpaRangeChart"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Average GPA by Path -->
+        <div class="col-md-6">
+            <div class="card h-100 p-0">
+                <div class="card-header border-bottom bg-base py-16 px-24">
+                    <h6 class="text-lg fw-semibold mb-0">Average GPA by Path</h6>
+                </div>
+                <div class="card-body p-24">
+                    <div id="gpaByPathChart"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Province Distribution Table -->
+    <div class="row gy-4 mt-1">
+        <div class="col-12">
+            <div class="card h-100 p-0">
+                <div class="card-header border-bottom bg-base py-16 px-24">
+                    <h6 class="text-lg fw-semibold mb-0">Students by Province</h6>
+                </div>
+                <div class="card-body p-24">
+                    <div class="table-responsive scroll-sm">
+                        <table class="table bordered-table mb-0">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Province</th>
+                                    <th scope="col" class="text-center">Student Count</th>
+                                    <th scope="col" class="text-center">Average GPA</th>
+                                    <th scope="col" class="text-center">Distribution</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var province in Model.ProvinceDistribution)
+                                {
+                                    var percentage = Model.TotalStudents > 0 ? (province.StudentCount * 100.0 / Model.TotalStudents) : 0;
+                                    <tr>
+                                        <td>
+                                            <span class="text-md fw-semibold">@province.Province</span>
+                                        </td>
+                                        <td class="text-center">
+                                            <span class="text-primary-light fw-semibold">@province.StudentCount</span>
+                                        </td>
+                                        <td class="text-center">
+                                            <span class="bg-success-focus text-success-main px-16 py-4 rounded-pill fw-medium text-sm">@province.AverageGPA.ToString("F2")</span>
+                                        </td>
+                                        <td class="text-center">
+                                            <div class="progress w-100 bg-primary-50 rounded-pill h-8-px" role="progressbar">
+                                                <div class="progress-bar bg-primary-600 rounded-pill" style="width: @percentage%"></div>
+                                            </div>
+                                            <span class="text-sm text-secondary-light fw-medium mt-4">@percentage.ToString("F1")%</span>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Export Button -->
+    <div class="row gy-4 mt-1">
+        <div class="col-12">
+            <div class="card h-100 p-0">
+                <div class="card-body p-24">
+                    <a asp-action="ExportAnalytics" asp-route-reportType="demographics" class="btn btn-success-600 radius-8 px-20 py-11">
+                        <iconify-icon icon="solar:download-minimalistic-bold" class="icon text-xl line-height-1"></iconify-icon>
+                        Export Demographics Report
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/assets/js/lib/apexcharts.min.js"></script>
+    <script>
+        // Gender Distribution Pie Chart
+        var genderDistributionOptions = {
+            series: [@string.Join(",", Model.GenderDistribution.Values)],
+            chart: {
+                type: 'pie',
+                height: 250
+            },
+            labels: [@Html.Raw(string.Join(",", Model.GenderDistribution.Keys.Select(k => $"'{k}'")))],
+            colors: ['#487FFF', '#EA5455'],
+            legend: {
+                show: false
+            },
+            dataLabels: {
+                enabled: true,
+                formatter: function(val) {
+                    return val.toFixed(1) + '%'
+                }
+            }
+        };
+
+        var genderDistributionChart = new ApexCharts(document.querySelector("#genderDistributionChart"), genderDistributionOptions);
+        genderDistributionChart.render();
+
+        // Path Distribution Column Chart
+        var pathDistributionOptions = {
+            series: [{
+                name: 'Students',
+                data: [@string.Join(",", Model.PathDistribution.Values)]
+            }],
+            chart: {
+                type: 'bar',
+                height: 250,
+                toolbar: {
+                    show: false
+                }
+            },
+            colors: ['#45B369'],
+            plotOptions: {
+                bar: {
+                    horizontal: false,
+                    columnWidth: '50%',
+                    borderRadius: 8
+                }
+            },
+            dataLabels: {
+                enabled: true
+            },
+            xaxis: {
+                categories: [@Html.Raw(string.Join(",", Model.PathDistribution.Keys.Select(k => $"'{k}'")))],
+            },
+            yaxis: {
+                title: {
+                    text: 'Number of Students'
+                }
+            }
+        };
+
+        var pathDistributionChart = new ApexCharts(document.querySelector("#pathDistributionChart"), pathDistributionOptions);
+        pathDistributionChart.render();
+
+        // Academic Track Distribution Donut Chart
+        var trackDistributionOptions = {
+            series: [@string.Join(",", Model.AcademicTrackDistribution.Values)],
+            chart: {
+                type: 'donut',
+                height: 250
+            },
+            labels: [@Html.Raw(string.Join(",", Model.AcademicTrackDistribution.Keys.Select(k => $"'{k}'")))],
+            colors: ['#45B369', '#FF9F43', '#00CFE8'],
+            legend: {
+                show: false
+            },
+            plotOptions: {
+                pie: {
+                    donut: {
+                        size: '70%'
+                    }
+                }
+            },
+            dataLabels: {
+                enabled: true,
+                formatter: function(val) {
+                    return val.toFixed(0) + '%'
+                }
+            }
+        };
+
+        var trackDistributionChart = new ApexCharts(document.querySelector("#trackDistributionChart"), trackDistributionOptions);
+        trackDistributionChart.render();
+
+        // GPA Range Distribution Column Chart
+        var gpaRangeOptions = {
+            series: [{
+                name: 'Students',
+                data: [@string.Join(",", Model.GPARangeDistribution.Values)]
+            }],
+            chart: {
+                type: 'bar',
+                height: 300,
+                toolbar: {
+                    show: false
+                }
+            },
+            colors: ['#FF9F43'],
+            plotOptions: {
+                bar: {
+                    horizontal: false,
+                    columnWidth: '60%',
+                    borderRadius: 8,
+                    distributed: true
+                }
+            },
+            dataLabels: {
+                enabled: true
+            },
+            xaxis: {
+                categories: [@Html.Raw(string.Join(",", Model.GPARangeDistribution.Keys.Select(k => $"'{k}'")))],
+            },
+            yaxis: {
+                title: {
+                    text: 'Number of Students'
+                }
+            },
+            legend: {
+                show: false
+            }
+        };
+
+        var gpaRangeChart = new ApexCharts(document.querySelector("#gpaRangeChart"), gpaRangeOptions);
+        gpaRangeChart.render();
+
+        // Average GPA by Path Column Chart
+        var gpaByPathOptions = {
+            series: [{
+                name: 'Average GPA',
+                data: [@string.Join(",", Model.AverageGPAByPath.Values)]
+            }],
+            chart: {
+                type: 'bar',
+                height: 300,
+                toolbar: {
+                    show: false
+                }
+            },
+            colors: ['#487FFF'],
+            plotOptions: {
+                bar: {
+                    horizontal: false,
+                    columnWidth: '50%',
+                    borderRadius: 8
+                }
+            },
+            dataLabels: {
+                enabled: true,
+                formatter: function(val) {
+                    return val.toFixed(2)
+                }
+            },
+            xaxis: {
+                categories: [@Html.Raw(string.Join(",", Model.AverageGPAByPath.Keys.Select(k => $"'{k}'")))],
+            },
+            yaxis: {
+                title: {
+                    text: 'Average GPA'
+                },
+                max: 100
+            }
+        };
+
+        var gpaByPathChart = new ApexCharts(document.querySelector("#gpaByPathChart"), gpaByPathOptions);
+        gpaByPathChart.render();
+    </script>
+}

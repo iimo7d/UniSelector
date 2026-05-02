@@ -1,0 +1,455 @@
+﻿@using Uni_Selector.ViewModels.AdminApplication
+@model ApplicationStatisticsViewModel
+
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = "Application Statistics";
+}
+
+<div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-24">
+    <h6 class="fw-semibold mb-0">Application Statistics</h6>
+    <ul class="d-flex align-items-center gap-2">
+        <li class="fw-medium">
+            <a href="@Url.Action("Index", "Admin")" class="d-flex align-items-center gap-1 hover-text-primary">
+                <iconify-icon icon="solar:home-smile-angle-outline" class="icon text-lg"></iconify-icon>
+                Dashboard
+            </a>
+        </li>
+        <li>-</li>
+        <li class="fw-medium">
+            <a href="@Url.Action("Index")" class="hover-text-primary">Applications</a>
+        </li>
+        <li>-</li>
+        <li class="fw-medium">Statistics</li>
+    </ul>
+</div>
+
+<!-- Summary Cards Row -->
+<div class="row gy-4 mb-24">
+    <div class="col-xxl-3 col-sm-6">
+        <div class="card p-0 radius-12 h-100">
+            <div class="card-body p-20">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <span class="text-secondary-light mb-4 fw-medium text-sm d-block">Total Applications</span>
+                        <h4 class="mb-0 fw-bold">@Model.TotalApplications.ToString("N0")</h4>
+                    </div>
+                    <div class="w-64-px h-64-px rounded-circle bg-primary-600 d-flex align-items-center justify-content-center">
+                        <iconify-icon icon="solar:document-text-bold" class="text-white text-32"></iconify-icon>
+                    </div>
+                </div>
+                <p class="text-sm text-secondary-light mt-12 mb-0 d-flex align-items-center gap-8">
+                    <span class="badge bg-neutral-200 text-neutral-600 px-8 py-2 radius-4 text-xs">
+                        Regular: @Model.RegularApplications | BTEC: @Model.BtecApplications
+                    </span>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xxl-3 col-sm-6">
+        <div class="card p-0 radius-12 h-100">
+            <div class="card-body p-20">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <span class="text-secondary-light mb-4 fw-medium text-sm d-block">Pending Review</span>
+                        <h4 class="mb-0 fw-bold text-warning-600">@Model.PendingApplications.ToString("N0")</h4>
+                    </div>
+                    <div class="w-64-px h-64-px rounded-circle bg-warning-600 d-flex align-items-center justify-content-center">
+                        <iconify-icon icon="solar:clock-circle-bold" class="text-white text-32"></iconify-icon>
+                    </div>
+                </div>
+                <p class="text-sm text-secondary-light mt-12 mb-0">
+                    Requires attention
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xxl-3 col-sm-6">
+        <div class="card p-0 radius-12 h-100">
+            <div class="card-body p-20">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <span class="text-secondary-light mb-4 fw-medium text-sm d-block">Approved</span>
+                        <h4 class="mb-0 fw-bold text-success-600">@Model.ApprovedApplications.ToString("N0")</h4>
+                    </div>
+                    <div class="w-64-px h-64-px rounded-circle bg-success-600 d-flex align-items-center justify-content-center">
+                        <iconify-icon icon="solar:check-circle-bold" class="text-white text-32"></iconify-icon>
+                    </div>
+                </div>
+                <p class="text-sm text-success-600 mt-12 mb-0 fw-semibold">
+                    @Model.ApprovalRate% Approval Rate
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xxl-3 col-sm-6">
+        <div class="card p-0 radius-12 h-100">
+            <div class="card-body p-20">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <span class="text-secondary-light mb-4 fw-medium text-sm d-block">Enrolled</span>
+                        <h4 class="mb-0 fw-bold text-primary-600">@Model.EnrolledApplications.ToString("N0")</h4>
+                    </div>
+                    <div class="w-64-px h-64-px rounded-circle bg-info-600 d-flex align-items-center justify-content-center">
+                        <iconify-icon icon="solar:user-check-bold" class="text-white text-32"></iconify-icon>
+                    </div>
+                </div>
+                <p class="text-sm text-info-600 mt-12 mb-0 fw-semibold">
+                    @Model.EnrollmentRate% Enrollment Rate
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Metrics Cards Row -->
+<div class="row gy-4 mb-24">
+    <div class="col-xxl-4 col-sm-6">
+        <div class="card p-0 radius-12 h-100">
+            <div class="card-body p-20">
+                <div class="d-flex align-items-center justify-content-between mb-16">
+                    <h6 class="text-lg fw-semibold mb-0">Approval Rate</h6>
+                    <iconify-icon icon="solar:chart-2-outline" class="text-primary-600 text-xl"></iconify-icon>
+                </div>
+                <div class="d-flex align-items-center gap-12">
+                    <div class="flex-grow-1">
+                        <div class="progress h-8-px bg-neutral-200 radius-4">
+                            <div class="progress-bar bg-success-600 radius-4" role="progressbar" style="width: @Model.ApprovalRate%" aria-valuenow="@Model.ApprovalRate" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                    </div>
+                    <span class="text-lg fw-bold text-success-600">@Model.ApprovalRate%</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xxl-4 col-sm-6">
+        <div class="card p-0 radius-12 h-100">
+            <div class="card-body p-20">
+                <div class="d-flex align-items-center justify-content-between mb-16">
+                    <h6 class="text-lg fw-semibold mb-0">Rejection Rate</h6>
+                    <iconify-icon icon="solar:chart-2-outline" class="text-danger-600 text-xl"></iconify-icon>
+                </div>
+                <div class="d-flex align-items-center gap-12">
+                    <div class="flex-grow-1">
+                        <div class="progress h-8-px bg-neutral-200 radius-4">
+                            <div class="progress-bar bg-danger-600 radius-4" role="progressbar" style="width: @Model.RejectionRate%" aria-valuenow="@Model.RejectionRate" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                    </div>
+                    <span class="text-lg fw-bold text-danger-600">@Model.RejectionRate%</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xxl-4 col-sm-6">
+        <div class="card p-0 radius-12 h-100">
+            <div class="card-body p-20">
+                <div class="d-flex align-items-center justify-content-between mb-16">
+                    <h6 class="text-lg fw-semibold mb-0">Avg Processing Time</h6>
+                    <iconify-icon icon="solar:clock-circle-outline" class="text-warning-600 text-xl"></iconify-icon>
+                </div>
+                <div class="d-flex align-items-center justify-content-between">
+                    <span class="text-secondary-light text-sm">Days to process</span>
+                    <h4 class="mb-0 fw-bold text-warning-600">@Model.AverageProcessingDays</h4>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Charts Row -->
+<div class="row gy-4 mb-24">
+    <!-- Status Distribution Pie Chart -->
+    <div class="col-lg-6">
+        <div class="card h-100 p-0 radius-12">
+            <div class="card-header border-bottom bg-base py-16 px-24">
+                <h6 class="text-lg fw-semibold mb-0">Applications by Status</h6>
+            </div>
+            <div class="card-body p-24">
+                <div class="row align-items-center">
+                    <div class="col-md-6">
+                        <div id="statusDistributionChart" class="d-flex justify-content-center"></div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="d-flex flex-column gap-12">
+                            @foreach (var status in Model.StatusDistribution.OrderByDescending(s => s.Count))
+                            {
+                                <div class="d-flex align-items-center justify-content-between">
+                                    <span class="text-sm d-flex align-items-center gap-8">
+                                        <span class="w-12-px h-12-px rounded-circle" style="background-color: @status.Color"></span>
+                                        @status.StatusName
+                                    </span>
+                                    <div class="d-flex align-items-center gap-12">
+                                        <span class="text-sm fw-semibold">@status.Count</span>
+                                        <span class="text-xs text-secondary-light">(@status.Percentage%)</span>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Monthly Applications Line Chart -->
+    <div class="col-lg-6">
+        <div class="card h-100 p-0 radius-12">
+            <div class="card-header border-bottom bg-base py-16 px-24">
+                <h6 class="text-lg fw-semibold mb-0">Monthly Applications Trend</h6>
+            </div>
+            <div class="card-body p-24">
+                <div id="monthlyApplicationsChart"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Top Universities Column Chart -->
+<div class="row gy-4 mb-24">
+    <div class="col-12">
+        <div class="card h-100 p-0 radius-12">
+            <div class="card-header border-bottom bg-base py-16 px-24">
+                <h6 class="text-lg fw-semibold mb-0">Top 10 Universities by Applications</h6>
+            </div>
+            <div class="card-body p-24">
+                <div id="topUniversitiesChart"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Top Programs & Recent Activity -->
+<div class="row gy-4">
+    <!-- Top Programs -->
+    <div class="col-lg-6">
+        <div class="card h-100 p-0 radius-12">
+            <div class="card-header border-bottom bg-base py-16 px-24">
+                <h6 class="text-lg fw-semibold mb-0">Top 10 Programs</h6>
+            </div>
+            <div class="card-body p-24">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Program</th>
+                                <th>Degree</th>
+                                <th class="text-end">Applications</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @for (int i = 0; i < Model.TopPrograms.Count; i++)
+                            {
+                                var program = Model.TopPrograms[i];
+                                <tr>
+                                    <td>@(i + 1)</td>
+                                    <td>
+                                        <span class="text-sm fw-medium">@program.ProgramName</span>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-neutral-200 text-neutral-600 px-12 py-4 radius-4 text-xs">@program.Degree</span>
+                                    </td>
+                                    <td class="text-end">
+                                        <span class="badge bg-primary-focus text-primary-600 px-12 py-4 radius-4 fw-semibold">@program.ApplicationCount</span>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Activity -->
+    <div class="col-lg-6">
+        <div class="card h-100 p-0 radius-12">
+            <div class="card-header border-bottom bg-base py-16 px-24">
+                <h6 class="text-lg fw-semibold mb-0">Recent Activity</h6>
+            </div>
+            <div class="card-body p-24">
+                <div class="d-flex flex-column gap-16">
+                    @foreach (var activity in Model.RecentActivity)
+                    {
+                        <div class="d-flex align-items-start gap-12 pb-16 border-bottom">
+                            <div class="w-40-px h-40-px rounded-circle @(activity.Status == Uni_Selector.Models.Enums.ApplicationStatus.Approved ? "bg-success-focus" : activity.Status == Uni_Selector.Models.Enums.ApplicationStatus.Rejected ? "bg-danger-focus" : "bg-warning-focus") d-flex align-items-center justify-content-center flex-shrink-0">
+                                <iconify-icon icon="@(activity.Status == Uni_Selector.Models.Enums.ApplicationStatus.Approved ? "solar:check-circle-outline" : activity.Status == Uni_Selector.Models.Enums.ApplicationStatus.Rejected ? "solar:close-circle-outline" : "solar:clock-circle-outline")" class="text-xl @(activity.Status == Uni_Selector.Models.Enums.ApplicationStatus.Approved ? "text-success-600" : activity.Status == Uni_Selector.Models.Enums.ApplicationStatus.Rejected ? "text-danger-600" : "text-warning-600")"></iconify-icon>
+                            </div>
+                            <div class="flex-grow-1">
+                                <div class="d-flex align-items-start justify-content-between mb-4">
+                                    <h6 class="text-sm fw-semibold mb-0">@activity.ApplicationNumber</h6>
+                                    <span class="text-xs text-secondary-light">@activity.ActivityDate.ToString("MMM dd, HH:mm")</span>
+                                </div>
+                                <p class="text-sm text-secondary-light mb-4">@activity.StudentName - @activity.UniversityName</p>
+                                <span class="badge @(activity.Status == Uni_Selector.Models.Enums.ApplicationStatus.Approved ? "bg-success-focus text-success-600" : activity.Status == Uni_Selector.Models.Enums.ApplicationStatus.Rejected ? "bg-danger-focus text-danger-600" : "bg-warning-focus text-warning-600") px-12 py-2 radius-4 text-xs">@activity.StatusText</span>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <!-- ApexCharts -->
+
+    <script>
+        // Status Distribution Pie Chart
+        var statusDistributionOptions = {
+            series: [@string.Join(",", Model.StatusDistribution.Select(s => s.Count))],
+            labels: [@Html.Raw(string.Join(",", Model.StatusDistribution.Select(s => $"'{s.StatusName}'")))],
+            colors: [@Html.Raw(string.Join(",", Model.StatusDistribution.Select(s => $"'{s.Color}'")))],
+            chart: {
+                type: 'donut',
+                height: 280
+            },
+            plotOptions: {
+                pie: {
+                    donut: {
+                        size: '70%',
+                        labels: {
+                            show: true,
+                            total: {
+                                show: true,
+                                label: 'Total',
+                                fontSize: '16px',
+                                fontWeight: 600,
+                                formatter: function (w) {
+                                    return @Model.TotalApplications
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            legend: {
+                show: false
+            },
+            dataLabels: {
+                enabled: true,
+                formatter: function (val) {
+                    return Math.round(val) + "%"
+                }
+            }
+        };
+        var statusChart = new ApexCharts(document.querySelector("#statusDistributionChart"), statusDistributionOptions);
+        statusChart.render();
+
+        // Monthly Applications Line Chart
+        var monthlyOptions = {
+            series: [{
+                name: 'Applications',
+                data: [@string.Join(",", Model.MonthlyApplications.Select(m => m.Count))]
+            }],
+            chart: {
+                type: 'area',
+                height: 280,
+                toolbar: {
+                    show: false
+                }
+            },
+            colors: ['#487FFF'],
+            dataLabels: {
+                enabled: false
+            },
+            stroke: {
+                curve: 'smooth',
+                width: 2
+            },
+            xaxis: {
+                categories: [@Html.Raw(string.Join(",", Model.MonthlyApplications.Select(m => $"'{m.MonthName}'")))],
+                labels: {
+                    style: {
+                        fontSize: '12px'
+                    }
+                }
+            },
+            yaxis: {
+                title: {
+                    text: 'Applications'
+                }
+            },
+            fill: {
+                type: 'gradient',
+                gradient: {
+                    shadeIntensity: 1,
+                    opacityFrom: 0.7,
+                    opacityTo: 0.3,
+                }
+            }
+        };
+        var monthlyChart = new ApexCharts(document.querySelector("#monthlyApplicationsChart"), monthlyOptions);
+        monthlyChart.render();
+
+        // Top Universities Column Chart
+        var universitiesOptions = {
+            series: [
+                {
+                    name: 'Total Applications',
+                    data: [@string.Join(",", Model.TopUniversities.Select(u => u.ApplicationCount))]
+                },
+                {
+                    name: 'Approved',
+                    data: [@string.Join(",", Model.TopUniversities.Select(u => u.ApprovedCount))]
+                },
+                {
+                    name: 'Pending',
+                    data: [@string.Join(",", Model.TopUniversities.Select(u => u.PendingCount))]
+                }
+            ],
+            chart: {
+                type: 'bar',
+                height: 350,
+                toolbar: {
+                    show: false
+                }
+            },
+            colors: ['#487FFF', '#28A745', '#FFA500'],
+            plotOptions: {
+                bar: {
+                    horizontal: false,
+                    columnWidth: '55%',
+                    borderRadius: 4
+                }
+            },
+            dataLabels: {
+                enabled: false
+            },
+            stroke: {
+                show: true,
+                width: 2,
+                colors: ['transparent']
+            },
+            xaxis: {
+                categories: [@Html.Raw(string.Join(",", Model.TopUniversities.Select(u => $"'{u.UniversityName.Substring(0, Math.Min(20, u.UniversityName.Length))}...'")))],
+                labels: {
+                    style: {
+                        fontSize: '11px'
+                    },
+                    rotate: -45,
+                    rotateAlways: true
+                }
+            },
+            yaxis: {
+                title: {
+                    text: 'Applications'
+                }
+            },
+            fill: {
+                opacity: 1
+            },
+            legend: {
+                position: 'top',
+                horizontalAlign: 'right'
+            }
+        };
+        var universitiesChart = new ApexCharts(document.querySelector("#topUniversitiesChart"), universitiesOptions);
+        universitiesChart.render();
+    </script>
+}

@@ -1,0 +1,1827 @@
+﻿@using Uni_Selector.Models.Enums
+@using Uni_Selector.ViewModels.Students
+@using Microsoft.AspNetCore.Mvc.Rendering
+@model CompleteProfileViewModel
+
+@{
+    ViewData["Title"] = "Complete Your Profile";
+}
+
+@section Styles {
+    <style>
+        /* Add inner spacing so fields don't touch card edges */
+        .wizard-form-padding {
+            padding-left: 24px;
+            padding-right: 24px;
+        }
+
+        @@media (max-width: 768px) {
+            .wizard-form-padding {
+                padding-left: 12px;
+                padding-right: 12px;
+            }
+        }
+
+        /* Wizard Container */
+        .wizard-container {
+            background: linear-gradient(135deg, rgba(95, 45, 237, 0.02) 0%, rgba(242, 39, 126, 0.02) 100%);
+            /* Extra space so the card doesn't hit the footer */
+            padding-bottom: 5rem !important;
+        }
+
+        @@media (min-width: 1024px) {
+            .wizard-container {
+                padding-bottom: 7rem !important;
+            }
+        }
+
+        /* Step Panel Animations */
+        .step-panel {
+            display: none;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+            .step-panel.active {
+                display: block;
+                animation: stepFadeIn 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+            }
+
+        @@keyframes stepFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Progress Stepper */
+        .wizard-stepper {
+            position: relative;
+            z-index: 1;
+        }
+
+        .step-item {
+            position: relative;
+            flex: 1;
+        }
+
+        .step-dot {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.25rem;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            z-index: 2;
+            border: 3px solid transparent;
+            margin: 0 auto;
+        }
+
+            .step-dot.todo {
+                background: var(--borderColor);
+                color: var(--lightGrey4);
+                border-color: var(--borderColor);
+            }
+
+        .dark .step-dot.todo {
+            background: #312a57;
+            color: var(--lightGrey4);
+        }
+
+        .step-dot.active {
+            background: linear-gradient(135deg, var(--primaryColor) 0%, #7c3aed 100%);
+            color: white;
+            border-color: var(--primaryColor);
+            box-shadow: 0 8px 24px rgba(95, 45, 237, 0.4);
+            transform: scale(1.1);
+        }
+
+        .step-dot.completed {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            border-color: #10b981;
+            box-shadow: 0 4px 16px rgba(16, 185, 129, 0.3);
+        }
+
+        .step-dot i {
+            font-size: 1.75rem;
+            transition: all 0.3s ease;
+        }
+
+        .step-dot.completed i {
+            animation: checkBounce 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        @@keyframes checkBounce {
+            0%, 100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.2);
+            }
+        }
+
+        /* Step Connector Lines */
+        .step-connector {
+            position: absolute;
+            top: 30px;
+            left: calc(50% + 30px);
+            right: calc(-50% + 30px);
+            height: 3px;
+            background: var(--borderColor);
+            z-index: 0;
+            transition: all 0.4s ease;
+        }
+
+        .dark .step-connector {
+            background: #312a57;
+        }
+
+        .step-connector.completed {
+            background: linear-gradient(90deg, #10b981 0%, #059669 100%);
+        }
+
+        /* Progress Bar */
+        .wizard-progress-bar {
+            height: 8px;
+            background: var(--borderColor);
+            border-radius: 999px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .dark .wizard-progress-bar {
+            background: #312a57;
+        }
+
+        .wizard-progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primaryColor) 0%, var(--secondaryColor) 50%, #10b981 100%);
+            border-radius: 999px;
+            transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+            .wizard-progress-fill::after {
+                content: '';
+                position: absolute;
+                inset: 0;
+                background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+                animation: shimmer 2s infinite;
+            }
+
+        @@keyframes shimmer {
+            0% {
+                transform: translateX(-100%);
+            }
+
+            100% {
+                transform: translateX(100%);
+            }
+        }
+
+        /* Form Input Enhancements */
+        .form-input {
+            transition: all 0.3s ease;
+            position: relative;
+            font-family: 'Inter', sans-serif;
+        }
+
+            .form-input:focus {
+                border-color: var(--primaryColor);
+                box-shadow: 0 0 0 4px rgba(95, 45, 237, 0.1);
+                transform: translateY(-1px);
+            }
+
+            .form-input:hover:not(:focus) {
+                border-color: rgba(95, 45, 237, 0.3);
+            }
+
+        /* Input Group */
+        .input-group {
+            position: relative;
+            margin-bottom: 25px;
+        }
+
+        .input-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 10px;
+            font-weight: 600;
+            font-size: 0.875rem;
+            color: var(--blackColor);
+            font-family: 'Hind', sans-serif;
+        }
+
+        .dark .input-label {
+            color: var(--whiteColor);
+        }
+
+        .required-star {
+            color: var(--secondaryColor);
+            font-size: 1.125rem;
+            line-height: 1;
+        }
+
+        /* Info Card */
+        .info-card {
+            background: linear-gradient(135deg, rgba(95, 45, 237, 0.05) 0%, rgba(242, 39, 126, 0.05) 100%);
+            border: 2px solid rgba(95, 45, 237, 0.1);
+            border-radius: 16px;
+            padding: 25px;
+            margin-bottom: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .dark .info-card {
+            background: linear-gradient(135deg, rgba(95, 45, 237, 0.1) 0%, rgba(242, 39, 126, 0.1) 100%);
+            border-color: #312a57;
+        }
+
+        .info-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: linear-gradient(180deg, var(--primaryColor) 0%, var(--secondaryColor) 100%);
+        }
+
+        /* Section Header */
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 20px 0;
+            border-bottom: 2px solid var(--borderColor);
+            margin-bottom: 30px;
+        }
+
+        .dark .section-header {
+            border-bottom-color: #312a57;
+        }
+
+        .section-header-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, var(--primaryColor) 0%, #7c3aed 100%);
+            color: white;
+            font-size: 1.5rem;
+        }
+
+        /* Button Enhancements */
+        .wizard-btn {
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-family: 'Hind', sans-serif;
+        }
+
+            .wizard-btn::before {
+                content: '';
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                width: 0;
+                height: 0;
+                border-radius: 50%;
+                background: rgba(255, 255, 255, 0.2);
+                transform: translate(-50%, -50%);
+                transition: width 0.6s, height 0.6s;
+            }
+
+            .wizard-btn:hover::before {
+                width: 300px;
+                height: 300px;
+            }
+
+            .wizard-btn:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 12px 28px rgba(95, 45, 237, 0.4);
+            }
+
+            .wizard-btn:active {
+                transform: translateY(0);
+            }
+
+        .btn-next {
+            background: linear-gradient(135deg, var(--primaryColor) 0%, #7c3aed 100%);
+            color: white;
+            position: relative;
+            z-index: 1;
+        }
+
+        .btn-prev {
+            background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
+            color: white;
+        }
+
+        .btn-submit {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            animation: pulse 2s infinite;
+        }
+
+        @@keyframes pulse {
+            0%, 100% {
+                box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+            }
+
+            50% {
+                box-shadow: 0 0 0 15px rgba(16, 185, 129, 0);
+            }
+        }
+
+        .btn-submit:hover {
+            animation: none;
+        }
+
+        /* Checkbox/Radio Enhancements */
+        .custom-checkbox,
+        .custom-radio {
+            width: 22px;
+            height: 22px;
+            border: 2px solid var(--borderColor);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .dark .custom-checkbox,
+        .dark .custom-radio {
+            border-color: #312a57;
+        }
+
+        .custom-checkbox:checked {
+            background: linear-gradient(135deg, var(--primaryColor) 0%, #7c3aed 100%);
+            border-color: var(--primaryColor);
+        }
+
+        .custom-checkbox:focus {
+            box-shadow: 0 0 0 4px rgba(95, 45, 237, 0.1);
+        }
+
+        /* File Upload Enhancement */
+        .file-upload-wrapper {
+            position: relative;
+            border: 2px dashed var(--borderColor);
+            border-radius: 12px;
+            padding: 30px;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .dark .file-upload-wrapper {
+            border-color: #312a57;
+        }
+
+        .file-upload-wrapper:hover {
+            border-color: var(--primaryColor);
+            background: rgba(95, 45, 237, 0.02);
+        }
+
+        .dark .file-upload-wrapper:hover {
+            background: rgba(95, 45, 237, 0.05);
+        }
+
+        .file-upload-wrapper.has-file {
+            border-color: #10b981;
+            background: rgba(16, 185, 129, 0.05);
+        }
+
+        /* Badge */
+        .step-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 16px;
+            border-radius: 999px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            background: linear-gradient(135deg, rgba(95, 45, 237, 0.1) 0%, rgba(242, 39, 126, 0.1) 100%);
+            color: var(--primaryColor);
+        }
+
+        /* Tooltip */
+        .tooltip-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: rgba(95, 45, 237, 0.1);
+            color: var(--primaryColor);
+            font-size: 0.75rem;
+            cursor: help;
+            transition: all 0.3s ease;
+        }
+
+            .tooltip-icon:hover {
+                background: var(--primaryColor);
+                color: white;
+                transform: scale(1.1);
+            }
+
+        /* Validation Error Styling */
+        .validation-error {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--secondaryColor);
+            font-size: 0.75rem;
+            margin-top: 6px;
+            animation: shake 0.5s;
+        }
+
+        @@keyframes shake {
+            0%, 100% {
+                transform: translateX(0);
+            }
+
+            25% {
+                transform: translateX(-5px);
+            }
+
+            75% {
+                transform: translateX(5px);
+            }
+        }
+
+        /* Special Circumstances Cards */
+        .circumstance-card {
+            position: relative;
+            border: 2px solid var(--borderColor);
+            border-radius: 12px;
+            padding: 20px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            overflow: hidden;
+        }
+
+        .dark .circumstance-card {
+            border-color: #312a57;
+        }
+
+        .circumstance-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(95, 45, 237, 0.05), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .circumstance-card:hover::before {
+            left: 100%;
+        }
+
+        .circumstance-card:hover {
+            border-color: var(--primaryColor);
+            box-shadow: 0 8px 24px rgba(95, 45, 237, 0.15);
+            transform: translateY(-2px);
+        }
+
+        .circumstance-card.active {
+            border-color: var(--primaryColor);
+            background: rgba(95, 45, 237, 0.05);
+        }
+
+        .dark .circumstance-card.active {
+            background: rgba(95, 45, 237, 0.1);
+        }
+
+        /* Loading Spinner */
+        .spinner {
+            border: 3px solid rgba(95, 45, 237, 0.1);
+            border-top-color: var(--primaryColor);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @@keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Animated Blob Background */
+        @@keyframes blob {
+            0%, 100% {
+                transform: translate(0, 0) scale(1);
+            }
+
+            25% {
+                transform: translate(20px, -50px) scale(1.1);
+            }
+
+            50% {
+                transform: translate(-20px, 20px) scale(0.9);
+            }
+
+            75% {
+                transform: translate(20px, 50px) scale(1.05);
+            }
+        }
+
+        .animate-blob {
+            animation: blob 20s infinite;
+        }
+
+        .animation-delay-2000 {
+            animation-delay: 2s;
+        }
+
+        .animation-delay-4000 {
+            animation-delay: 4s;
+        }
+
+        /* Responsive Adjustments */
+        @@media (max-width: 768px) {
+            .step-dot {
+                width: 50px;
+                height: 50px;
+                font-size: 1rem;
+            }
+
+                .step-dot i {
+                    font-size: 1.5rem;
+                }
+
+            .step-connector {
+                display: none;
+            }
+
+            .section-header-icon {
+                width: 40px;
+                height: 40px;
+                font-size: 1.25rem;
+            }
+        }
+
+    </style>
+}
+
+<!-- Hero Banner Section -->
+<section class="relative bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 dark:from-darkdeep1 dark:via-darkdeep1 dark:to-darkdeep1 py-20 overflow-hidden">
+    <!-- Animated Background Pattern -->
+    <div class="absolute inset-0 opacity-10">
+        <div class="absolute top-0 left-0 w-72 h-72 bg-primaryColor rounded-full mix-blend-multiply filter blur-3xl animate-blob"></div>
+        <div class="absolute top-0 right-0 w-72 h-72 bg-secondaryColor rounded-full mix-blend-multiply filter blur-3xl animate-blob animation-delay-2000"></div>
+        <div class="absolute bottom-0 left-1/2 w-72 h-72 bg-blue rounded-full mix-blend-multiply filter blur-3xl animate-blob animation-delay-4000"></div>
+    </div>
+
+    <div class="px-15px lg:container 3xl:container-secondary-lg 4xl:container mx-auto relative z-10">
+        <div class="text-center" data-aos="fade-up">
+            <!-- Icon -->
+            <div class="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-primaryColor to-secondaryColor rounded-2xl mb-6 shadow-xl">
+                <i class="icofont-user-alt-7 text-4xl text-white"></i>
+            </div>
+
+            <!-- Title -->
+            <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold text-blackColor dark:text-whiteColor mb-4">
+                Complete Your <span class="bg-gradient-to-r from-primaryColor to-secondaryColor bg-clip-text text-transparent">Profile</span>
+            </h1>
+
+            <!-- Subtitle -->
+            <p class="text-lg text-contentColor dark:text-contentColor-dark mb-6 max-w-2xl mx-auto">
+                Just a few steps to unlock your personalized university recommendations
+            </p>
+
+            <!-- Breadcrumb -->
+            <nav class="flex justify-center items-center gap-2 text-sm">
+                <a asp-controller="Account" asp-action="Me"
+                   class="flex items-center gap-2 text-contentColor dark:text-contentColor-dark hover:text-primaryColor transition-colors">
+                    <i class="icofont-home"></i>
+                    <span>Profile</span>
+                </a>
+                <i class="icofont-simple-right text-contentColor dark:text-contentColor-dark"></i>
+                <span class="text-primaryColor font-semibold">Complete Profile</span>
+            </nav>
+        </div>
+    </div>
+</section>
+
+<!-- Main Wizard Section -->
+<section class="py-16 lg:py-24 wizard-container">
+    <div class="px-15px lg:container 3xl:container-secondary-lg 4xl:container mx-auto">
+        <div class="max-w-5xl mx-auto">
+            <!-- Main Card -->
+            <div class="bg-whiteColor dark:bg-whiteColor-dark rounded-3xl shadow-2xl p-8 md:p-12" data-aos="fade-up" data-aos-delay="100">
+
+                <!-- Account Info Card -->
+                <div class="info-card" data-aos="fade-up" data-aos-delay="200">
+                    <div class="flex items-center gap-4 mb-5">
+                        <div class="w-14 h-14 rounded-full bg-gradient-to-br from-primaryColor to-secondaryColor flex items-center justify-center flex-shrink-0">
+                            <i class="icofont-user-suited text-2xl text-white"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-bold text-blackColor dark:text-whiteColor">Account Information</h3>
+                            <p class="text-sm text-contentColor dark:text-contentColor-dark">Linked to your account</p>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div>
+                            <div class="text-xs font-semibold text-contentColor dark:text-contentColor-dark mb-1 uppercase tracking-wide">Full Name</div>
+                            <div class="font-bold text-blackColor dark:text-whiteColor">@Model.FullName</div>
+                        </div>
+                        <div>
+                            <div class="text-xs font-semibold text-contentColor dark:text-contentColor-dark mb-1 uppercase tracking-wide">Email</div>
+                            <div class="font-bold text-blackColor dark:text-whiteColor truncate">@Model.Email</div>
+                        </div>
+                        <div>
+                            <div class="text-xs font-semibold text-contentColor dark:text-contentColor-dark mb-1 uppercase tracking-wide">Phone</div>
+                            <div class="font-bold text-blackColor dark:text-whiteColor">@Model.PhoneNumber</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Progress Stepper -->
+                <div class="mb-12" data-aos="fade-up" data-aos-delay="300">
+                    <div class="wizard-stepper flex justify-between items-start mb-8">
+                        @{
+                            var steps = new[] {
+                                                new { Icon = "icofont-id-card", Label = "Personal" },
+                                                new { Icon = "icofont-location-pin", Label = "Location" },
+                                                new { Icon = "icofont-graduate-alt", Label = "Academic" },
+                                                new { Icon = "icofont-heart", Label = "Preferences" },
+                                                new { Icon = "icofont-star", Label = "Special" }
+                                                };
+
+                            for (int i = 0; i < steps.Length; i++)
+                            {
+                                <div class="step-item flex flex-col items-center" data-step="@(i + 1)">
+                                    <div class="step-dot todo" data-role="dot">
+                                        <i class="@steps[i].Icon" data-role="icon"></i>
+                                        <span class="hidden" data-role="number">@(i + 1)</span>
+                                    </div>
+                                    <div class="mt-3 text-xs md:text-sm font-semibold text-contentColor dark:text-contentColor-dark text-center">
+                                        @steps[i].Label
+                                    </div>
+                                    @if (i < steps.Length - 1)
+                                    {
+                                        <div class="step-connector hidden md:block"></div>
+                                    }
+                                </div>
+                            }
+                        }
+                    </div>
+
+                    <!-- Progress Bar -->
+                    <div class="wizard-progress-bar">
+                        <div class="wizard-progress-fill" id="progressFill" style="width: 0%"></div>
+                    </div>
+                </div>
+
+                <!-- Form -->
+                <form asp-action="CompleteProfile" method="post" enctype="multipart/form-data"
+                      id="wizardForm" novalidate class="wizard-form-padding">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" asp-for="ExistingBtecCertificateUrl" />
+
+                    <!-- Model Validation Summary -->
+                    <div asp-validation-summary="ModelOnly" class="hidden"></div>
+
+                    <!-- STEP 1: Personal Information -->
+                    <div class="step-panel active" data-step="1">
+                        <div class="section-header">
+                            <div class="section-header-icon">
+                                <i class="icofont-id-card"></i>
+                            </div>
+                            <div class="flex-1">
+                                <h3 class="text-2xl font-bold text-blackColor dark:text-whiteColor">Personal Information</h3>
+                                <p class="text-sm text-contentColor dark:text-contentColor-dark mt-1">Tell us about yourself</p>
+                            </div>
+                            <span class="step-badge">
+                                <span>Step 1</span>
+                                <span class="text-contentColor dark:text-contentColor-dark">/ 5</span>
+                            </span>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <!-- National ID -->
+                            <div class="input-group">
+                                <label class="input-label">
+                                    <i class="icofont-id text-primaryColor"></i>
+                                    <span>National ID</span>
+                                    <span class="required-star">*</span>
+                                    <span class="tooltip-icon" title="Enter your 10-digit National ID">i</span>
+                                </label>
+                                <input asp-for="NationalId" required
+                                       class="form-input w-full h-14 px-5 text-sm rounded-xl border-2 border-borderColor dark:border-borderColor-dark bg-transparent text-blackColor dark:text-whiteColor placeholder:text-placeholder focus:outline-none"
+                                       placeholder="Enter 10-digit National ID"
+                                       maxlength="10"
+                                       pattern="\d{10}" />
+                                <span asp-validation-for="NationalId" class="validation-error"></span>
+                            </div>
+
+                            <!-- Seat Number -->
+                            <div class="input-group">
+                                <label class="input-label">
+                                    <i class="icofont-numbered text-primaryColor"></i>
+                                    <span>Tawjihi Seat Number</span>
+                                    <span class="required-star">*</span>
+                                </label>
+                                <input asp-for="SeatNumber" required
+                                       class="form-input w-full h-14 px-5 text-sm rounded-xl border-2 border-borderColor dark:border-borderColor-dark bg-transparent text-blackColor dark:text-whiteColor placeholder:text-placeholder focus:outline-none"
+                                       placeholder="Enter Tawjihi Seat Number" />
+                                <span asp-validation-for="SeatNumber" class="validation-error"></span>
+                            </div>
+
+                            <!-- Gender -->
+                            <div class="input-group">
+                                <label class="input-label">
+                                    <i class="icofont-ui-user-group text-primaryColor"></i>
+                                    <span>Gender</span>
+                                    <span class="required-star">*</span>
+                                </label>
+                                <select asp-for="Gender" required asp-items="Html.GetEnumSelectList<Gender>()"
+                                        class="form-input w-full h-14 px-5 text-sm rounded-xl border-2 border-borderColor dark:border-borderColor-dark bg-transparent text-blackColor dark:text-whiteColor focus:outline-none">
+                                    <option value="">-- Select Gender --</option>
+                                </select>
+                                <span asp-validation-for="Gender" class="validation-error"></span>
+                            </div>
+
+                            <!-- Date of Birth -->
+                            <div class="input-group">
+                                <label class="input-label">
+                                    <i class="icofont-birthday-cake text-primaryColor"></i>
+                                    <span>Date of Birth</span>
+                                    <span class="required-star">*</span>
+                                </label>
+                                <input asp-for="DateOfBirth" type="date" required
+                                       class="form-input w-full h-14 px-5 text-sm rounded-xl border-2 border-borderColor dark:border-borderColor-dark bg-transparent text-blackColor dark:text-whiteColor focus:outline-none" />
+                                <span asp-validation-for="DateOfBirth" class="validation-error"></span>
+                            </div>
+
+                            <!-- Nationality -->
+                            <div class="input-group md:col-span-2">
+                                <label class="input-label">
+                                    <i class="icofont-flag text-primaryColor"></i>
+                                    <span>Nationality</span>
+                                </label>
+                                <input asp-for="Nationality"
+                                       class="form-input w-full h-14 px-5 text-sm rounded-xl border-2 border-borderColor dark:border-borderColor-dark bg-transparent text-blackColor dark:text-whiteColor placeholder:text-placeholder focus:outline-none"
+                                       placeholder="e.g., Jordanian" />
+                                <span asp-validation-for="Nationality" class="validation-error"></span>
+                            </div>
+                        </div>
+
+                        <!-- Guardian Information -->
+                        <div class="mt-10">
+                            <div class="section-header">
+                                <div class="section-header-icon">
+                                    <i class="icofont-users-alt-4"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <h4 class="text-xl font-bold text-blackColor dark:text-whiteColor">Guardian Information</h4>
+                                    <p class="text-sm text-contentColor dark:text-contentColor-dark mt-1">Emergency contact details</p>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <!-- Guardian Name -->
+                                <div class="input-group">
+                                    <label class="input-label">
+                                        <i class="icofont-user-alt-7 text-primaryColor"></i>
+                                        <span>Guardian Name</span>
+                                        <span class="required-star">*</span>
+                                    </label>
+                                    <input asp-for="GuardianName" required
+                                           class="form-input w-full h-14 px-5 text-sm rounded-xl border-2 border-borderColor dark:border-borderColor-dark bg-transparent text-blackColor dark:text-whiteColor placeholder:text-placeholder focus:outline-none"
+                                           placeholder="Enter guardian's full name" />
+                                    <span asp-validation-for="GuardianName" class="validation-error"></span>
+                                </div>
+
+                                <!-- Guardian Phone -->
+                                <div class="input-group">
+                                    <label class="input-label">
+                                        <i class="icofont-phone text-primaryColor"></i>
+                                        <span>Guardian Phone</span>
+                                        <span class="required-star">*</span>
+                                    </label>
+                                    <input asp-for="GuardianPhone" required type="tel"
+                                           class="form-input w-full h-14 px-5 text-sm rounded-xl border-2 border-borderColor dark:border-borderColor-dark bg-transparent text-blackColor dark:text-whiteColor placeholder:text-placeholder focus:outline-none"
+                                           placeholder="Enter guardian's phone number" />
+                                    <span asp-validation-for="GuardianPhone" class="validation-error"></span>
+                                </div>
+
+                                <!-- Guardian Relation -->
+                                <div class="input-group md:col-span-2">
+                                    <label class="input-label">
+                                        <i class="icofont-link text-primaryColor"></i>
+                                        <span>Relation to Guardian</span>
+                                        <span class="required-star">*</span>
+                                    </label>
+                                    <select asp-for="GuardianRelation" required
+                                            class="form-input w-full h-14 px-5 text-sm rounded-xl border-2 border-borderColor dark:border-borderColor-dark bg-transparent text-blackColor dark:text-whiteColor focus:outline-none">
+                                        <option value="">-- Select Relation --</option>
+                                        @foreach (var relation in ViewBag.GuardianRelations as List<string>)
+                                        {
+                                            <option value="@relation">@relation</option>
+                                        }
+                                    </select>
+                                    <span asp-validation-for="GuardianRelation" class="validation-error"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Navigation -->
+                        <div class="flex justify-end gap-4 mt-10 pt-6 border-t-2 border-borderColor dark:border-borderColor-dark">
+                            <button type="button" class="wizard-btn btn-next px-8 py-4 rounded-xl font-bold text-sm flex items-center gap-2 shadow-lg">
+                                <span>Next Step</span>
+                                <i class="icofont-rounded-right text-xl"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- STEP 2: Location -->
+                    <div class="step-panel" data-step="2">
+                        <div class="section-header">
+                            <div class="section-header-icon">
+                                <i class="icofont-location-pin"></i>
+                            </div>
+                            <div class="flex-1">
+                                <h3 class="text-2xl font-bold text-blackColor dark:text-whiteColor">Location Information</h3>
+                                <p class="text-sm text-contentColor dark:text-contentColor-dark mt-1">Where are you located?</p>
+                            </div>
+                            <span class="step-badge">
+                                <span>Step 2</span>
+                                <span class="text-contentColor dark:text-contentColor-dark">/ 5</span>
+                            </span>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <!-- Province -->
+                            <div class="input-group">
+                                <label class="input-label">
+                                    <i class="icofont-map text-primaryColor"></i>
+                                    <span>Province</span>
+                                    <span class="required-star">*</span>
+                                </label>
+                                <select asp-for="Province" id="provinceSelect" required
+                                        class="form-input w-full h-14 px-5 text-sm rounded-xl border-2 border-borderColor dark:border-borderColor-dark bg-transparent text-blackColor dark:text-whiteColor focus:outline-none">
+                                    <option value="">-- Select Province --</option>
+                                    @foreach (var province in ViewBag.Provinces as List<string>)
+                                    {
+                                        <option value="@province">@province</option>
+                                    }
+                                </select>
+                                <span asp-validation-for="Province" class="validation-error"></span>
+                            </div>
+
+                            <!-- City -->
+                            <div class="input-group">
+                                <label class="input-label">
+                                    <i class="icofont-building-alt text-primaryColor"></i>
+                                    <span>City</span>
+                                    <span class="required-star">*</span>
+                                </label>
+                                <input asp-for="City" required
+                                       class="form-input w-full h-14 px-5 text-sm rounded-xl border-2 border-borderColor dark:border-borderColor-dark bg-transparent text-blackColor dark:text-whiteColor placeholder:text-placeholder focus:outline-none"
+                                       placeholder="Enter your city" />
+                                <span asp-validation-for="City" class="validation-error"></span>
+                            </div>
+
+                            <!-- Area -->
+                            <div class="input-group md:col-span-2">
+                                <label class="input-label">
+                                    <i class="icofont-tree-alt text-primaryColor"></i>
+                                    <span>Area / Neighborhood</span>
+                                    <span class="text-xs text-contentColor dark:text-contentColor-dark font-normal">(Optional)</span>
+                                </label>
+                                <input asp-for="Area"
+                                       class="form-input w-full h-14 px-5 text-sm rounded-xl border-2 border-borderColor dark:border-borderColor-dark bg-transparent text-blackColor dark:text-whiteColor placeholder:text-placeholder focus:outline-none"
+                                       placeholder="Enter area or neighborhood (optional)" />
+                                <span asp-validation-for="Area" class="validation-error"></span>
+                            </div>
+                        </div>
+
+                        <!-- Navigation -->
+                        <div class="flex justify-between gap-4 mt-10 pt-6 border-t-2 border-borderColor dark:border-borderColor-dark">
+                            <button type="button" class="wizard-btn btn-prev px-8 py-4 rounded-xl font-bold text-sm flex items-center gap-2 shadow-lg">
+                                <i class="icofont-rounded-left text-xl"></i>
+                                <span>Previous</span>
+                            </button>
+                            <button type="button" class="wizard-btn btn-next px-8 py-4 rounded-xl font-bold text-sm flex items-center gap-2 shadow-lg">
+                                <span>Next Step</span>
+                                <i class="icofont-rounded-right text-xl"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- STEP 3: Academic -->
+                    <div class="step-panel" data-step="3">
+                        <div class="section-header">
+                            <div class="section-header-icon">
+                                <i class="icofont-graduate-alt"></i>
+                            </div>
+                            <div class="flex-1">
+                                <h3 class="text-2xl font-bold text-blackColor dark:text-whiteColor">Academic Information</h3>
+                                <p class="text-sm text-contentColor dark:text-contentColor-dark mt-1">Your educational background</p>
+                            </div>
+                            <span class="step-badge">
+                                <span>Step 3</span>
+                                <span class="text-contentColor dark:text-contentColor-dark">/ 5</span>
+                            </span>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <!-- GPA -->
+                            <div class="input-group">
+                                <label class="input-label">
+                                    <i class="icofont-chart-bar-graph text-primaryColor"></i>
+                                    <span>GPA (0-100)</span>
+                                    <span class="required-star">*</span>
+                                </label>
+                                <input asp-for="GPA" type="number" step="0.01" min="0" max="100" required
+                                       class="form-input w-full h-14 px-5 text-sm rounded-xl border-2 border-borderColor dark:border-borderColor-dark bg-transparent text-blackColor dark:text-whiteColor placeholder:text-placeholder focus:outline-none"
+                                       placeholder="Enter your GPA" />
+                                <span asp-validation-for="GPA" class="validation-error"></span>
+                            </div>
+
+                            <!-- Educational Path -->
+                            <div class="input-group">
+                                <label class="input-label">
+                                    <i class="icofont-road text-primaryColor"></i>
+                                    <span>Educational Path</span>
+                                    <span class="required-star">*</span>
+                                </label>
+                                <select asp-for="Path" id="pathSelect" required asp-items="Html.GetEnumSelectList<PathType>()"
+                                        class="form-input w-full h-14 px-5 text-sm rounded-xl border-2 border-borderColor dark:border-borderColor-dark bg-transparent text-blackColor dark:text-whiteColor focus:outline-none">
+                                    <option value="">-- Select Path --</option>
+                                </select>
+                                <span asp-validation-for="Path" class="validation-error"></span>
+                            </div>
+
+                            <!-- Academic Track (Conditional) -->
+                            <div id="academicTrackDiv" class="input-group hidden">
+                                <label class="input-label">
+                                    <i class="icofont-book-alt text-primaryColor"></i>
+                                    <span>Academic Track</span>
+                                    <span class="required-star">*</span>
+                                </label>
+                                <select asp-for="AcademicTrack" id="AcademicTrack" asp-items="Html.GetEnumSelectList<AcademicTrack>()"
+                                        class="form-input w-full h-14 px-5 text-sm rounded-xl border-2 border-borderColor dark:border-borderColor-dark bg-transparent text-blackColor dark:text-whiteColor focus:outline-none">
+                                    <option value="">-- Select Track --</option>
+                                </select>
+                                <span asp-validation-for="AcademicTrack" class="validation-error"></span>
+                            </div>
+
+                            <!-- Vocational Branch (Conditional) -->
+                            <div id="vocationalBranchDiv" class="input-group hidden">
+                                <label class="input-label">
+                                    <i class="icofont-wrench text-primaryColor"></i>
+                                    <span>Vocational Branch</span>
+                                    <span class="required-star">*</span>
+                                </label>
+                                <select asp-for="VocationalBranch" id="VocationalBranch" asp-items="Html.GetEnumSelectList<VocationalBranch>()"
+                                        class="form-input w-full h-14 px-5 text-sm rounded-xl border-2 border-borderColor dark:border-borderColor-dark bg-transparent text-blackColor dark:text-whiteColor focus:outline-none">
+                                    <option value="">-- Select Branch --</option>
+                                </select>
+                                <span asp-validation-for="VocationalBranch" class="validation-error"></span>
+                            </div>
+
+                            <!-- BTEC Section (Conditional) -->
+                            <div id="btecDiv" class="md:col-span-2 hidden">
+                                <div class="bg-gradient-to-br from-blue/5 to-primaryColor/5 dark:from-blue/10 dark:to-primaryColor/10 border-2 border-blue/20 dark:border-blue/30 rounded-2xl p-6">
+                                    <div class="flex items-center gap-3 mb-6">
+                                        <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-blue to-primaryColor flex items-center justify-center">
+                                            <i class="icofont-certificate-alt-1 text-2xl text-white"></i>
+                                        </div>
+                                        <div>
+                                            <h4 class="text-lg font-bold text-blackColor dark:text-whiteColor">BTEC Qualifications</h4>
+                                            <p class="text-sm text-contentColor dark:text-contentColor-dark">Select your completed levels</p>
+                                        </div>
+                                    </div>
+
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                                        <!-- BTEC Level 2 -->
+                                        <label class="circumstance-card cursor-pointer" id="btecLevel2Card">
+                                            <div class="flex items-center gap-3">
+                                                <input asp-for="BtecLevel2Completed" type="checkbox" class="custom-checkbox" />
+                                                <div>
+                                                    <div class="font-semibold text-blackColor dark:text-whiteColor">BTEC Level 2</div>
+                                                    <div class="text-xs text-contentColor dark:text-contentColor-dark">Foundation level</div>
+                                                </div>
+                                            </div>
+                                        </label>
+
+                                        <!-- BTEC Level 3 -->
+                                        <label class="circumstance-card cursor-pointer" id="btecLevel3Card">
+                                            <div class="flex items-center gap-3">
+                                                <input asp-for="BtecLevel3Completed" type="checkbox" class="custom-checkbox" />
+                                                <div>
+                                                    <div class="font-semibold text-blackColor dark:text-whiteColor">BTEC Level 3</div>
+                                                    <div class="text-xs text-contentColor dark:text-contentColor-dark">Advanced level</div>
+                                                </div>
+                                            </div>
+                                        </label>
+                                    </div>
+
+                                    @if (!string.IsNullOrWhiteSpace(Model.ExistingBtecCertificateUrl))
+                                    {
+                                        <div class="mb-4 p-4 rounded-xl bg-greencolor/10 border-2 border-greencolor/30 text-blackColor dark:text-whiteColor">
+                                            <div class="flex items-center gap-3">
+                                                <i class="icofont-check-circled text-2xl text-greencolor"></i>
+                                                <div class="flex-1">
+                                                    <div class="font-semibold">Certificate uploaded successfully</div>
+                                                    <a href="@Model.ExistingBtecCertificateUrl" target="_blank" class="text-sm text-primaryColor hover:underline font-semibold flex items-center gap-1 mt-1">
+                                                        <i class="icofont-eye-alt"></i>
+                                                        <span>View Certificate</span>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+
+                                    <!-- File Upload -->
+                                    <div class="input-group">
+                                        <label class="input-label">
+                                            <i class="icofont-upload-alt text-primaryColor"></i>
+                                            <span>Upload BTEC Certificate</span>
+                                        </label>
+                                        <div class="file-upload-wrapper" id="fileUploadWrapper">
+                                            <input asp-for="BtecCertificateFile" type="file" accept=".pdf,.jpg,.jpeg,.png" id="btecFileInput" class="hidden" />
+                                            <div id="fileUploadPlaceholder">
+                                                <i class="icofont-file-pdf text-4xl text-contentColor dark:text-contentColor-dark mb-2"></i>
+                                                <p class="font-semibold text-blackColor dark:text-whiteColor mb-1">Click to upload or drag and drop</p>
+                                                <p class="text-xs text-contentColor dark:text-contentColor-dark">PDF, JPG, PNG (Max 5MB)</p>
+                                            </div>
+                                            <div id="fileUploadSuccess" class="hidden">
+                                                <i class="icofont-check-circled text-4xl text-greencolor mb-2"></i>
+                                                <p class="font-semibold text-blackColor dark:text-whiteColor" id="fileName"></p>
+                                                <button type="button" class="text-sm text-secondaryColor hover:underline mt-2" id="removeFile">Remove file</button>
+                                            </div>
+                                        </div>
+                                        <span asp-validation-for="BtecCertificateFile" class="validation-error"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Navigation -->
+                        <div class="flex justify-between gap-4 mt-10 pt-6 border-t-2 border-borderColor dark:border-borderColor-dark">
+                            <button type="button" class="wizard-btn btn-prev px-8 py-4 rounded-xl font-bold text-sm flex items-center gap-2 shadow-lg">
+                                <i class="icofont-rounded-left text-xl"></i>
+                                <span>Previous</span>
+                            </button>
+                            <button type="button" class="wizard-btn btn-next px-8 py-4 rounded-xl font-bold text-sm flex items-center gap-2 shadow-lg">
+                                <span>Next Step</span>
+                                <i class="icofont-rounded-right text-xl"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- STEP 4: Preferences -->
+                    <div class="step-panel" data-step="4">
+                        <div class="section-header">
+                            <div class="section-header-icon">
+                                <i class="icofont-heart"></i>
+                            </div>
+                            <div class="flex-1">
+                                <h3 class="text-2xl font-bold text-blackColor dark:text-whiteColor">University Preferences</h3>
+                                <p class="text-sm text-contentColor dark:text-contentColor-dark mt-1">What are you looking for?</p>
+                            </div>
+                            <span class="step-badge">
+                                <span>Step 4</span>
+                                <span class="text-contentColor dark:text-contentColor-dark">/ 5</span>
+                            </span>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <!-- Budget -->
+                            <div class="input-group">
+                                <label class="input-label">
+                                    <i class="icofont-cur-dollar text-primaryColor"></i>
+                                    <span>Registration Budget (JOD)</span>
+                                    <span class="required-star">*</span>
+                                </label>
+                                <input asp-for="RegistrationBudget" type="number" step="0.01" min="0" required
+                                       class="form-input w-full h-14 px-5 text-sm rounded-xl border-2 border-borderColor dark:border-borderColor-dark bg-transparent text-blackColor dark:text-whiteColor placeholder:text-placeholder focus:outline-none"
+                                       placeholder="Enter your budget in JOD" />
+                                <span asp-validation-for="RegistrationBudget" class="validation-error"></span>
+                            </div>
+
+                            <!-- Preferred City -->
+                            <div class="input-group">
+                                <label class="input-label">
+                                    <i class="icofont-building text-primaryColor"></i>
+                                    <span>Preferred University City</span>
+                                </label>
+                                <input asp-for="PreferredCity"
+                                       class="form-input w-full h-14 px-5 text-sm rounded-xl border-2 border-borderColor dark:border-borderColor-dark bg-transparent text-blackColor dark:text-whiteColor placeholder:text-placeholder focus:outline-none"
+                                       placeholder="Preferred city (optional)" />
+                                <span asp-validation-for="PreferredCity" class="validation-error"></span>
+                            </div>
+
+                            <!-- Max Distance -->
+                            <div class="input-group">
+                                <label class="input-label">
+                                    <i class="icofont-map-pins text-primaryColor"></i>
+                                    <span>Max Distance (km)</span>
+                                </label>
+                                <input asp-for="MaxDistanceKm" type="number" min="1" max="200"
+                                       class="form-input w-full h-14 px-5 text-sm rounded-xl border-2 border-borderColor dark:border-borderColor-dark bg-transparent text-blackColor dark:text-whiteColor placeholder:text-placeholder focus:outline-none"
+                                       placeholder="Maximum distance in kilometers" />
+                                <span asp-validation-for="MaxDistanceKm" class="validation-error"></span>
+                            </div>
+
+                            <!-- Preferred Language -->
+                            <div class="input-group">
+                                <label class="input-label">
+                                    <i class="icofont-speech-comments text-primaryColor"></i>
+                                    <span>Preferred Language of Study</span>
+                                </label>
+                                <select asp-for="PreferredLanguage" asp-items="Html.GetEnumSelectList<LanguageCode>()"
+                                        class="form-input w-full h-14 px-5 text-sm rounded-xl border-2 border-borderColor dark:border-borderColor-dark bg-transparent text-blackColor dark:text-whiteColor focus:outline-none">
+                                </select>
+                                <span asp-validation-for="PreferredLanguage" class="validation-error"></span>
+                            </div>
+
+                            <!-- Desired Majors -->
+                            <div class="input-group md:col-span-2">
+                                <label class="input-label">
+                                    <i class="icofont-automation text-primaryColor"></i>
+                                    <span>Desired Majors</span>
+                                    <span class="text-xs text-contentColor dark:text-contentColor-dark font-normal">(Comma separated)</span>
+                                </label>
+                                <input asp-for="DesiredMajors"
+                                       class="form-input w-full h-14 px-5 text-sm rounded-xl border-2 border-borderColor dark:border-borderColor-dark bg-transparent text-blackColor dark:text-whiteColor placeholder:text-placeholder focus:outline-none"
+                                       placeholder="e.g., Computer Science, Engineering, Business" />
+                                <span asp-validation-for="DesiredMajors" class="validation-error"></span>
+                                <p class="text-xs text-contentColor dark:text-contentColor-dark mt-2 flex items-center gap-1">
+                                    <i class="icofont-info-circle"></i>
+                                    <span>Separate multiple majors with commas</span>
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Navigation -->
+                        <div class="flex justify-between gap-4 mt-10 pt-6 border-t-2 border-borderColor dark:border-borderColor-dark">
+                            <button type="button" class="wizard-btn btn-prev px-8 py-4 rounded-xl font-bold text-sm flex items-center gap-2 shadow-lg">
+                                <i class="icofont-rounded-left text-xl"></i>
+                                <span>Previous</span>
+                            </button>
+                            <button type="button" class="wizard-btn btn-next px-8 py-4 rounded-xl font-bold text-sm flex items-center gap-2 shadow-lg">
+                                <span>Final Step</span>
+                                <i class="icofont-rounded-right text-xl"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- STEP 5: Special Circumstances -->
+                    <div class="step-panel" data-step="5">
+                        <div class="section-header">
+                            <div class="section-header-icon">
+                                <i class="icofont-star"></i>
+                            </div>
+                            <div class="flex-1">
+                                <h3 class="text-2xl font-bold text-blackColor dark:text-whiteColor">Special Circumstances</h3>
+                                <p class="text-sm text-contentColor dark:text-contentColor-dark mt-1">Any additional information</p>
+                            </div>
+                            <span class="step-badge bg-gradient-to-r from-greencolor/10 to-blue/10 text-greencolor">
+                                <i class="icofont-check-circled"></i>
+                                <span>Final Step</span>
+                            </span>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <!-- Has Disability -->
+                            <label class="circumstance-card" id="disabilityCard">
+                                <div class="flex items-center gap-3">
+                                    <input asp-for="HasDisability" type="checkbox" id="hasDisabilityCheck" class="custom-checkbox" />
+                                    <div class="flex-1">
+                                        <div class="font-semibold text-blackColor dark:text-whiteColor flex items-center gap-2">
+                                            <i class="icofont-wheelchair text-primaryColor"></i>
+                                            <span>I have a disability</span>
+                                        </div>
+                                        <p class="text-xs text-contentColor dark:text-contentColor-dark mt-1">Select if applicable</p>
+                                    </div>
+                                </div>
+                            </label>
+
+                            <!-- Disability Type (Conditional) -->
+                            <div id="disabilityTypeDiv" class="input-group hidden">
+                                <label class="input-label">
+                                    <i class="icofont-info-circle text-primaryColor"></i>
+                                    <span>Disability Type</span>
+                                    <span class="required-star">*</span>
+                                </label>
+                                <input asp-for="DisabilityType" id="DisabilityType"
+                                       class="form-input w-full h-14 px-5 text-sm rounded-xl border-2 border-borderColor dark:border-borderColor-dark bg-transparent text-blackColor dark:text-whiteColor placeholder:text-placeholder focus:outline-none"
+                                       placeholder="Specify disability type" />
+                                <span asp-validation-for="DisabilityType" class="validation-error"></span>
+                            </div>
+
+                            <!-- Is Orphan -->
+                            <label class="circumstance-card" id="orphanCard">
+                                <div class="flex items-center gap-3">
+                                    <input asp-for="IsOrphan" type="checkbox" class="custom-checkbox" />
+                                    <div class="flex-1">
+                                        <div class="font-semibold text-blackColor dark:text-whiteColor flex items-center gap-2">
+                                            <i class="icofont-heart-alt text-primaryColor"></i>
+                                            <span>I am an orphan</span>
+                                        </div>
+                                        <p class="text-xs text-contentColor dark:text-contentColor-dark mt-1">Select if applicable</p>
+                                    </div>
+                                </div>
+                            </label>
+
+                            <!-- Is Employee Child -->
+                            <label class="circumstance-card" id="employeeCard">
+                                <div class="flex items-center gap-3">
+                                    <input asp-for="IsEmployeeChild" type="checkbox" class="custom-checkbox" />
+                                    <div class="flex-1">
+                                        <div class="font-semibold text-blackColor dark:text-whiteColor flex items-center gap-2">
+                                            <i class="icofont-briefcase text-primaryColor"></i>
+                                            <span>University employee's child</span>
+                                        </div>
+                                        <p class="text-xs text-contentColor dark:text-contentColor-dark mt-1">Parent works at university</p>
+                                    </div>
+                                </div>
+                            </label>
+
+                            <!-- Has Family Connection -->
+                            <label class="circumstance-card" id="familyCard">
+                                <div class="flex items-center gap-3">
+                                    <input asp-for="HasFamilyConnection" type="checkbox" id="hasFamilyConnectionCheck" class="custom-checkbox" />
+                                    <div class="flex-1">
+                                        <div class="font-semibold text-blackColor dark:text-whiteColor flex items-center gap-2">
+                                            <i class="icofont-users text-primaryColor"></i>
+                                            <span>Family connection to university</span>
+                                        </div>
+                                        <p class="text-xs text-contentColor dark:text-contentColor-dark mt-1">Family member attended/works</p>
+                                    </div>
+                                </div>
+                            </label>
+
+                            <!-- Family University (Conditional) -->
+                            <div id="familyUniversityDiv" class="input-group hidden">
+                                <label class="input-label">
+                                    <i class="icofont-graduate text-primaryColor"></i>
+                                    <span>Select University</span>
+                                    <span class="required-star">*</span>
+                                </label>
+                                <select asp-for="FamilyConnectionUniversityId" id="FamilyConnectionUniversityId"
+                                        class="form-input w-full h-14 px-5 text-sm rounded-xl border-2 border-borderColor dark:border-borderColor-dark bg-transparent text-blackColor dark:text-whiteColor focus:outline-none">
+                                    <option value="">-- Select University --</option>
+                                    @foreach (var u in ViewBag.Universities as List<SelectListItem>)
+                                    {
+                                        <option value="@u.Value">@u.Text</option>
+                                    }
+                                </select>
+                                <span asp-validation-for="FamilyConnectionUniversityId" class="validation-error"></span>
+                            </div>
+                        </div>
+
+                        <!-- Final Note -->
+                        <div class="mt-8 p-6 rounded-2xl bg-gradient-to-br from-primaryColor/5 to-secondaryColor/5 dark:from-primaryColor/10 dark:to-secondaryColor/10 border-2 border-primaryColor/20">
+                            <div class="flex items-start gap-4">
+                                <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-primaryColor to-secondaryColor flex-shrink-0 flex items-center justify-center">
+                                    <i class="icofont-info-circle text-2xl text-white"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <h4 class="font-bold text-blackColor dark:text-whiteColor mb-2">Almost Done!</h4>
+                                    <p class="text-sm text-contentColor dark:text-contentColor-dark">
+                                        Please review all information before submitting. Once submitted, your profile will be used to generate personalized university recommendations.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Navigation -->
+                        <div class="flex justify-between gap-4 mt-10 pt-6 border-t-2 border-borderColor dark:border-borderColor-dark">
+                            <button type="button" class="wizard-btn btn-prev px-8 py-4 rounded-xl font-bold text-sm flex items-center gap-2 shadow-lg">
+                                <i class="icofont-rounded-left text-xl"></i>
+                                <span>Previous</span>
+                            </button>
+                            <button type="submit" class="wizard-btn btn-submit px-10 py-4 rounded-xl font-bold text-sm flex items-center gap-3 shadow-xl">
+                                <i class="icofont-check-circled text-2xl"></i>
+                                <span>Complete Profile</span>
+                            </button>
+                        </div>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            // Configuration
+            let currentStep = 1;
+            const totalSteps = 5;
+            const form = document.getElementById("wizardForm");
+            const panels = document.querySelectorAll(".step-panel");
+            const stepItems = document.querySelectorAll(".step-item");
+            const progressFill = document.getElementById("progressFill");
+
+            // Elements
+            const pathSelect = document.getElementById("pathSelect");
+            const academicTrackDiv = document.getElementById("academicTrackDiv");
+            const vocationalBranchDiv = document.getElementById("vocationalBranchDiv");
+            const btecDiv = document.getElementById("btecDiv");
+            const academicTrackSelect = document.getElementById("AcademicTrack");
+            const vocationalBranchSelect = document.getElementById("VocationalBranch");
+
+            const hasDisabilityCheck = document.getElementById("hasDisabilityCheck");
+            const disabilityTypeDiv = document.getElementById("disabilityTypeDiv");
+            const disabilityTypeInput = document.getElementById("DisabilityType");
+            const disabilityCard = document.getElementById("disabilityCard");
+
+            const hasFamilyConnectionCheck = document.getElementById("hasFamilyConnectionCheck");
+            const familyUniversityDiv = document.getElementById("familyUniversityDiv");
+            const familyUniversitySelect = document.getElementById("FamilyConnectionUniversityId");
+            const familyCard = document.getElementById("familyCard");
+
+            // File upload
+            const btecFileInput = document.getElementById("btecFileInput");
+            const fileUploadWrapper = document.getElementById("fileUploadWrapper");
+            const fileUploadPlaceholder = document.getElementById("fileUploadPlaceholder");
+            const fileUploadSuccess = document.getElementById("fileUploadSuccess");
+            const fileNameDisplay = document.getElementById("fileName");
+            const removeFileBtn = document.getElementById("removeFile");
+
+            // ========================================
+            // Step Navigation Functions
+            // ========================================
+
+            function updateStepDots(step) {
+                stepItems.forEach((item, index) => {
+                    const stepNum = index + 1;
+                    const dot = item.querySelector('[data-role="dot"]');
+                    const icon = item.querySelector('[data-role="icon"]');
+                    const number = item.querySelector('[data-role="number"]');
+                    const connector = item.querySelector('.step-connector');
+
+                    // Remove all state classes
+                    dot.classList.remove('todo', 'active', 'completed');
+
+                    if (stepNum < step) {
+                        // Completed steps
+                        dot.classList.add('completed');
+                        if (icon) icon.classList.add('hidden');
+                        if (number) number.classList.remove('hidden');
+                        if (connector) connector.classList.add('completed');
+                    } else if (stepNum === step) {
+                        // Current step
+                        dot.classList.add('active');
+                        if (icon) icon.classList.remove('hidden');
+                        if (number) number.classList.add('hidden');
+                    } else {
+                        // Future steps
+                        dot.classList.add('todo');
+                        if (icon) icon.classList.remove('hidden');
+                        if (number) number.classList.add('hidden');
+                        if (connector) connector.classList.remove('completed');
+                    }
+                });
+            }
+
+            function updateProgressBar(step) {
+                const progress = ((step - 1) / (totalSteps - 1)) * 100;
+                progressFill.style.width = progress + '%';
+            }
+
+            function showStep(step) {
+                // Hide all panels
+                panels.forEach(panel => {
+                    panel.classList.remove('active');
+                });
+
+                // Show current panel
+                const currentPanel = document.querySelector(`.step-panel[data-step="${step}"]`);
+                if (currentPanel) {
+                    currentPanel.classList.add('active');
+                }
+
+                // Update step indicators
+                updateStepDots(step);
+                updateProgressBar(step);
+
+                // Update current step
+                currentStep = step;
+
+                // Scroll to top
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+
+            function validateStep(step) {
+                const panel = document.querySelector(`.step-panel[data-step="${step}"]`);
+                if (!panel) return true;
+
+                const inputs = panel.querySelectorAll('input:not([type="hidden"]):not([type="checkbox"]):not([type="file"]), select, textarea');
+                let isValid = true;
+                let firstInvalidField = null;
+
+                inputs.forEach(input => {
+                    // Skip if hidden or disabled
+                    if (input.offsetParent === null || input.disabled) return;
+
+                    // Check if parent is hidden
+                    let parent = input.closest('.input-group');
+                    if (parent && parent.classList.contains('hidden')) return;
+
+                    // Validate
+                    if (!input.checkValidity()) {
+                        isValid = false;
+                        if (!firstInvalidField) firstInvalidField = input;
+                        input.classList.add('border-secondaryColor');
+                    } else {
+                        input.classList.remove('border-secondaryColor');
+                    }
+                });
+
+                if (!isValid && firstInvalidField) {
+                    firstInvalidField.focus();
+                    firstInvalidField.reportValidity();
+                }
+
+                return isValid;
+            }
+
+            // ========================================
+            // Path-based Conditional Logic
+            // ========================================
+
+            function updatePathUI() {
+                if (!pathSelect) return;
+
+                const value = pathSelect.value;
+
+                // Hide all conditional sections
+                if (academicTrackDiv) {
+                    academicTrackDiv.classList.add('hidden');
+                    if (academicTrackSelect) academicTrackSelect.required = false;
+                }
+                if (vocationalBranchDiv) {
+                    vocationalBranchDiv.classList.add('hidden');
+                    if (vocationalBranchSelect) vocationalBranchSelect.required = false;
+                }
+                if (btecDiv) {
+                    btecDiv.classList.add('hidden');
+                }
+
+                // Show relevant section based on path
+                if (value === "1") { // Academic
+                    if (academicTrackDiv) {
+                        academicTrackDiv.classList.remove('hidden');
+                        if (academicTrackSelect) academicTrackSelect.required = true;
+                    }
+                } else if (value === "2") { // Vocational
+                    if (vocationalBranchDiv) {
+                        vocationalBranchDiv.classList.remove('hidden');
+                        if (vocationalBranchSelect) vocationalBranchSelect.required = true;
+                    }
+                } else if (value === "3") { // BTEC
+                    if (btecDiv) {
+                        btecDiv.classList.remove('hidden');
+                    }
+                }
+            }
+
+            // ========================================
+            // Special Circumstances Logic
+            // ========================================
+
+            function updateDisabilityUI() {
+                if (!hasDisabilityCheck || !disabilityTypeDiv) return;
+
+                const isChecked = hasDisabilityCheck.checked;
+
+                if (isChecked) {
+                    disabilityTypeDiv.classList.remove('hidden');
+                    if (disabilityTypeInput) disabilityTypeInput.required = true;
+                    if (disabilityCard) disabilityCard.classList.add('active');
+                } else {
+                    disabilityTypeDiv.classList.add('hidden');
+                    if (disabilityTypeInput) {
+                        disabilityTypeInput.required = false;
+                        disabilityTypeInput.value = '';
+                    }
+                    if (disabilityCard) disabilityCard.classList.remove('active');
+                }
+            }
+
+            function updateFamilyUI() {
+                if (!hasFamilyConnectionCheck || !familyUniversityDiv) return;
+
+                const isChecked = hasFamilyConnectionCheck.checked;
+
+                if (isChecked) {
+                    familyUniversityDiv.classList.remove('hidden');
+                    if (familyUniversitySelect) familyUniversitySelect.required = true;
+                    if (familyCard) familyCard.classList.add('active');
+                } else {
+                    familyUniversityDiv.classList.add('hidden');
+                    if (familyUniversitySelect) {
+                        familyUniversitySelect.required = false;
+                        familyUniversitySelect.value = '';
+                    }
+                    if (familyCard) familyCard.classList.remove('active');
+                }
+            }
+
+            // ========================================
+            // File Upload Logic
+            // ========================================
+
+            function handleFileSelect(file) {
+                if (!file) return;
+
+                // Validate file size (5MB max)
+                if (file.size > 5 * 1024 * 1024) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'File Too Large',
+                        text: 'Please select a file smaller than 5MB',
+                        confirmButtonColor: '#5f2ded',
+                        confirmButtonText: 'OK'
+                    });
+                    btecFileInput.value = '';
+                    return;
+                }
+
+                // Validate file type
+                const validTypes = ['application/pdf', 'image/jpeg', 'image/jpg', 'image/png'];
+                if (!validTypes.includes(file.type)) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Invalid File Type',
+                        text: 'Please select a PDF, JPG, or PNG file',
+                        confirmButtonColor: '#5f2ded',
+                        confirmButtonText: 'OK'
+                    });
+                    btecFileInput.value = '';
+                    return;
+                }
+
+                // Show success state
+                fileUploadPlaceholder.classList.add('hidden');
+                fileUploadSuccess.classList.remove('hidden');
+                fileUploadWrapper.classList.add('has-file');
+                fileNameDisplay.textContent = file.name;
+            }
+
+            if (btecFileInput) {
+                btecFileInput.addEventListener('change', function(e) {
+                    handleFileSelect(e.target.files[0]);
+                });
+            }
+
+            if (fileUploadWrapper) {
+                fileUploadWrapper.addEventListener('click', function() {
+                    btecFileInput.click();
+                });
+
+                // Drag and drop
+                fileUploadWrapper.addEventListener('dragover', function(e) {
+                    e.preventDefault();
+                    fileUploadWrapper.style.borderColor = '#5f2ded';
+                    fileUploadWrapper.style.background = 'rgba(95, 45, 237, 0.05)';
+                });
+
+                fileUploadWrapper.addEventListener('dragleave', function(e) {
+                    e.preventDefault();
+                    fileUploadWrapper.style.borderColor = '';
+                    fileUploadWrapper.style.background = '';
+                });
+
+                fileUploadWrapper.addEventListener('drop', function(e) {
+                    e.preventDefault();
+                    fileUploadWrapper.style.borderColor = '';
+                    fileUploadWrapper.style.background = '';
+
+                    const file = e.dataTransfer.files[0];
+                    if (file) {
+                        btecFileInput.files = e.dataTransfer.files;
+                        handleFileSelect(file);
+                    }
+                });
+            }
+
+            if (removeFileBtn) {
+                removeFileBtn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    btecFileInput.value = '';
+                    fileUploadPlaceholder.classList.remove('hidden');
+                    fileUploadSuccess.classList.add('hidden');
+                    fileUploadWrapper.classList.remove('has-file');
+                });
+            }
+
+            // ========================================
+            // Navigation Button Handlers
+            // ========================================
+
+            // Next buttons
+        document.querySelectorAll('.btn-next').forEach(btn => {
+            btn.addEventListener('click', function () {
+
+                const fromStep = currentStep; // save step BEFORE moving
+
+                if (!validateStep(fromStep)) return;
+
+                if (fromStep < totalSteps) {
+                    showStep(fromStep + 1);
+
+                }
+            });
+        });
+
+
+            // Previous buttons
+            document.querySelectorAll('.btn-prev').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    if (currentStep > 1) {
+                        showStep(currentStep - 1);
+                    }
+                });
+            });
+
+            // Step dots navigation
+            stepItems.forEach((item, index) => {
+                item.addEventListener('click', function() {
+                    const targetStep = index + 1;
+
+                    // Only allow going to previous steps or current step
+                    if (targetStep <= currentStep) {
+                        showStep(targetStep);
+                    } else {
+                        // Try to validate and go forward
+                        let canProceed = true;
+                        for (let i = currentStep; i < targetStep; i++) {
+                            if (!validateStep(i)) {
+                                canProceed = false;
+                                break;
+                            }
+                        }
+                        if (canProceed) {
+                            showStep(targetStep);
+                        }
+                    }
+                });
+            });
+
+            // ========================================
+            // Form Submission
+            // ========================================
+
+            form.addEventListener('submit', async function(e) {
+                e.preventDefault();
+
+                // Final validation of all steps
+                let allValid = true;
+                for (let i = 1; i <= totalSteps; i++) {
+                    if (!validateStep(i)) {
+                        allValid = false;
+                        showStep(i);
+
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Validation Error',
+                            text: `Please complete all required fields in Step ${i}`,
+                            confirmButtonColor: '#5f2ded',
+                            confirmButtonText: 'OK'
+                        });
+                        return;
+                    }
+                }
+
+                if (!allValid) return;
+
+                           const result = await Swal.fire({
+            title: 'Complete Profile?',
+            html: `
+                <div class="text-left space-y-2">
+                    <p class="text-contentColor">Please review all information before submitting.</p>
+                    <p class="text-sm text-contentColor">Once submitted, your profile will be used to generate personalized university recommendations.</p>
+                </div>
+            `,
+            icon: 'question',
+            showConfirmButton: true,
+            showCancelButton: true,
+            showDenyButton: false,  // ← ADD THIS LINE to hide the "No" button
+            confirmButtonColor: '#10b981',
+            cancelButtonColor: '#6b7280',
+            confirmButtonText: 'Yes, Complete!',
+            cancelButtonText: 'Review Again',
+            heightAuto: false,
+            customClass: {
+                confirmButton: 'swal2-confirm',
+                cancelButton: 'swal2-cancel'
+            }
+        });
+
+                if (result.isConfirmed) {
+                    // Submit form
+                    form.submit();
+                }
+            });
+
+            // ========================================
+            // Event Listeners
+            // ========================================
+
+            if (pathSelect) {
+                pathSelect.addEventListener('change', updatePathUI);
+                updatePathUI(); // Initialize on load
+            }
+
+            if (hasDisabilityCheck) {
+                hasDisabilityCheck.addEventListener('change', updateDisabilityUI);
+                updateDisabilityUI(); // Initialize on load
+            }
+
+            if (hasFamilyConnectionCheck) {
+                hasFamilyConnectionCheck.addEventListener('change', updateFamilyUI);
+                updateFamilyUI(); // Initialize on load
+            }
+
+            // Update circumstance cards on checkbox change
+            document.querySelectorAll('.circumstance-card input[type="checkbox"]').forEach(checkbox => {
+                checkbox.addEventListener('change', function() {
+                    const card = this.closest('.circumstance-card');
+                    if (this.checked) {
+                        card.classList.add('active');
+                    } else {
+                        card.classList.remove('active');
+                    }
+                });
+            });
+
+            // ========================================
+            // Initialize
+            // ========================================
+
+            showStep(1);
+
+            // Show TempData messages
+            @if (TempData["Success"] != null)
+            {
+                        <text>
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Success!',
+                            text: '@TempData["Success"]',
+                            confirmButtonColor: '#10b981',
+                            confirmButtonText: 'OK'
+                        });
+                        </text>
+            }
+
+            @if (TempData["Error"] != null)
+            {
+                        <text>
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error!',
+                            text: '@TempData["Error"]',
+                            confirmButtonColor: '#5f2ded',
+                            confirmButtonText: 'OK'
+                        });
+                        </text>
+            }
+
+            @if (TempData["Info"] != null)
+            {
+                        <text>
+                        Swal.fire({
+                            icon: 'info',
+                            title: 'Information',
+                            text: '@TempData["Info"]',
+                            confirmButtonColor: '#5f2ded',
+                            confirmButtonText: 'OK'
+                        });
+                        </text>
+            }
+        });
+    </script>
+}

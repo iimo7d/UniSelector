@@ -1,0 +1,390 @@
+﻿@model Uni_Selector.ViewModels.UserManagement.UserListViewModel
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = "User Management";
+}
+
+<div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-24">
+    <h6 class="fw-semibold mb-0">User Management</h6>
+    <ul class="d-flex align-items-center gap-2">
+        <li class="fw-medium">
+            <a href="@Url.Action("Index", "Admin")" class="d-flex align-items-center gap-1 hover-text-primary">
+                <iconify-icon icon="solar:home-smile-angle-outline" class="icon text-lg"></iconify-icon>
+                Dashboard
+            </a>
+        </li>
+        <li>-</li>
+        <li class="fw-medium">Users</li>
+    </ul>
+</div>
+
+<!-- Summary Cards -->
+<div class="row gy-4 mb-24">
+    <div class="col-xxl-3 col-sm-6">
+        <div class="card p-0 radius-12">
+            <div class="card-body p-20">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <span class="text-secondary-light mb-4 fw-medium text-sm d-block">Total Users</span>
+                        <h4 class="mb-0 fw-bold">@Model.TotalUsers</h4>
+                    </div>
+                    <div class="w-64-px h-64-px rounded-circle bg-primary-600 d-flex align-items-center justify-content-center">
+                        <iconify-icon icon="solar:users-group-rounded-bold" class="text-white text-32"></iconify-icon>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xxl-3 col-sm-6">
+        <div class="card p-0 radius-12">
+            <div class="card-body p-20">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <span class="text-secondary-light mb-4 fw-medium text-sm d-block">Active Users</span>
+                        <h4 class="mb-0 fw-bold text-success-600">@Model.TotalActiveUsers</h4>
+                    </div>
+                    <div class="w-64-px h-64-px rounded-circle bg-success-600 d-flex align-items-center justify-content-center">
+                        <iconify-icon icon="solar:check-circle-bold" class="text-white text-32"></iconify-icon>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xxl-3 col-sm-6">
+        <div class="card p-0 radius-12">
+            <div class="card-body p-20">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <span class="text-secondary-light mb-4 fw-medium text-sm d-block">Inactive Users</span>
+                        <h4 class="mb-0 fw-bold text-danger-600">@Model.TotalInactiveUsers</h4>
+                    </div>
+                    <div class="w-64-px h-64-px rounded-circle bg-danger-600 d-flex align-items-center justify-content-center">
+                        <iconify-icon icon="solar:close-circle-bold" class="text-white text-32"></iconify-icon>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xxl-3 col-sm-6">
+        <div class="card p-0 radius-12">
+            <div class="card-body p-20">
+                <div class="text-center">
+                    <span class="text-secondary-light mb-8 fw-medium text-xs d-block">Role Distribution</span>
+                    @foreach (var role in Model.RoleCounts.Take(2))
+                    {
+                        <div class="d-flex justify-content-between mb-4">
+                            <span class="text-xs">@role.Key</span>
+                            <span class="text-xs fw-bold">@role.Value</span>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card h-100 p-0 radius-12">
+    <div class="card-header border-bottom bg-base py-16 px-24">
+        <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+            <h6 class="text-lg fw-semibold mb-0">All Users</h6>
+            <div class="d-flex align-items-center gap-2">
+                <a href="@Url.Action("Create")" class="btn btn-primary text-sm btn-sm px-12 py-12 radius-8">
+                    <iconify-icon icon="ic:baseline-plus" class="icon text-xl me-4"></iconify-icon>
+                    Add New User
+                </a>
+                <a href="@Url.Action("Export")" class="btn btn-success text-sm btn-sm px-12 py-12 radius-8">
+                    <iconify-icon icon="solar:download-outline" class="icon text-xl me-4"></iconify-icon>
+                    Export to Excel
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="card-body p-24">
+        <!-- Filters -->
+        <form asp-action="Index" method="get" class="mb-24">
+            <div class="row align-items-end gy-3">
+                <div class="col-md-2">
+                    <label class="form-label fw-medium text-sm mb-8">Show</label>
+                    <select name="pageSize" class="form-select form-select-sm radius-8" onchange="this.form.submit()">
+                        <option value="10" selected="@(Model.PageSize == 10)">10</option>
+                        <option value="20" selected="@(Model.PageSize == 20)">20</option>
+                        <option value="50" selected="@(Model.PageSize == 50)">50</option>
+                        <option value="100" selected="@(Model.PageSize == 100)">100</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label fw-medium text-sm mb-8">Search</label>
+                    <input type="text" name="searchTerm" value="@Model.SearchTerm" class="form-control form-control-sm radius-8" placeholder="Name, Email, Phone">
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label fw-medium text-sm mb-8">Role</label>
+                    <select name="role" class="form-select form-select-sm radius-8">
+                        <option value="">All Roles</option>
+                        @foreach (var role in Model.AllRoles)
+                        {
+                            <option value="@role" selected="@(Model.Role == role)">@role</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label fw-medium text-sm mb-8">Status</label>
+                    <select name="isActive" class="form-select form-select-sm radius-8">
+                        <option value="">All</option>
+                        <option value="true" selected="@(Model.IsActive == true)">Active</option>
+                        <option value="false" selected="@(Model.IsActive == false)">Inactive</option>
+                    </select>
+                </div>
+                <div class="col-auto">
+                    <button type="submit" class="btn btn-primary btn-sm radius-8 px-20">Filter</button>
+                    <a href="@Url.Action("Index")" class="btn btn-outline-secondary btn-sm radius-8 px-16">Clear</a>
+                </div>
+            </div>
+        </form>
+
+        <div class="table-responsive scroll-sm">
+            <table class="table bordered-table sm-table mb-0">
+                <thead>
+                    <tr>
+                        <th>
+                            <input class="form-check-input" type="checkbox" id="selectAll">
+                        </th>
+                        <th>User</th>
+                        <th>Email</th>
+                        <th>Phone</th>
+                        <th>Role</th>
+                        <th>Status</th>
+                        <th>Created</th>
+                        <th class="text-center">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.Users.Any())
+                    {
+                        foreach (var user in Model.Users)
+                        {
+                            <tr>
+                                <td>
+                                    <input class="form-check-input" type="checkbox" name="userIds" value="@user.Id">
+                                </td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="w-40-px h-40-px rounded-circle flex-shrink-0 me-12 bg-primary-50 d-flex align-items-center justify-content-center">
+                                            <span class="text-primary-600 fw-bold">@user.FullName[0]</span>
+                                        </div>
+                                        <div class="flex-grow-1">
+                                            <h6 class="text-md mb-0 fw-medium">@user.FullName</h6>
+                                            @if (user.IsLockedOut)
+                                            {
+                                                <span class="text-xs text-danger-600">🔒 Locked</span>
+                                            }
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="d-flex flex-column">
+                                        <span class="text-sm">@user.Email</span>
+                                        @if (!user.EmailConfirmed)
+                                        {
+                                            <span class="text-xs text-warning-600">⚠ Not Confirmed</span>
+                                        }
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="text-sm">@user.PhoneNumber</span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-primary-focus text-primary-600 px-12 py-4 radius-4 text-xs">@user.PrimaryRole</span>
+                                </td>
+                                <td>
+                                    @if (user.IsActive)
+                                    {
+                                        <span class="badge bg-success-focus text-success-600 px-16 py-4 radius-4">Active</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-danger-focus text-danger-600 px-16 py-4 radius-4">Inactive</span>
+                                    }
+                                </td>
+                                <td>
+                                    <div class="d-flex flex-column">
+                                        <span class="text-sm">@user.CreatedAt.ToString("dd MMM yyyy")</span>
+                                        <span class="text-xs text-secondary-light">@user.CreatedAt.ToString("HH:mm")</span>
+                                    </div>
+                                </td>
+                                <td class="text-center">
+                                    <div class="d-flex align-items-center gap-10 justify-content-center">
+                                        <a asp-action="Details" asp-route-id="@user.Id"
+                                           class="bg-primary-focus text-primary-600 bg-hover-primary-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle"
+                                           title="View Details">
+                                            <iconify-icon icon="majesticons:eye-line" class="icon text-xl"></iconify-icon>
+                                        </a>
+                                        <a asp-action="Edit" asp-route-id="@user.Id"
+                                           class="bg-info-focus text-info-600 bg-hover-info-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle"
+                                           title="Edit">
+                                            <iconify-icon icon="lucide:edit" class="icon text-xl"></iconify-icon>
+                                        </a>
+                                        @if (user.IsLockedOut)
+                                        {
+                                            <form asp-action="Unlock" asp-route-id="@user.Id" method="post" style="display:inline;">
+                                                @Html.AntiForgeryToken()
+                                                <button type="submit"
+                                                        class="bg-success-focus text-success-600 bg-hover-success-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle border-0"
+                                                        title="Unlock Account">
+                                                    <iconify-icon icon="solar:lock-unlocked-outline" class="icon text-xl"></iconify-icon>
+                                                </button>
+                                            </form>
+                                        }
+                                        else
+                                        {
+                                            <form asp-action="Lock" asp-route-id="@user.Id" method="post" style="display:inline;" class="lockForm">
+                                                @Html.AntiForgeryToken()
+                                                <button type="submit"
+                                                        class="bg-warning-focus text-warning-600 bg-hover-warning-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle border-0"
+                                                        title="Lock Account">
+                                                    <iconify-icon icon="solar:lock-outline" class="icon text-xl"></iconify-icon>
+                                                </button>
+                                            </form>
+                                        }
+                                        <form asp-action="ResetPassword" asp-route-id="@user.Id" method="post" style="display:inline;" class="resetForm">
+                                            @Html.AntiForgeryToken()
+                                            <button type="submit"
+                                                    class="bg-neutral-200 text-neutral-600 bg-hover-neutral-300 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle border-0"
+                                                    title="Reset Password">
+                                                <iconify-icon icon="solar:key-outline" class="icon text-xl"></iconify-icon>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="8" class="text-center py-32">
+                                <iconify-icon icon="solar:user-outline" class="icon text-64 text-secondary-light mb-12"></iconify-icon>
+                                <p class="text-secondary-light mb-0">No users found</p>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        @if (Model.TotalPages > 1)
+        {
+            <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mt-24">
+                <span class="text-sm fw-medium text-secondary-light">
+                    Showing @((Model.CurrentPage - 1) * Model.PageSize + 1) to @Math.Min(Model.CurrentPage * Model.PageSize, Model.TotalUsers) of @Model.TotalUsers
+                </span>
+                <ul class="pagination d-flex flex-wrap align-items-center gap-2 justify-content-center">
+                    @if (Model.CurrentPage > 1)
+                    {
+                        <li class="page-item">
+                            <a class="page-link bg-neutral-200 text-secondary-light fw-semibold radius-8 border-0 d-flex align-items-center justify-content-center h-32-px w-32-px"
+                               href="@Url.Action("Index", new { page = Model.CurrentPage - 1, pageSize = Model.PageSize, searchTerm = Model.SearchTerm, role = Model.Role, isActive = Model.IsActive })">
+                                <iconify-icon icon="ep:d-arrow-left"></iconify-icon>
+                            </a>
+                        </li>
+                    }
+                    @for (int i = Math.Max(1, Model.CurrentPage - 2); i <= Math.Min(Model.TotalPages, Model.CurrentPage + 2); i++)
+                    {
+                        <li class="page-item">
+                            <a class="page-link @(i == Model.CurrentPage ? "bg-primary-600 text-white" : "bg-neutral-200 text-secondary-light") fw-semibold radius-8 border-0 d-flex align-items-center justify-content-center h-32-px w-32-px"
+                               href="@Url.Action("Index", new { page = i, pageSize = Model.PageSize, searchTerm = Model.SearchTerm, role = Model.Role, isActive = Model.IsActive })">
+                                @i
+                            </a>
+                        </li>
+                    }
+                    @if (Model.CurrentPage < Model.TotalPages)
+                    {
+                        <li class="page-item">
+                            <a class="page-link bg-neutral-200 text-secondary-light fw-semibold radius-8 border-0 d-flex align-items-center justify-content-center h-32-px w-32-px"
+                               href="@Url.Action("Index", new { page = Model.CurrentPage + 1, pageSize = Model.PageSize, searchTerm = Model.SearchTerm, role = Model.Role, isActive = Model.IsActive })">
+                                <iconify-icon icon="ep:d-arrow-right"></iconify-icon>
+                            </a>
+                        </li>
+                    }
+                </ul>
+            </div>
+        }
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        // Select all checkbox
+        document.getElementById('selectAll')?.addEventListener('change', function() {
+            document.querySelectorAll('input[name="userIds"]').forEach(cb => cb.checked = this.checked);
+        });
+
+        // Lock user confirmation
+        document.querySelectorAll('.lockForm').forEach(form => {
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                Swal.fire({
+                    title: 'Lock User Account?',
+                    text: "The user will not be able to log in until unlocked.",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#FFA500',
+                    cancelButtonColor: '#6c757d',
+                    confirmButtonText: 'Yes, Lock Account',
+                    cancelButtonText: 'Cancel'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        form.submit();
+                    }
+                });
+            });
+        });
+
+        // Reset password confirmation
+        document.querySelectorAll('.resetForm').forEach(form => {
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                Swal.fire({
+                    title: 'Send Password Reset Email?',
+                    text: "The user will receive an email with instructions to reset their password.",
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonColor: '#487FFF',
+                    cancelButtonColor: '#6c757d',
+                    confirmButtonText: 'Yes, Send Email',
+                    cancelButtonText: 'Cancel'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        form.submit();
+                    }
+                });
+            });
+        });
+
+        @if (TempData["Success"] != null)
+        {
+                <text>
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success!',
+                    text: '@TempData["Success"]',
+                    confirmButtonColor: '#198754',
+                    timer: 3000,
+                    timerProgressBar: true
+                });
+                </text>
+        }
+        @if (TempData["Error"] != null)
+        {
+                <text>
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error!',
+                    text: '@TempData["Error"]',
+                    confirmButtonColor: '#dc3545'
+                });
+                </text>
+        }
+    </script>
+}

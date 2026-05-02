@@ -1,0 +1,297 @@
+﻿@model Uni_Selector.ViewModels.ProgramManagement.BtecProgramDetailsViewModel
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = "BTEC Program Details";
+}
+
+<div class="dashboard-main-body">
+    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-24">
+        <h6 class="fw-semibold mb-0">BTEC Program Details</h6>
+        <ul class="d-flex align-items-center gap-2">
+            <li class="fw-medium">
+                <a asp-controller="UniversityRep" asp-action="Index" class="d-flex align-items-center gap-1 hover-text-primary">
+                    <iconify-icon icon="solar:home-smile-angle-outline" class="icon text-lg"></iconify-icon>
+                    Dashboard
+                </a>
+            </li>
+            <li>-</li>
+            <li class="fw-medium">
+                <a asp-action="Index">BTEC Programs</a>
+            </li>
+            <li>-</li>
+            <li class="fw-medium">Details</li>
+        </ul>
+    </div>
+
+    <div class="row gy-4">
+        <!-- Program Information Card -->
+        <div class="col-lg-8">
+            <div class="card h-100 p-0 radius-12">
+                <div class="card-header border-bottom bg-base py-16 px-24 d-flex align-items-center justify-content-between">
+                    <h6 class="text-lg fw-semibold mb-0">Program Information</h6>
+                    <div class="d-flex gap-2">
+                        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-success text-sm btn-sm px-12 py-8 radius-8">
+                            <iconify-icon icon="lucide:edit" class="icon"></iconify-icon> Edit
+                        </a>
+                        <a asp-action="EntryRequirements" asp-route-id="@Model.Id" class="btn btn-info text-sm btn-sm px-12 py-8 radius-8">
+                            <iconify-icon icon="mdi:file-document-check" class="icon"></iconify-icon> Entry Requirements
+                        </a>
+                    </div>
+                </div>
+                <div class="card-body p-24">
+                    <!-- Program Names -->
+                    <div class="mb-20">
+                        <h4 class="mb-2">@Model.NameEnglish</h4>
+                        <h5 class="text-secondary-light">@Model.NameArabic</h5>
+                    </div>
+
+                    @if (!string.IsNullOrEmpty(Model.Description))
+                    {
+                        <div class="mb-20">
+                            <p class="text-secondary-light">@Model.Description</p>
+                        </div>
+                    }
+
+                    <!-- Program Details Grid -->
+                    <div class="row g-3">
+                        <div class="col-sm-6 col-md-4">
+                            <div class="p-3 border radius-8">
+                                <label class="text-sm text-secondary-light mb-1">BTEC Level</label>
+                                <h6 class="mb-0">@Model.Level</h6>
+                            </div>
+                        </div>
+                        <div class="col-sm-6 col-md-4">
+                            <div class="p-3 border radius-8">
+                                <label class="text-sm text-secondary-light mb-1">Technical Field</label>
+                                <h6 class="mb-0">@Model.TechnicalField</h6>
+                            </div>
+                        </div>
+                        <div class="col-sm-6 col-md-4">
+                            <div class="p-3 border radius-8">
+                                <label class="text-sm text-secondary-light mb-1">Language</label>
+                                <h6 class="mb-0">@Model.Language</h6>
+                            </div>
+                        </div>
+                        <div class="col-sm-6 col-md-4">
+                            <div class="p-3 border radius-8">
+                                <label class="text-sm text-secondary-light mb-1">Duration</label>
+                                <h6 class="mb-0">@Model.DurationInYears Years</h6>
+                            </div>
+                        </div>
+                        <div class="col-sm-6 col-md-4">
+                            <div class="p-3 border radius-8">
+                                <label class="text-sm text-secondary-light mb-1">Credit Hours</label>
+                                <h6 class="mb-0">@Model.TotalCreditHours Hours</h6>
+                            </div>
+                        </div>
+                        <div class="col-sm-6 col-md-4">
+                            <div class="p-3 border radius-8">
+                                <label class="text-sm text-secondary-light mb-1">Semester Start</label>
+                                <h6 class="mb-0">@Model.SemesterStartDate.ToString("MMM dd, yyyy")</h6>
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr class="my-20">
+
+                    <!-- Financial Information -->
+                    <h6 class="mb-16 fw-semibold">Financial Information</h6>
+                    <div class="row g-3">
+                        <div class="col-sm-6 col-md-4">
+                            <div class="p-3 border radius-8 bg-success-focus">
+                                <label class="text-sm text-secondary-light mb-1">Hour Price</label>
+                                <h6 class="mb-0 text-success-main">@Model.HourPriceBase.ToString("N2") JOD</h6>
+                            </div>
+                        </div>
+                        <div class="col-sm-6 col-md-4">
+                            <div class="p-3 border radius-8 bg-info-focus">
+                                <label class="text-sm text-secondary-light mb-1">First Semester Fee</label>
+                                <h6 class="mb-0 text-info-main">@Model.RegistrationFeeFirstSemester.ToString("N2") JOD</h6>
+                            </div>
+                        </div>
+                        <div class="col-sm-6 col-md-4">
+                            <div class="p-3 border radius-8 bg-info-focus">
+                                <label class="text-sm text-secondary-light mb-1">Regular Semester Fee</label>
+                                <h6 class="mb-0 text-info-main">@Model.RegistrationFeeRegularSemester.ToString("N2") JOD</h6>
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr class="my-20">
+
+                    <!-- Additional Information -->
+                    <div class="row g-3">
+                        <div class="col-sm-6">
+                            <div class="p-3 border radius-8">
+                                <label class="text-sm text-secondary-light mb-1">Student Capacity</label>
+                                <h6 class="mb-0">@Model.Capacity Students</h6>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="p-3 border radius-8">
+                                <label class="text-sm text-secondary-light mb-1">Status</label>
+                                <h6 class="mb-0">
+                                    @if (Model.IsActive)
+                                    {
+                                        <span class="bg-success-focus text-success-main px-24 py-4 rounded-pill fw-medium text-sm">Active</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="bg-danger-focus text-danger-main px-24 py-4 rounded-pill fw-medium text-sm">Inactive</span>
+                                    }
+                                </h6>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+            <!-- Approval Status Card -->
+            <div class="card p-0 radius-12 mb-24">
+                <div class="card-header border-bottom bg-base py-16 px-24">
+                    <h6 class="text-lg fw-semibold mb-0">Approval Status</h6>
+                </div>
+                <div class="card-body p-24">
+                    @if (Model.IsApprovedByBtecAuthority)
+                    {
+                        <div class="text-center py-16">
+                            <iconify-icon icon="mdi:check-circle" class="text-success-main" style="font-size: 48px;"></iconify-icon>
+                            <h6 class="mt-12 mb-8 text-success-main">Approved</h6>
+                            @if (Model.ApprovalDate.HasValue)
+                            {
+                                <p class="text-sm text-secondary-light mb-0">
+                                    Approved on @Model.ApprovalDate.Value.ToString("MMM dd, yyyy")
+                                </p>
+                            }
+                            @if (!string.IsNullOrEmpty(Model.ApprovalNotes))
+                            {
+                                <div class="mt-12 p-12 bg-success-focus radius-8">
+                                    <p class="text-sm mb-0"><strong>Notes:</strong> @Model.ApprovalNotes</p>
+                                </div>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-center py-16">
+                            <iconify-icon icon="mdi:clock-outline" class="text-warning-main" style="font-size: 48px;"></iconify-icon>
+                            <h6 class="mt-12 mb-8 text-warning-main">Pending Approval</h6>
+                            <p class="text-sm text-secondary-light mb-0">
+                                This program is awaiting approval from BTEC Authority.
+                            </p>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <!-- Entry Requirements Card -->
+            <div class="card p-0 radius-12">
+                <div class="card-header border-bottom bg-base py-16 px-24">
+                    <h6 class="text-lg fw-semibold mb-0">Entry Requirements</h6>
+                </div>
+                <div class="card-body p-24">
+                    @if (Model.EntryRequirements.Any())
+                    {
+                        <div class="list-group">
+                            @foreach (var req in Model.EntryRequirements.Take(5))
+                            {
+                                <div class="list-group-item border radius-8 mb-12 p-12">
+                                    <div class="d-flex justify-content-between align-items-start mb-8">
+                                        <span class="badge bg-primary-600 text-white">Min GPA</span>
+                                        <span class="text-sm fw-bold text-primary-600">@req.MinGPA%</span>
+                                    </div>
+                                    @if (req.RequiresBtecL2)
+                                    {
+                                        <div class="text-sm text-success-main mb-4">
+                                            <iconify-icon icon="mdi:check"></iconify-icon> Requires BTEC Level 2
+                                        </div>
+                                    }
+                                    @if (req.RequiresBtecL3)
+                                    {
+                                        <div class="text-sm text-success-main">
+                                            <iconify-icon icon="mdi:check"></iconify-icon> Requires BTEC Level 3
+                                        </div>
+                                    }
+                                    @if (!string.IsNullOrEmpty(req.Notes))
+                                    {
+                                        <div class="text-sm text-secondary-light mt-8">
+                                            @req.Notes
+                                        </div>
+                                    }
+                                </div>
+                            }
+                        </div>
+                        @if (Model.EntryRequirements.Count > 5)
+                        {
+                            <div class="text-center mt-16">
+                                <a asp-action="EntryRequirements" asp-route-id="@Model.Id" class="btn btn-outline-primary btn-sm w-100">
+                                    View All (@Model.EntryRequirements.Count) Requirements
+                                </a>
+                            </div>
+                        }
+                        else if (Model.EntryRequirements.Count > 0)
+                        {
+                            <div class="text-center mt-16">
+                                <a asp-action="EntryRequirements" asp-route-id="@Model.Id" class="btn btn-outline-primary btn-sm w-100">
+                                    Manage Requirements
+                                </a>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <div class="text-center py-32">
+                            <iconify-icon icon="mdi:file-document-alert-outline" class="text-xxl text-secondary-light mb-12"></iconify-icon>
+                            <p class="text-secondary-light mb-16">No entry requirements added yet.</p>
+                            <a asp-action="EntryRequirements" asp-route-id="@Model.Id" class="btn btn-primary btn-sm">
+                                Add Requirements
+                            </a>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Metadata Card -->
+    <div class="card mt-24 p-0 radius-12">
+        <div class="card-body p-24">
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <label class="text-sm text-secondary-light">University</label>
+                    <p class="mb-0 fw-medium">@Model.UniversityNameEnglish</p>
+                    <p class="mb-0 text-sm text-secondary-light">@Model.UniversityNameArabic</p>
+                </div>
+                <div class="col-md-4">
+                    <label class="text-sm text-secondary-light">Created At</label>
+                    <p class="mb-0">@Model.CreatedAt.ToString("MMM dd, yyyy hh:mm tt")</p>
+                </div>
+                <div class="col-md-4">
+                    <label class="text-sm text-secondary-light">Last Updated</label>
+                    <p class="mb-0">@(Model.UpdatedAt?.ToString("MMM dd, yyyy hh:mm tt") ?? "Never")</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        @if (TempData["SuccessMessage"] != null)
+        {
+                <text>
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success!',
+                    text: '@TempData["SuccessMessage"]',
+                    timer: 3000,
+                    showConfirmButton: false
+                });
+                </text>
+        }
+    </script>
+}

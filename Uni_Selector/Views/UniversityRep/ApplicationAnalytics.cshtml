@@ -1,0 +1,319 @@
+﻿@model Uni_Selector.ViewModels.UniversityReps.ApplicationAnalyticsViewModel
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = "Application Analytics";
+}
+
+<div class="dashboard-main-body">
+    <!-- Page Header -->
+    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-24">
+        <h6 class="fw-semibold mb-0">Application Analytics</h6>
+        <ul class="d-flex align-items-center gap-2">
+            <li class="fw-medium">
+                <a asp-action="Dashboard" class="d-flex align-items-center gap-1 hover-text-primary">
+                    <iconify-icon icon="solar:home-smile-angle-outline" class="icon text-lg"></iconify-icon>
+                    Dashboard
+                </a>
+            </li>
+            <li>-</li>
+            <li class="fw-medium">Analytics / Applications</li>
+        </ul>
+    </div>
+
+    <!-- Date Filter -->
+    <div class="row gy-4 mb-24">
+        <div class="col-12">
+            <div class="card h-100 p-0">
+                <div class="card-header border-bottom bg-base py-16 px-24">
+                    <h6 class="text-lg fw-semibold mb-0">Filter by Date Range</h6>
+                </div>
+                <div class="card-body p-24">
+                    <form method="get" asp-action="ApplicationAnalytics" class="row gy-3">
+                        <div class="col-md-4">
+                            <label class="form-label">Start Date</label>
+                            <input type="date" name="startDate" class="form-control radius-8" value="@Model.StartDate.ToString("yyyy-MM-dd")" />
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">End Date</label>
+                            <input type="date" name="endDate" class="form-control radius-8" value="@Model.EndDate.ToString("yyyy-MM-dd")" />
+                        </div>
+                        <div class="col-md-4 d-flex align-items-end">
+                            <button type="submit" class="btn btn-primary-600 radius-8 px-20 py-11">
+                                <iconify-icon icon="solar:filter-bold" class="icon text-xl"></iconify-icon>
+                                Apply Filter
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="row gy-4">
+        <div class="col-xxl-4 col-sm-6">
+            <div class="card shadow-none border bg-gradient-start-1 h-100">
+                <div class="card-body p-20">
+                    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
+                        <div>
+                            <p class="fw-medium text-primary-light mb-1">Total Applications</p>
+                            <h6 class="mb-0">@Model.TotalApplications</h6>
+                        </div>
+                        <div class="w-50-px h-50-px bg-primary-600 rounded-circle d-flex justify-content-center align-items-center">
+                            <iconify-icon icon="solar:document-text-bold" class="text-white text-2xl mb-0"></iconify-icon>
+                        </div>
+                    </div>
+                    <p class="fw-medium text-sm text-primary-light mt-12 mb-0">
+                        <span class="text-primary-600">@Model.StartDate.ToString("MMM dd") - @Model.EndDate.ToString("MMM dd, yyyy")</span>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xxl-4 col-sm-6">
+            <div class="card shadow-none border bg-gradient-start-2 h-100">
+                <div class="card-body p-20">
+                    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
+                        <div>
+                            <p class="fw-medium text-primary-light mb-1">Avg Processing Time</p>
+                            <h6 class="mb-0">@Model.AverageProcessingTimeDays.ToString("F1") days</h6>
+                        </div>
+                        <div class="w-50-px h-50-px bg-warning-main rounded-circle d-flex justify-content-center align-items-center">
+                            <iconify-icon icon="solar:clock-circle-bold" class="text-white text-2xl mb-0"></iconify-icon>
+                        </div>
+                    </div>
+                    <p class="fw-medium text-sm text-primary-light mt-12 mb-0">
+                        <span class="text-warning-main">From Application to Decision</span>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xxl-4 col-sm-6">
+            <div class="card shadow-none border bg-gradient-start-3 h-100">
+                <div class="card-body p-20">
+                    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
+                        <div>
+                            <p class="fw-medium text-primary-light mb-1">Approval Rate</p>
+                            @{
+                                var approvedCount = Model.StatusDistribution.FirstOrDefault(s => s.Status == "Approved")?.Count ?? 0;
+                                var approvalRate = Model.TotalApplications > 0 ? (approvedCount * 100.0 / Model.TotalApplications).ToString("F1") : "0";
+                            }
+                            <h6 class="mb-0">@approvalRate%</h6>
+                        </div>
+                        <div class="w-50-px h-50-px bg-success-main rounded-circle d-flex justify-content-center align-items-center">
+                            <iconify-icon icon="solar:check-circle-bold" class="text-white text-2xl mb-0"></iconify-icon>
+                        </div>
+                    </div>
+                    <p class="fw-medium text-sm text-primary-light mt-12 mb-0">
+                        <span class="text-success-main">@approvedCount out of @Model.TotalApplications</span>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts Row -->
+    <div class="row gy-4 mt-1">
+        <!-- Status Distribution Pie Chart -->
+        <div class="col-md-6">
+            <div class="card h-100 p-0">
+                <div class="card-header border-bottom bg-base py-16 px-24">
+                    <h6 class="text-lg fw-semibold mb-0">Status Distribution</h6>
+                </div>
+                <div class="card-body p-24 text-center">
+                    <div id="statusDistributionChart" class="apexcharts-tooltip-z-none"></div>
+                    <div class="max-w-290-px w-100 mx-auto mt-16">
+                        <div class="d-flex align-items-center justify-content-between gap-12 border pb-12 mb-12 border-end-0 border-top-0 border-start-0">
+                            <span class="text-primary-light fw-medium text-sm">Status</span>
+                            <span class="text-primary-light fw-medium text-sm">Count</span>
+                            <span class="text-primary-light fw-medium text-sm">%</span>
+                        </div>
+                        @foreach (var status in Model.StatusDistribution)
+                        {
+                            <div class="d-flex align-items-center justify-content-between gap-12 mb-12">
+                                <span class="text-primary-light fw-medium text-sm d-flex align-items-center gap-12">
+                                    <span class="w-12-px h-12-px bg-primary-600 rounded-circle"></span> @status.Status
+                                </span>
+                                <span class="text-primary-light fw-medium text-sm">@status.Count</span>
+                                <span class="text-primary-light fw-medium text-sm">@status.Percentage.ToString("F1")%</span>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Daily Applications Line Chart -->
+        <div class="col-md-6">
+            <div class="card h-100 p-0">
+                <div class="card-header border-bottom bg-base py-16 px-24">
+                    <h6 class="text-lg fw-semibold mb-0">Daily Applications (Last 30 Days)</h6>
+                </div>
+                <div class="card-body p-24">
+                    <div id="dailyApplicationsChart" class="apexcharts-tooltip-style-1"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Program Statistics Table -->
+    <div class="row gy-4 mt-1">
+        <div class="col-12">
+            <div class="card h-100 p-0">
+                <div class="card-header border-bottom bg-base py-16 px-24">
+                    <h6 class="text-lg fw-semibold mb-0">Applications by Program</h6>
+                </div>
+                <div class="card-body p-24">
+                    <div class="table-responsive scroll-sm">
+                        <table class="table bordered-table mb-0">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Program Name</th>
+                                    <th scope="col" class="text-center">Total</th>
+                                    <th scope="col" class="text-center">Approved</th>
+                                    <th scope="col" class="text-center">Pending</th>
+                                    <th scope="col" class="text-center">Rejected</th>
+                                    <th scope="col" class="text-center">Approval Rate</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var program in Model.ProgramStatistics)
+                                {
+                                    <tr>
+                                        <td>
+                                            <span class="text-md fw-semibold">@program.ProgramName</span>
+                                        </td>
+                                        <td class="text-center">
+                                            <span class="text-primary-light fw-semibold">@program.TotalApplications</span>
+                                        </td>
+                                        <td class="text-center">
+                                            <span class="bg-success-focus text-success-main px-16 py-4 rounded-pill fw-medium text-sm">@program.Approved</span>
+                                        </td>
+                                        <td class="text-center">
+                                            <span class="bg-warning-focus text-warning-main px-16 py-4 rounded-pill fw-medium text-sm">@program.Pending</span>
+                                        </td>
+                                        <td class="text-center">
+                                            <span class="bg-danger-focus text-danger-main px-16 py-4 rounded-pill fw-medium text-sm">@program.Rejected</span>
+                                        </td>
+                                        <td class="text-center">
+                                            <div class="progress w-100 bg-primary-50 rounded-pill h-8-px" role="progressbar">
+                                                <div class="progress-bar bg-primary-600 rounded-pill" style="width: @program.ApprovalRate%"></div>
+                                            </div>
+                                            <span class="text-sm text-secondary-light fw-medium mt-4">@program.ApprovalRate.ToString("F1")%</span>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Export Button -->
+    <div class="row gy-4 mt-1">
+        <div class="col-12">
+            <div class="card h-100 p-0">
+                <div class="card-body p-24">
+                    <a asp-action="ExportAnalytics" asp-route-reportType="applications" class="btn btn-success-600 radius-8 px-20 py-11">
+                        <iconify-icon icon="solar:download-minimalistic-bold" class="icon text-xl line-height-1"></iconify-icon>
+                        Export Applications Report
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/assets/js/lib/apexcharts.min.js"></script>
+    <script>
+        // Status Distribution Pie Chart
+        var statusDistributionOptions = {
+            series: [@string.Join(",", Model.StatusDistribution.Select(s => s.Count))],
+            chart: {
+                type: 'pie',
+                height: 350
+            },
+            labels: [@Html.Raw(string.Join(",", Model.StatusDistribution.Select(s => $"'{s.Status}'")))],
+            colors: ['#487FFF', '#45B369', '#EA5455', '#FF9F43', '#00CFE8', '#7367F0'],
+            legend: {
+                show: false
+            },
+            dataLabels: {
+                enabled: true,
+                formatter: function(val) {
+                    return val.toFixed(1) + '%'
+                }
+            },
+            responsive: [{
+                breakpoint: 480,
+                options: {
+                    chart: {
+                        width: 200
+                    }
+                }
+            }]
+        };
+
+        var statusDistributionChart = new ApexCharts(document.querySelector("#statusDistributionChart"), statusDistributionOptions);
+        statusDistributionChart.render();
+
+        // Daily Applications Line Chart
+        var dailyApplicationsOptions = {
+            series: [{
+                name: 'Applications',
+                data: [@string.Join(",", Model.DailyApplications.Select(d => d.Count))]
+            }],
+            chart: {
+                height: 350,
+                type: 'line',
+                toolbar: {
+                    show: true
+                },
+                zoom: {
+                    enabled: true
+                }
+            },
+            colors: ['#45B369'],
+            dataLabels: {
+                enabled: false
+            },
+            stroke: {
+                curve: 'smooth',
+                width: 3
+            },
+            xaxis: {
+                categories: [@Html.Raw(string.Join(",", Model.DailyApplications.Select(d => $"'{d.Date:MMM dd}'")))],
+                labels: {
+                    rotate: -45,
+                    rotateAlways: false
+                }
+            },
+            yaxis: {
+                title: {
+                    text: 'Number of Applications'
+                }
+            },
+            markers: {
+                size: 5,
+                colors: ['#45B369'],
+                strokeColors: '#fff',
+                strokeWidth: 2,
+                hover: {
+                    size: 7
+                }
+            },
+            tooltip: {
+                x: {
+                    format: 'dd MMM yyyy'
+                }
+            }
+        };
+
+        var dailyApplicationsChart = new ApexCharts(document.querySelector("#dailyApplicationsChart"), dailyApplicationsOptions);
+        dailyApplicationsChart.render();
+    </script>
+}

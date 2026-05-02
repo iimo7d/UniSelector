@@ -1,0 +1,175 @@
+﻿@using Uni_Selector.Models.Enums
+@model Uni_Selector.ViewModels.DiscountManagement.DiscountListViewModel
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+
+    ViewData["Title"] = "Discount Management";
+}
+
+<div class="dashboard-main-body">
+    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-24">
+        <h6 class="fw-semibold mb-0">Discount Management</h6>
+        <ul class="d-flex align-items-center gap-2">
+            <li class="fw-medium">
+                <a asp-controller="UniversityRep" asp-action="Index" class="d-flex align-items-center gap-1 hover-text-primary">
+                    <iconify-icon icon="solar:home-smile-angle-outline" class="icon text-lg"></iconify-icon>
+                    Dashboard
+                </a>
+            </li>
+            <li>-</li>
+            <li class="fw-medium">Discounts</li>
+        </ul>
+    </div>
+
+    <div class="card h-100 p-0 radius-12">
+        <div class="card-header border-bottom bg-base py-16 px-24 d-flex align-items-center justify-content-between flex-wrap">
+            <h6 class="text-lg fw-semibold mb-0">Discount Grants for @Model.UniversityName</h6>
+            <a asp-action="Statistics" class="btn btn-outline-primary-600 radius-8 px-20 py-11">
+                <iconify-icon icon="solar:chart-bold-duotone" class="icon text-xl"></iconify-icon>
+                View Statistics
+            </a>
+        </div>
+
+        <div class="card-body p-24">
+            <form method="get" class="row mb-20 gy-3">
+                <div class="col-md-3">
+                    <input type="text" name="search" value="@Model.Search" class="form-control radius-8" placeholder="Search...">
+                </div>
+                <div class="col-md-2">
+                    <select name="status" class="form-control radius-8 form-select">
+                        <option value="">All Status</option>
+                        @foreach (DiscountStatus status in Enum.GetValues(typeof(DiscountStatus)))
+                        {
+                            <option value="@((int)status)" selected="@(Model.StatusFilter == status)">@status</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <input type="date" name="fromDate" value="@Model.FromDate?.ToString("yyyy-MM-dd")" class="form-control radius-8">
+                </div>
+                <div class="col-md-2">
+                    <input type="date" name="toDate" value="@Model.ToDate?.ToString("yyyy-MM-dd")" class="form-control radius-8">
+                </div>
+                <div class="col-md-1">
+                    <button type="submit" class="btn btn-primary w-100 radius-8">
+                        <iconify-icon icon="ic:baseline-search"></iconify-icon>
+                    </button>
+                </div>
+                <div class="col-md-2">
+                    <a asp-action="Index" class="btn btn-outline-secondary w-100 radius-8">Clear</a>
+                </div>
+            </form>
+
+            <div class="table-responsive">
+                <table class="table bordered-table mb-0">
+                    <thead>
+                        <tr>
+                            <th>Code</th>
+                            <th>Student</th>
+                            <th>Application</th>
+                            <th>%</th>
+                            <th>Amount</th>
+                            <th>Status</th>
+                            <th>Granted</th>
+                            <th class="text-center">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.Discounts.Any())
+                        {
+                            @foreach (var d in Model.Discounts)
+                            {
+                                <tr>
+                                    <td><a asp-action="Details" asp-route-id="@d.Id" class="text-primary-600 fw-semibold">@d.Code</a></td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="flex-shrink-0 me-12 radius-8 bg-success-50 d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                                                <iconify-icon icon="solar:user-bold" class="text-success-600 text-xl"></iconify-icon>
+                                            </div>
+                                            <div>
+                                                <h6 class="text-md mb-0 fw-medium">@d.StudentName</h6>
+                                                <span class="text-sm text-secondary-light">@d.StudentEmail</span>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="fw-medium d-block">@d.ApplicationNumber</span>
+                                        @if (!string.IsNullOrWhiteSpace(d.AdmissionNumber))
+                                        {
+                                            <span class="text-sm text-success-600">@d.AdmissionNumber</span>
+                                        }
+                                    </td>
+                                    <td><span class="fw-semibold text-primary-600">@d.Percentage%</span></td>
+                                    <td><span class="fw-bold">@d.AmountEstimated.ToString("N2") JOD</span></td>
+                                    <td>
+                                        @switch (d.Status)
+                                        {
+                                            case DiscountStatus.Issued:
+                                                <span class="bg-warning-focus text-warning-main px-24 py-4 rounded-pill fw-medium text-sm">Issued</span>
+                                                break;
+                                            case DiscountStatus.Redeemed:
+                                                <span class="bg-success-focus text-success-main px-24 py-4 rounded-pill fw-medium text-sm">Redeemed</span>
+                                                break;
+                                            case DiscountStatus.Expired:
+                                                <span class="bg-danger-focus text-danger-main px-24 py-4 rounded-pill fw-medium text-sm">Expired</span>
+                                                break;
+                                        }
+                                    </td>
+                                    <td>@d.GrantedAt.ToString("MMM dd, yyyy")</td>
+                                    <td class="text-center">
+                                        <a asp-action="Details" asp-route-id="@d.Id" class="w-32-px h-32-px bg-primary-light text-primary-600 rounded-circle d-inline-flex align-items-center justify-content-center">
+                                            <iconify-icon icon="iconamoon:eye-light"></iconify-icon>
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="8" class="text-center text-secondary-light py-24">
+                                    <iconify-icon icon="tabler:database-off" class="text-xxl mb-12"></iconify-icon>
+                                    <p class="mb-0">No discounts found.</p>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            @if (Model.TotalPages > 1)
+            {
+                <div class="d-flex justify-content-center mt-24">
+                    <ul class="pagination">
+                        @if (Model.CurrentPage > 1)
+                        {
+                            <li class="page-item"><a class="page-link" asp-action="Index" asp-route-page="@(Model.CurrentPage - 1)" asp-route-search="@Model.Search" asp-route-status="@Model.StatusFilter" asp-route-fromDate="@Model.FromDate?.ToString("yyyy-MM-dd")" asp-route-toDate="@Model.ToDate?.ToString("yyyy-MM-dd")">Previous</a></li>
+                        }
+                        @for (int i = 1; i <= Model.TotalPages; i++)
+                        {
+                            <li class="page-item @(i == Model.CurrentPage ? "active" : "")"><a class="page-link" asp-action="Index" asp-route-page="@i" asp-route-search="@Model.Search" asp-route-status="@Model.StatusFilter" asp-route-fromDate="@Model.FromDate?.ToString("yyyy-MM-dd")" asp-route-toDate="@Model.ToDate?.ToString("yyyy-MM-dd")">@i</a></li>
+                        }
+                        @if (Model.CurrentPage < Model.TotalPages)
+                        {
+                            <li class="page-item"><a class="page-link" asp-action="Index" asp-route-page="@(Model.CurrentPage + 1)" asp-route-search="@Model.Search" asp-route-status="@Model.StatusFilter" asp-route-fromDate="@Model.FromDate?.ToString("yyyy-MM-dd")" asp-route-toDate="@Model.ToDate?.ToString("yyyy-MM-dd")">Next</a></li>
+                        }
+                    </ul>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        @if (TempData["Success"] != null)
+        {
+            <text>Swal.fire({ icon: 'success', title: 'Success!', text: '@TempData["Success"]', timer: 3000, showConfirmButton: false });</text>
+        }
+        @if (TempData["Error"] != null)
+        {
+            <text>Swal.fire({ icon: 'error', title: 'Error!', text: '@TempData["Error"]', timer: 3000, showConfirmButton: false });</text>
+        }
+    </script>
+}

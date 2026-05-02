@@ -1,0 +1,822 @@
+﻿@model Uni_Selector.ViewModels.Discounts.DiscountDetailsViewModel
+@{
+    ViewData["Title"] = $"Discount Code - {Model.Code}";
+}
+
+@section Styles {
+    <style>
+        /* Certificate Card */
+        .certificate-card {
+            background: linear-gradient(135deg, rgba(95, 45, 237, 0.05) 0%, rgba(242, 39, 126, 0.05) 100%);
+            border: 2px dashed rgba(95, 45, 237, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+            .certificate-card::before {
+                content: '';
+                position: absolute;
+                top: -50%;
+                left: -50%;
+                width: 200%;
+                height: 200%;
+                background: radial-gradient(circle, rgba(95, 45, 237, 0.1) 0%, transparent 70%);
+                animation: rotate-gradient 20s linear infinite;
+            }
+
+        @@keyframes rotate-gradient {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Status Banner */
+        .status-banner {
+            position: relative;
+            overflow: hidden;
+        }
+
+            .status-banner::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: -100%;
+                width: 100%;
+                height: 100%;
+                background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+                animation: shine 3s infinite;
+            }
+
+        @@keyframes shine {
+            0% {
+                left: -100%;
+            }
+
+            100% {
+                left: 100%;
+            }
+        }
+
+        /* Info Card Hover */
+        .info-card {
+            transition: all 0.3s ease;
+        }
+
+            .info-card:hover {
+                transform: translateY(-4px);
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            }
+
+        /* Button Animations */
+        .btn-download {
+            position: relative;
+            overflow: hidden;
+        }
+
+            .btn-download::after {
+                content: '';
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                width: 0;
+                height: 0;
+                border-radius: 50%;
+                background: rgba(255, 255, 255, 0.3);
+                transform: translate(-50%, -50%);
+                transition: width 0.6s, height 0.6s;
+            }
+
+            .btn-download:hover::after {
+                width: 300px;
+                height: 300px;
+            }
+
+        /* QR Code Placeholder */
+        .qr-code-box {
+            background: linear-gradient(45deg, #f3f4f6 25%, transparent 25%), linear-gradient(-45deg, #f3f4f6 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #f3f4f6 75%), linear-gradient(-45deg, transparent 75%, #f3f4f6 75%);
+            background-size: 20px 20px;
+            background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+        }
+
+        /* Timeline */
+        .timeline-item {
+            position: relative;
+            padding-left: 40px;
+        }
+
+            .timeline-item::before {
+                content: '';
+                position: absolute;
+                left: 12px;
+                top: 30px;
+                width: 2px;
+                height: calc(100% - 30px);
+                background: linear-gradient(180deg, rgba(95, 45, 237, 0.5) 0%, rgba(95, 45, 237, 0.1) 100%);
+            }
+
+            .timeline-item:last-child::before {
+                display: none;
+            }
+
+        .timeline-dot {
+            position: absolute;
+            left: 0;
+            top: 8px;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-center;
+            z-index: 1;
+        }
+
+        /* Urgency Pulse */
+        .urgency-pulse {
+            animation: pulse-urgent 1.5s ease-in-out infinite;
+        }
+
+        @@keyframes pulse-urgent {
+            0%, 100% {
+                box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
+            }
+
+            50% {
+                box-shadow: 0 0 0 10px rgba(239, 68, 68, 0);
+            }
+        }
+
+        /* Verification Badge */
+        .verification-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        @@keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+}
+
+<!-- Breadcrumb -->
+<section class="bg-lightGrey10 dark:bg-lightGrey10-dark relative z-0 overflow-y-visible py-50px md:py-20 lg:py-70px">
+    <div class="container 2xl:container-secondary-md mx-auto">
+        <div class="text-center">
+            <h1 class="text-3xl md:text-4xl lg:text-4xl font-bold text-blackColor dark:text-blackColor-dark mb-4" data-aos="fade-up">
+                <i class="icofont-certificate text-primaryColor mr-3"></i>
+                Discount Certificate
+            </h1>
+
+            <!-- Breadcrumb -->
+            <ul class="flex gap-1 text-sm lg:text-size-15 text-contentColor dark:text-contentColor-dark justify-center" data-aos="fade-up" data-aos-delay="100">
+                <li>
+                    <a asp-controller="Home" asp-action="Index" class="hover:text-primaryColor">
+                        <i class="icofont-home mr-1"></i>Home
+                    </a>
+                </li>
+                <li><i class="icofont-simple-right"></i></li>
+                <li>
+                    <a asp-controller="Account" asp-action="Me" class="hover:text-primaryColor">Profile</a>
+                </li>
+                <li><i class="icofont-simple-right"></i></li>
+                <li>
+                    <a asp-controller="Discounts" asp-action="Index" class="hover:text-primaryColor">Discounts</a>
+                </li>
+                <li><i class="icofont-simple-right"></i></li>
+                <li class="text-primaryColor">Details</li>
+            </ul>
+        </div>
+    </div>
+</section>
+
+<!-- Main Content -->
+<section class="py-50px md:py-70px lg:py-20 bg-whiteColor dark:bg-whiteColor-dark">
+    <div class="container 2xl:container-secondary-md mx-auto">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+
+            <!-- Left Column - Certificate -->
+            <div class="lg:col-span-8" data-aos="fade-right">
+
+                <!-- Status Banner -->
+                <div class="status-banner @Model.BannerGradientClass @Model.BannerBorderClass border-l-4 rounded-xl p-6 mb-6">
+                    <div class="flex items-center justify-between flex-wrap gap-4">
+                        <div class="flex items-center gap-4">
+                            <div class="@Model.IconCircleClass w-16 h-16 rounded-full flex items-center justify-center">
+                                <i class="@Model.StatusIcon text-3xl text-whiteColor"></i>
+                            </div>
+                            <div>
+                                <h2 class="text-2xl font-bold text-blackColor dark:text-blackColor-dark mb-1">
+                                    @Model.StatusTitle Discount Code
+                                </h2>
+                                <p class="text-contentColor dark:text-contentColor-dark">
+                                    @Model.ValidityMessage
+                                </p>
+                                @if (Model.UrgencyLevel != "none" && !string.IsNullOrEmpty(Model.UrgencyMessage))
+                                {
+                                    <p class="@(Model.UrgencyLevel == "critical" ? "text-red-600 font-semibold urgency-pulse" : "text-yellow-600") mt-2">
+                                        <i class="icofont-warning-alt mr-1"></i>
+                                        @Model.UrgencyMessage
+                                    </p>
+                                }
+                            </div>
+                        </div>
+                        <span class="@Model.StatusBadgeClass px-6 py-3 rounded-full text-sm font-bold">
+                            @Model.EffectiveStatus
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Certificate Card -->
+                <div class="certificate-card rounded-2xl p-8 md:p-12 mb-6 relative z-0">
+                    <div class="relative z-10">
+                        <!-- Header -->
+                        <div class="text-center mb-8">
+                            <div class="inline-block mb-4">
+                                <div class="w-20 h-20 bg-gradient-to-br from-primaryColor to-secondaryColor rounded-full flex items-center justify-center mx-auto shadow-lg">
+                                    <i class="icofont-award text-4xl text-whiteColor"></i>
+                                </div>
+                            </div>
+                            <h3 class="text-3xl md:text-4xl font-bold text-blackColor dark:text-blackColor-dark mb-2">
+                                DISCOUNT CERTIFICATE
+                            </h3>
+                            <p class="text-contentColor dark:text-contentColor-dark">
+                                Uni Selector Platform
+                            </p>
+                        </div>
+
+                        <div class="border-t-2 border-dashed border-borderColor dark:border-borderColor-dark my-6"></div>
+
+                        <!-- Discount Code -->
+                        <div class="text-center mb-8">
+                            <p class="text-sm text-contentColor dark:text-contentColor-dark uppercase tracking-wide mb-2">
+                                Your Discount Code
+                            </p>
+                            <div class="inline-block bg-whiteColor dark:bg-whiteColor-dark rounded-xl px-8 py-4 shadow-lg border-2 border-primaryColor">
+                                <div class="font-mono text-3xl md:text-4xl font-bold text-primaryColor tracking-widest">
+                                    @Model.Code
+                                </div>
+                            </div>
+                            @if (Model.IsValid && Model.EffectiveStatus == Uni_Selector.Models.Enums.DiscountStatus.Issued)
+                            {
+                                <button type="button" onclick="copyCode('@Model.Code')"
+                                        class="mt-4 bg-secondaryColor hover:bg-secondaryColor/90 text-whiteColor px-6 py-2 rounded-lg font-semibold transition-all duration-300">
+                                    <i class="icofont-copy mr-2"></i>Copy Code
+                                </button>
+                            }
+                        </div>
+
+                        <!-- Discount Percentage -->
+                        <div class="text-center mb-8">
+                            <div class="inline-block bg-gradient-to-r from-green-500 to-green-600 text-whiteColor rounded-full px-12 py-4 shadow-xl">
+                                <div class="text-5xl md:text-6xl font-bold">
+                                    @Model.Percentage<span class="text-3xl">%</span>
+                                </div>
+                                <div class="text-sm uppercase tracking-wide">Discount</div>
+                            </div>
+                        </div>
+
+                        <div class="border-t-2 border-dashed border-borderColor dark:border-borderColor-dark my-6"></div>
+
+                        <!-- Certificate Details Grid -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                            <div class="bg-whiteColor/50 dark:bg-blackColor/20 rounded-lg p-4">
+                                <p class="text-xs text-contentColor dark:text-contentColor-dark uppercase tracking-wide mb-1">
+                                    Student Name
+                                </p>
+                                <p class="font-semibold text-blackColor dark:text-blackColor-dark">
+                                    @Model.StudentFullName
+                                </p>
+                            </div>
+
+                            <div class="bg-whiteColor/50 dark:bg-blackColor/20 rounded-lg p-4">
+                                <p class="text-xs text-contentColor dark:text-contentColor-dark uppercase tracking-wide mb-1">
+                                    University
+                                </p>
+                                <p class="font-semibold text-blackColor dark:text-blackColor-dark">
+                                    @Model.UniversityName
+                                </p>
+                            </div>
+
+                            <div class="bg-whiteColor/50 dark:bg-blackColor/20 rounded-lg p-4">
+                                <p class="text-xs text-contentColor dark:text-contentColor-dark uppercase tracking-wide mb-1">
+                                    Program
+                                </p>
+                                <p class="font-semibold text-blackColor dark:text-blackColor-dark">
+                                    @Model.ProgramName
+                                </p>
+                            </div>
+
+                            <div class="bg-whiteColor/50 dark:bg-blackColor/20 rounded-lg p-4">
+                                <p class="text-xs text-contentColor dark:text-contentColor-dark uppercase tracking-wide mb-1">
+                                    Application #
+                                </p>
+                                <p class="font-semibold text-blackColor dark:text-blackColor-dark font-mono">
+                                    @(Model.ApplicationNumber ?? "N/A")
+                                </p>
+                            </div>
+
+                            <div class="bg-whiteColor/50 dark:bg-blackColor/20 rounded-lg p-4">
+                                <p class="text-xs text-contentColor dark:text-contentColor-dark uppercase tracking-wide mb-1">
+                                    Estimated Savings
+                                </p>
+                                <p class="font-bold text-2xl text-primaryColor">
+                                    @Model.AmountEstimated.ToString("N2") JOD
+                                </p>
+                            </div>
+
+                            <div class="bg-whiteColor/50 dark:bg-blackColor/20 rounded-lg p-4">
+                                <p class="text-xs text-contentColor dark:text-contentColor-dark uppercase tracking-wide mb-1">
+                                    Status
+                                </p>
+                                <p class="font-semibold @Model.AccentTextClass">
+                                    @Model.StatusTitle
+                                </p>
+                            </div>
+
+                            <div class="bg-whiteColor/50 dark:bg-blackColor/20 rounded-lg p-4">
+                                <p class="text-xs text-contentColor dark:text-contentColor-dark uppercase tracking-wide mb-1">
+                                    Issued On
+                                </p>
+                                <p class="font-semibold text-blackColor dark:text-blackColor-dark">
+                                    @Model.GrantedAt.ToString("MMMM dd, yyyy")
+                                </p>
+                            </div>
+
+                            <div class="bg-whiteColor/50 dark:bg-blackColor/20 rounded-lg p-4">
+                                <p class="text-xs text-contentColor dark:text-contentColor-dark uppercase tracking-wide mb-1">
+                                    Expires On
+                                </p>
+                                <p class="font-semibold text-blackColor dark:text-blackColor-dark">
+                                    @Model.ExpiryDate.ToString("MMMM dd, yyyy")
+                                </p>
+                            </div>
+                        </div>
+
+
+
+                        <!-- Footer Note -->
+                        <div class="text-center text-xs text-contentColor dark:text-contentColor-dark">
+                            <p class="mb-1">
+                                <i class="icofont-info-circle mr-1"></i>
+                                This discount is valid for 90 days from the issue date and can only be used once.
+                            </p>
+                            <p>
+                                Generated on @DateTime.UtcNow.ToString("MMMM dd, yyyy 'at' HH:mm") UTC
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+                    <a asp-action="Download" asp-route-id="@Model.Id"
+                       class="btn-download bg-gradient-to-r from-primaryColor to-secondaryColor hover:from-primaryColor/90 hover:to-secondaryColor/90 text-whiteColor text-center py-4 px-6 rounded-xl font-bold text-lg shadow-lg transition-all duration-300 relative overflow-hidden">
+                        <i class="icofont-download mr-2"></i>Download PDF Certificate
+                    </a>
+
+                    @if (Model.IsValid && Model.EffectiveStatus == Uni_Selector.Models.Enums.DiscountStatus.Issued)
+                    {
+                        <button type="button" onclick="verifyDiscount(@Model.Id)" id="verifyBtn"
+                                class="bg-green-600 hover:bg-green-700 text-whiteColor py-4 px-6 rounded-xl font-bold text-lg shadow-lg transition-all duration-300">
+                            <i class="icofont-verification-check mr-2"></i>Verify Status
+                        </button>
+                    }
+                    else
+                    {
+                        <a asp-controller="Discounts" asp-action="Index"
+                           class="bg-gray-600 hover:bg-gray-700 text-whiteColor text-center py-4 px-6 rounded-xl font-bold text-lg shadow-lg transition-all duration-300">
+                            <i class="icofont-list mr-2"></i>View All Discounts
+                        </a>
+                    }
+                </div>
+
+                <!-- How to Use -->
+                <div class="info-card bg-blue/5 border-l-4 border-blue rounded-xl p-6">
+                    <h4 class="text-xl font-bold text-blackColor dark:text-blackColor-dark mb-4 flex items-center">
+                        <i class="icofont-info-circle text-blue mr-2"></i>
+                        How to Use This Discount
+                    </h4>
+                    <ol class="space-y-3">
+                        <li class="flex items-start gap-3">
+                            <span class="flex-shrink-0 w-8 h-8 bg-blue text-whiteColor rounded-full flex items-center justify-center font-bold">1</span>
+                            <span class="text-contentColor dark:text-contentColor-dark pt-1">
+                                Present this certificate to the university admissions office during registration
+                            </span>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <span class="flex-shrink-0 w-8 h-8 bg-blue text-whiteColor rounded-full flex items-center justify-center font-bold">2</span>
+                            <span class="text-contentColor dark:text-contentColor-dark pt-1">
+                                Provide the discount code shown above
+                            </span>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <span class="flex-shrink-0 w-8 h-8 bg-blue text-whiteColor rounded-full flex items-center justify-center font-bold">3</span>
+                            <span class="text-contentColor dark:text-contentColor-dark pt-1">
+                                The university will verify and apply the discount to your tuition fees
+                            </span>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <span class="flex-shrink-0 w-8 h-8 bg-blue text-whiteColor rounded-full flex items-center justify-center font-bold">4</span>
+                            <span class="text-contentColor dark:text-contentColor-dark pt-1">
+                                This discount is valid for 90 days from the issue date and can only be used once
+                            </span>
+                        </li>
+                    </ol>
+                </div>
+            </div>
+
+            <!-- Right Column - Info -->
+            <div class="lg:col-span-4" data-aos="fade-left">
+
+                <!-- University Info Card -->
+                <div class="info-card bg-whiteColor dark:bg-whiteColor-dark rounded-xl shadow-lg p-6 mb-6">
+                    <div class="flex items-center gap-4 mb-6">
+                        @if (!string.IsNullOrEmpty(Model.UniversityLogo))
+                        {
+                            <img src="@Model.UniversityLogo" alt="@Model.UniversityName" class="w-16 h-16 object-contain rounded-lg">
+                        }
+                        else
+                        {
+                            <div class="w-16 h-16 bg-primaryColor/10 rounded-lg flex items-center justify-center">
+                                <i class="icofont-university text-3xl text-primaryColor"></i>
+                            </div>
+                        }
+                        <div>
+                            <h3 class="text-xl font-bold text-blackColor dark:text-blackColor-dark">
+                                University Details
+                            </h3>
+                        </div>
+                    </div>
+
+                    <div class="space-y-4">
+                        <div>
+                            <p class="text-xs text-contentColor dark:text-contentColor-dark uppercase tracking-wide mb-1">
+                                University Name
+                            </p>
+                            <p class="font-semibold text-blackColor dark:text-blackColor-dark">
+                                @Model.UniversityName
+                            </p>
+                            @if (!string.IsNullOrEmpty(Model.UniversityNameArabic))
+                            {
+                                <p class="text-sm text-contentColor dark:text-contentColor-dark mt-1">
+                                    @Model.UniversityNameArabic
+                                </p>
+                            }
+                        </div>
+
+                        @if (!string.IsNullOrEmpty(Model.UniversityAddress))
+                        {
+                            <div>
+                                <p class="text-xs text-contentColor dark:text-contentColor-dark uppercase tracking-wide mb-1">
+                                    <i class="icofont-location-pin mr-1"></i>Address
+                                </p>
+                                <p class="text-sm text-contentColor dark:text-contentColor-dark">
+                                    @Model.UniversityAddress
+                                </p>
+                            </div>
+                        }
+
+                        @if (!string.IsNullOrEmpty(Model.UniversityPhone))
+                        {
+                            <div>
+                                <p class="text-xs text-contentColor dark:text-contentColor-dark uppercase tracking-wide mb-1">
+                                    <i class="icofont-phone mr-1"></i>Phone
+                                </p>
+                                <a href="tel:@Model.UniversityPhone" class="text-sm text-primaryColor hover:text-secondaryColor">
+                                    @Model.UniversityPhone
+                                </a>
+                            </div>
+                        }
+
+                        @if (!string.IsNullOrEmpty(Model.UniversityEmail))
+                        {
+                            <div>
+                                <p class="text-xs text-contentColor dark:text-contentColor-dark uppercase tracking-wide mb-1">
+                                    <i class="icofont-email mr-1"></i>Email
+                                </p>
+                                <a href="mailto:@Model.UniversityEmail" class="text-sm text-primaryColor hover:text-secondaryColor break-all">
+                                    @Model.UniversityEmail
+                                </a>
+                            </div>
+                        }
+                    </div>
+                </div>
+
+                <!-- Program Info Card -->
+                <div class="info-card bg-whiteColor dark:bg-whiteColor-dark rounded-xl shadow-lg p-6 mb-6">
+                    <h3 class="text-xl font-bold text-blackColor dark:text-blackColor-dark mb-4 flex items-center">
+                        <i class="icofont-graduate text-primaryColor mr-2"></i>
+                        Program Details
+                    </h3>
+
+                    <div class="space-y-4">
+                        <div>
+                            <p class="text-xs text-contentColor dark:text-contentColor-dark uppercase tracking-wide mb-1">
+                                Program Name
+                            </p>
+                            <p class="font-semibold text-blackColor dark:text-blackColor-dark">
+                                @Model.ProgramName
+                            </p>
+                            @if (!string.IsNullOrEmpty(Model.ProgramNameArabic))
+                            {
+                                <p class="text-sm text-contentColor dark:text-contentColor-dark mt-1">
+                                    @Model.ProgramNameArabic
+                                </p>
+                            }
+                        </div>
+
+                        @if (Model.EstimatedRegistrationFee.HasValue)
+                        {
+                            <div class="bg-gradient-to-r from-primaryColor/10 to-secondaryColor/10 rounded-lg p-4">
+                                <p class="text-xs text-contentColor dark:text-contentColor-dark uppercase tracking-wide mb-1">
+                                    Registration Fee
+                                </p>
+                                <p class="text-2xl font-bold text-primaryColor">
+                                    @Model.EstimatedRegistrationFee.Value.ToString("N2") JOD
+                                </p>
+                                @if (Model.SavingsPercentageOfFee.HasValue)
+                                {
+                                    <p class="text-xs text-contentColor dark:text-contentColor-dark mt-2">
+                                        Your discount saves @Model.SavingsPercentageOfFee.Value.ToString("N2")% of registration fee
+                                    </p>
+                                }
+                            </div>
+                        }
+                    </div>
+                </div>
+
+                <!-- Timeline Card -->
+                @if (Model.EffectiveStatus == Uni_Selector.Models.Enums.DiscountStatus.Redeemed || Model.EffectiveStatus == Uni_Selector.Models.Enums.DiscountStatus.Expired)
+                {
+                    <div class="info-card bg-whiteColor dark:bg-whiteColor-dark rounded-xl shadow-lg p-6 mb-6">
+                        <h3 class="text-xl font-bold text-blackColor dark:text-blackColor-dark mb-4 flex items-center">
+                            <i class="icofont-clock-time text-primaryColor mr-2"></i>
+                            Timeline
+                        </h3>
+
+                        <div class="space-y-4">
+                            <div class="timeline-item">
+                                <div class="timeline-dot bg-green-500 shadow-lg">
+                                    <i class="icofont-check text-white text-xs"></i>
+                                </div>
+                                <div>
+                                    <p class="font-semibold text-blackColor dark:text-blackColor-dark">Issued</p>
+                                    <p class="text-sm text-contentColor dark:text-contentColor-dark">
+                                        @Model.GrantedAt.ToString("MMM dd, yyyy 'at' h:mm tt")
+                                    </p>
+                                </div>
+                            </div>
+
+                            @if (Model.RedeemedAt.HasValue)
+                            {
+                                <div class="timeline-item">
+                                    <div class="timeline-dot bg-blue shadow-lg">
+                                        <i class="icofont-tick-mark text-white text-xs"></i>
+                                    </div>
+                                    <div>
+                                        <p class="font-semibold text-blackColor dark:text-blackColor-dark">Redeemed</p>
+                                        <p class="text-sm text-contentColor dark:text-contentColor-dark">
+                                            @Model.RedeemedAt.Value.ToString("MMM dd, yyyy 'at' h:mm tt")
+                                        </p>
+                                        @if (!string.IsNullOrEmpty(Model.RedeemedBy))
+                                        {
+                                            <p class="text-xs text-contentColor dark:text-contentColor-dark mt-1">
+                                                By: @Model.RedeemedBy
+                                            </p>
+                                        }
+                                    </div>
+                                </div>
+                            }
+
+                            @if (Model.EffectiveStatus == Uni_Selector.Models.Enums.DiscountStatus.Expired)
+                            {
+                                <div class="timeline-item">
+                                    <div class="timeline-dot bg-gray-500 shadow-lg">
+                                        <i class="icofont-close text-white text-xs"></i>
+                                    </div>
+                                    <div>
+                                        <p class="font-semibold text-blackColor dark:text-blackColor-dark">Expired</p>
+                                        <p class="text-sm text-contentColor dark:text-contentColor-dark">
+                                            @Model.ExpiryDate.ToString("MMM dd, yyyy")
+                                        </p>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                }
+
+                <!-- Quick Actions -->
+                <div class="info-card bg-gradient-to-br from-primaryColor/5 to-secondaryColor/5 rounded-xl p-6">
+                    <h3 class="text-lg font-bold text-blackColor dark:text-blackColor-dark mb-4">
+                        Quick Actions
+                    </h3>
+                    <div class="space-y-3">
+                        <a asp-controller="Discounts" asp-action="Index"
+                           class="block bg-whiteColor dark:bg-whiteColor-dark hover:bg-primaryColor hover:text-whiteColor border border-borderColor dark:border-borderColor-dark text-center py-3 px-4 rounded-lg font-semibold transition-all duration-300">
+                            <i class="icofont-list mr-2"></i>All Discounts
+                        </a>
+                        <a asp-controller="Applications" asp-action="Index"
+                           class="block bg-whiteColor dark:bg-whiteColor-dark hover:bg-primaryColor hover:text-whiteColor border border-borderColor dark:border-borderColor-dark text-center py-3 px-4 rounded-lg font-semibold transition-all duration-300">
+                            <i class="icofont-file-document mr-2"></i>My Applications
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    <script>
+        // Initialize AOS
+        AOS.init({
+            duration: 600,
+            easing: 'ease-in-out',
+            once: true
+        });
+
+        // Copy discount code
+        function copyCode(code) {
+            const tempInput = document.createElement('input');
+            tempInput.value = code;
+            document.body.appendChild(tempInput);
+            tempInput.select();
+            document.execCommand('copy');
+            document.body.removeChild(tempInput);
+
+            Swal.fire({
+                title: 'Copied!',
+                html: `
+                    <div class="space-y-3">
+                        <i class="icofont-check-circled text-6xl text-green-500"></i>
+                        <p>Discount code <strong class="font-mono text-lg">${code}</strong> copied to clipboard!</p>
+                    </div>
+                `,
+                icon: 'success',
+                timer: 2500,
+                showConfirmButton: false,
+                customClass: {
+                    popup: 'rounded-xl'
+                }
+            });
+        }
+
+        // Verify discount status
+        function verifyDiscount(id) {
+            const verifyBtn = document.getElementById('verifyBtn');
+            const originalText = verifyBtn.innerHTML;
+
+            verifyBtn.disabled = true;
+            verifyBtn.innerHTML = '<i class="icofont-spinner icofont-spin mr-2"></i>Verifying...';
+
+            fetch(`/Discounts/${id}/Verify`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                verifyBtn.disabled = false;
+                verifyBtn.innerHTML = originalText;
+
+                if (data.success && data.isValid) {
+                    Swal.fire({
+                        title: '✓ Verified!',
+                        html: `
+                            <div class="space-y-4 text-left">
+                                <div class="bg-green-50 border-l-4 border-green-500 p-4 rounded">
+                                    <p class="text-green-800 font-semibold mb-2">
+                                        <i class="icofont-check-circled mr-2"></i>This discount code is valid and active!
+                                    </p>
+                                </div>
+                                <div class="grid grid-cols-2 gap-3 text-sm">
+                                    <div class="bg-gray-50 p-3 rounded">
+                                        <p class="text-gray-600 text-xs mb-1">Code</p>
+                                        <p class="font-mono font-bold">${data.code}</p>
+                                    </div>
+                                    <div class="bg-gray-50 p-3 rounded">
+                                        <p class="text-gray-600 text-xs mb-1">Discount</p>
+                                        <p class="font-bold text-green-600">${data.percentage}%</p>
+                                    </div>
+                                    <div class="bg-gray-50 p-3 rounded">
+                                        <p class="text-gray-600 text-xs mb-1">University</p>
+                                        <p class="font-semibold">${data.university}</p>
+                                    </div>
+                                    <div class="bg-gray-50 p-3 rounded">
+                                        <p class="text-gray-600 text-xs mb-1">Days Left</p>
+                                        <p class="font-bold ${data.daysRemaining <= 7 ? 'text-red-600' : 'text-green-600'}">${data.daysRemaining} days</p>
+                                    </div>
+                                </div>
+                                <div class="bg-blue-50 border-l-4 border-blue-500 p-3 rounded">
+                                    <p class="text-blue-800 text-sm">
+                                        <i class="icofont-info-circle mr-1"></i>
+                                        Expires on <strong>${data.expiresAt}</strong>
+                                    </p>
+                                </div>
+                            </div>
+                        `,
+                        icon: 'success',
+                        confirmButtonColor: '#5f2ded',
+                        confirmButtonText: 'Got it!',
+                        customClass: {
+                            popup: 'rounded-xl'
+                        }
+                    });
+                } else {
+                    Swal.fire({
+                        title: 'Discount Status',
+                        html: `
+                            <div class="space-y-3">
+                                <div class="bg-${data.status === 'Redeemed' ? 'blue' : 'gray'}-50 border-l-4 border-${data.status === 'Redeemed' ? 'blue' : 'gray'}-500 p-4 rounded text-left">
+                                    <p class="text-${data.status === 'Redeemed' ? 'blue' : 'gray'}-800 font-semibold">
+                                        ${data.message}
+                                    </p>
+                                    ${data.redeemedAt ? `<p class="text-sm mt-2">Redeemed on ${data.redeemedAt}</p>` : ''}
+                                </div>
+                            </div>
+                        `,
+                        icon: data.status === 'Redeemed' ? 'info' : 'warning',
+                        confirmButtonColor: '#5f2ded',
+                        confirmButtonText: 'Understood',
+                        customClass: {
+                            popup: 'rounded-xl'
+                        }
+                    });
+                }
+            })
+            .catch(error => {
+                verifyBtn.disabled = false;
+                verifyBtn.innerHTML = originalText;
+
+                Swal.fire({
+                    title: 'Error',
+                    text: 'Failed to verify discount code. Please try again.',
+                    icon: 'error',
+                    confirmButtonColor: '#5f2ded',
+                    customClass: {
+                        popup: 'rounded-xl'
+                    }
+                });
+            });
+        }
+
+        // Display TempData messages
+        @if (TempData["Success"] != null)
+        {
+                <text>
+                Swal.fire({
+                    title: 'Success!',
+                    text: '@TempData["Success"]',
+                    icon: 'success',
+                    confirmButtonColor: '#5f2ded',
+                    customClass: { popup: 'rounded-xl' }
+                });
+                </text>
+        }
+
+        @if (TempData["Error"] != null)
+        {
+                <text>
+                Swal.fire({
+                    title: 'Error!',
+                    text: '@TempData["Error"]',
+                    icon: 'error',
+                    confirmButtonColor: '#5f2ded',
+                    customClass: { popup: 'rounded-xl' }
+                });
+                </text>
+        }
+
+        @if (TempData["Warning"] != null)
+        {
+                <text>
+                Swal.fire({
+                    title: 'Notice',
+                    text: '@TempData["Warning"]',
+                    icon: 'warning',
+                    confirmButtonColor: '#5f2ded',
+                    customClass: { popup: 'rounded-xl' }
+                });
+                </text>
+        }
+    </script>
+
+    @Html.AntiForgeryToken()
+}

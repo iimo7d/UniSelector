@@ -1,0 +1,364 @@
+﻿@using Uni_Selector.Models.Enums
+@model Uni_Selector.ViewModels.DiscountManagement.DiscountDetailsViewModel
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = "Discount Details";
+}
+
+<div class="dashboard-main-body">
+    <!-- Breadcrumb -->
+    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-24">
+        <h6 class="fw-semibold mb-0">Discount Details</h6>
+        <ul class="d-flex align-items-center gap-2">
+            <li class="fw-medium">
+                <a asp-action="Index" class="d-flex align-items-center gap-1 hover-text-primary">
+                    <iconify-icon icon="solar:home-smile-angle-outline" class="icon text-lg"></iconify-icon>
+                    Discounts
+                </a>
+            </li>
+            <li>-</li>
+            <li class="fw-medium">@Model.Code</li>
+        </ul>
+    </div>
+
+    <div class="row gy-4">
+        <!-- Left Sidebar - Discount Info Card -->
+        <div class="col-lg-4">
+            <div class="user-grid-card position-relative border radius-16 overflow-hidden bg-base h-100">
+                <div class="bg-success-600" style="height: 120px;"></div>
+                <div class="pb-24 ms-16 mb-24 me-16 mt--100">
+                    <div class="text-center border border-top-0 border-start-0 border-end-0 pb-24">
+                        <div class="w-200-px h-200-px rounded-circle bg-success-50 d-inline-flex align-items-center justify-content-center border border-white border-width-2-px">
+                            <iconify-icon icon="solar:ticket-bold-duotone" class="text-success-600" style="font-size: 80px;"></iconify-icon>
+                        </div>
+                        <h6 class="mb-0 mt-16">@Model.Code</h6>
+                        <span class="text-secondary-light mb-16">Discount Grant</span>
+                        <div class="mt-12">
+                            @switch (Model.Status)
+                            {
+                                case DiscountStatus.Issued:
+                                    <span class="bg-warning-focus text-warning-main px-24 py-4 rounded-pill fw-medium text-sm">Issued</span>
+                                    break;
+                                case DiscountStatus.Redeemed:
+                                    <span class="bg-success-focus text-success-main px-24 py-4 rounded-pill fw-medium text-sm">Redeemed</span>
+                                    break;
+                                case DiscountStatus.Expired:
+                                    <span class="bg-danger-focus text-danger-main px-24 py-4 rounded-pill fw-medium text-sm">Expired</span>
+                                    break;
+                            }
+                        </div>
+                    </div>
+
+                    <div class="mt-24">
+                        <h6 class="text-xl mb-16">Discount Information</h6>
+                        <ul>
+                            <li class="d-flex align-items-center gap-1 mb-12">
+                                <span class="w-40 text-md fw-semibold text-primary-light">Percentage</span>
+                                <span class="w-60 text-success-600 fw-bold">: @Model.Percentage%</span>
+                            </li>
+                            <li class="d-flex align-items-center gap-1 mb-12">
+                                <span class="w-40 text-md fw-semibold text-primary-light">Amount</span>
+                                <span class="w-60 text-success-600 fw-bold">: @Model.AmountEstimated.ToString("N2") JOD</span>
+                            </li>
+                            <li class="d-flex align-items-center gap-1 mb-12">
+                                <span class="w-40 text-md fw-semibold text-primary-light">Granted At</span>
+                                <span class="w-60 text-secondary-light fw-medium">: @Model.GrantedAt.ToString("MMM dd, yyyy")</span>
+                            </li>
+                            @if (Model.RedeemedAt.HasValue)
+                            {
+                                <li class="d-flex align-items-center gap-1 mb-12">
+                                    <span class="w-40 text-md fw-semibold text-primary-light">Redeemed At</span>
+                                    <span class="w-60 text-secondary-light fw-medium">: @Model.RedeemedAt.Value.ToString("MMM dd, yyyy")</span>
+                                </li>
+                            }
+                            @if (!string.IsNullOrWhiteSpace(Model.RedeemedByUserName))
+                            {
+                                <li class="d-flex align-items-center gap-1 mb-12">
+                                    <span class="w-40 text-md fw-semibold text-primary-light">Redeemed By</span>
+                                    <span class="w-60 text-secondary-light fw-medium">: @Model.RedeemedByUserName</span>
+                                </li>
+                            }
+                        </ul>
+                    </div>
+
+                    <div class="mt-24">
+                        <h6 class="text-xl mb-16">Application</h6>
+                        <ul>
+                            <li class="d-flex align-items-center gap-1 mb-12">
+                                <span class="w-40 text-md fw-semibold text-primary-light">App #</span>
+                                <span class="w-60 text-secondary-light fw-medium">: @Model.ApplicationNumber</span>
+                            </li>
+                            @if (!string.IsNullOrWhiteSpace(Model.AdmissionNumber))
+                            {
+                                <li class="d-flex align-items-center gap-1 mb-12">
+                                    <span class="w-40 text-md fw-semibold text-primary-light">Admission #</span>
+                                    <span class="w-60 text-success-600 fw-medium">: @Model.AdmissionNumber</span>
+                                </li>
+                            }
+                            <li class="d-flex align-items-center gap-1 mb-12">
+                                <span class="w-40 text-md fw-semibold text-primary-light">Status</span>
+                                <span class="w-60 text-secondary-light fw-medium">: @Model.ApplicationStatus</span>
+                            </li>
+                            <li class="d-flex align-items-center gap-1 mb-12">
+                                <span class="w-40 text-md fw-semibold text-primary-light">Applied</span>
+                                <span class="w-60 text-secondary-light fw-medium">: @Model.ApplicationDate.ToString("MMM dd, yyyy")</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Side - Details -->
+        <div class="col-lg-8">
+            <div class="card h-100">
+                <div class="card-body p-24">
+                    <!-- Student Info Section -->
+                    <div class="mb-20">
+                        <h6 class="text-xl mb-16 fw-bold">Student Information</h6>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <div class="p-16 border radius-8">
+                                    <span class="text-secondary-light text-sm">Full Name</span>
+                                    <h6 class="fw-semibold mt-4">@Model.StudentName</h6>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="p-16 border radius-8">
+                                    <span class="text-secondary-light text-sm">Email</span>
+                                    <h6 class="fw-semibold mt-4">@Model.StudentEmail</h6>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="p-16 border radius-8">
+                                    <span class="text-secondary-light text-sm">National ID</span>
+                                    <h6 class="fw-semibold mt-4">@Model.NationalId</h6>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="p-16 border radius-8">
+                                    <span class="text-secondary-light text-sm">Seat Number</span>
+                                    <h6 class="fw-semibold mt-4">@Model.SeatNumber</h6>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="p-16 border radius-8">
+                                    <span class="text-secondary-light text-sm">GPA</span>
+                                    <h6 class="fw-semibold mt-4 text-primary-600">@Model.GPA.ToString("F1")%</h6>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Program Info Section -->
+                    <div class="mb-20">
+                        <h6 class="text-xl mb-16 fw-bold">Program Information</h6>
+                        <div class="border radius-8 p-20">
+                            <div class="d-flex justify-content-between align-items-start mb-16">
+                                <div>
+                                    <h5 class="fw-bold mb-8">@Model.ProgramNameEnglish</h5>
+                                    <p class="text-secondary-light mb-8">@Model.ProgramNameArabic</p>
+                                    @if (Model.IsBtecProgram)
+                                    {
+                                        <span class="badge bg-info-focus text-info-main">BTEC Program</span>
+                                    }
+                                </div>
+                            </div>
+
+                            <div class="row g-3 mt-16">
+                                <div class="col-md-4">
+                                    <span class="text-secondary-light text-sm d-block">University</span>
+                                    <span class="fw-semibold">@Model.UniversityNameEnglish</span>
+                                </div>
+                                <div class="col-md-4">
+                                    <span class="text-secondary-light text-sm d-block">
+                                        @if (Model.IsBtecProgram)
+                                        {
+                                            <text>BTEC Level</text>
+                                        }
+                                        else
+                                        {
+                                            <text>Degree</text>
+                                        }
+                                    </span>
+                                    <span class="fw-semibold">
+                                        @if (Model.IsBtecProgram)
+                                        {
+                                            @Model.BtecLevel
+                                        }
+                                        else
+                                        {
+                                            @Model.Degree
+                                        }
+                                    </span>
+                                </div>
+                                <div class="col-md-4">
+                                    <span class="text-secondary-light text-sm d-block">Duration</span>
+                                    <span class="fw-semibold">@Model.ProgramDuration Years</span>
+                                </div>
+                                <div class="col-md-4">
+                                    <span class="text-secondary-light text-sm d-block">Language</span>
+                                    <span class="fw-semibold">@Model.ProgramLanguage</span>
+                                </div>
+                                <div class="col-md-4">
+                                    <span class="text-secondary-light text-sm d-block">Total Credit Hours</span>
+                                    <span class="fw-semibold">@Model.TotalCreditHours Hours</span>
+                                </div>
+                                <div class="col-md-4">
+                                    <span class="text-secondary-light text-sm d-block">Hour Price</span>
+                                    <span class="fw-semibold text-primary-600">@Model.HourPriceBase.ToString("N2") JOD</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Commission Info -->
+                    @if (Model.HasCommission)
+                    {
+                        <div class="mb-20">
+                            <h6 class="text-xl mb-16 fw-bold">Commission Information</h6>
+                            <div class="border radius-8 p-16 bg-primary-50">
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <span class="text-sm d-block">Mode</span>
+                                        <span class="fw-semibold">@Model.CommissionMode</span>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <span class="text-sm d-block">Percentage</span>
+                                        <span class="fw-semibold">@Model.CommissionPercentage%</span>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <span class="text-sm d-block fw-bold text-primary-600">Amount</span>
+                                        <span class="fw-bold text-primary-600">@Model.CommissionAmountEstimated?.ToString("N2") JOD</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+
+                    <!-- Action Buttons -->
+                    <div class="d-flex gap-3 flex-wrap">
+                        @if (Model.CanRedeem)
+                        {
+                            <button type="button" class="btn btn-success px-24 py-12 radius-8" onclick="redeemDiscount(@Model.DiscountId)">
+                                <iconify-icon icon="solar:check-circle-bold" class="icon text-lg"></iconify-icon>
+                                Redeem Discount
+                            </button>
+                        }
+                        <a asp-action="Index" class="btn btn-outline-secondary px-24 py-12 radius-8">
+                            <iconify-icon icon="solar:arrow-left-bold" class="icon text-lg"></iconify-icon>
+                            Back to List
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+
+                function getAntiForgeryToken() {
+          return document.querySelector('#antiForgeryForm input[name="__RequestVerificationToken"]')?.value;
+        }
+
+        const discountId = @Model.DiscountId;
+
+        async function redeemDiscount(id) {
+            const result = await Swal.fire({
+                title: 'Redeem Discount?',
+                html: `
+                    <div class="text-start">
+                        <p class="mb-16">This will mark the discount <strong>@Model.Code</strong> as redeemed.</p>
+                        <ul class="text-start mb-16">
+                            <li>Student: <strong>@Model.StudentName</strong></li>
+                            <li>Amount: <strong>@Model.AmountEstimated.ToString("N2") JOD</strong></li>
+                            <li>Application must be <strong>Enrolled</strong></li>
+                        </ul>
+                        <p class="text-warning-600">This action cannot be undone.</p>
+                    </div>
+                `,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'Yes, Redeem',
+                cancelButtonText: 'Cancel',
+                confirmButtonColor: '#28a745',
+                cancelButtonColor: '#6c757d'
+            });
+
+            if (result.isConfirmed) {
+                try {
+                    const response = await fetch(`/UniversityRep/Discounts/${id}/Redeem`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                            'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]')?.value || ''
+                        },
+                        body: new URLSearchParams({
+                            'discountId': id,
+                            '__RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]')?.value || ''
+                        })
+                    });
+
+                    const data = await response.json();
+
+                    if (data.success) {
+                        await Swal.fire({
+                            icon: 'success',
+                            title: 'Redeemed!',
+                            text: data.message,
+                            timer: 2000,
+                            showConfirmButton: false
+                        });
+                        location.reload();
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error!',
+                            text: data.message
+                        });
+                    }
+                } catch (error) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error!',
+                        text: 'An error occurred while redeeming the discount.'
+                    });
+                }
+            }
+        }
+
+        @if (TempData["Success"] != null)
+        {
+                <text>
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success!',
+                    text: '@TempData["Success"]',
+                    timer: 3000,
+                    showConfirmButton: false
+                });
+                </text>
+        }
+
+        @if (TempData["Error"] != null)
+        {
+                <text>
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error!',
+                    text: '@TempData["Error"]',
+                    timer: 3000,
+                    showConfirmButton: false
+                });
+                </text>
+        }
+    </script>
+}
+
+
+<form id="antiForgeryForm" method="post">
+    @Html.AntiForgeryToken()
+</form>

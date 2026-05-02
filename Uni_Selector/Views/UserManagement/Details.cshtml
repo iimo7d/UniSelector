@@ -1,0 +1,452 @@
+﻿@model Uni_Selector.ViewModels.UserManagement.UserDetailsViewModel
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = "User Details";
+}
+
+<div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-24">
+    <h6 class="fw-semibold mb-0">User Profile</h6>
+    <ul class="d-flex align-items-center gap-2">
+        <li class="fw-medium">
+            <a href="@Url.Action("Index", "Admin")" class="d-flex align-items-center gap-1 hover-text-primary">
+                <iconify-icon icon="solar:home-smile-angle-outline" class="icon text-lg"></iconify-icon>
+                Dashboard
+            </a>
+        </li>
+        <li>-</li>
+        <li class="fw-medium">
+            <a href="@Url.Action("Index")" class="hover-text-primary">Users</a>
+        </li>
+        <li>-</li>
+        <li class="fw-medium">Profile</li>
+    </ul>
+</div>
+
+<div class="row gy-4">
+    <!-- Left Column - Profile Card -->
+    <div class="col-lg-4">
+        <div class="card h-100 radius-12">
+            <div class="card-body p-24">
+                <div class="text-center border-bottom pb-24 mb-24">
+                    <div class="border br-white border-width-2-px w-200-px h-200-px rounded-circle object-fit-cover bg-primary-50 d-flex align-items-center justify-content-center mx-auto">
+                        <span class="text-primary-600 fw-bold" style="font-size: 72px;">@Model.FullName[0]</span>
+                    </div>
+                    <h5 class="mb-8">@Model.FullName</h5>
+                    <span class="badge bg-primary-focus text-primary-600 px-24 py-8 radius-4 fw-medium">@Model.PrimaryRole</span>
+
+                    <div class="mt-16">
+                        @if (Model.IsActive)
+                        {
+                            <span class="badge bg-success-focus text-success-600 px-16 py-6 radius-4 me-8">Active</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-danger-focus text-danger-600 px-16 py-6 radius-4 me-8">Inactive</span>
+                        }
+
+                        @if (Model.EmailConfirmed)
+                        {
+                            <span class="badge bg-info-focus text-info-600 px-16 py-6 radius-4">Email Verified</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-warning-focus text-warning-600 px-16 py-6 radius-4">Email Not Verified</span>
+                        }
+                    </div>
+
+                    @if (Model.IsLockedOut)
+                    {
+                        <div class="alert alert-danger-focus mt-16 mb-0 text-start">
+                            <iconify-icon icon="solar:lock-outline" class="icon text-lg me-8"></iconify-icon>
+                            <small>Account is locked until @Model.LockoutEnd.Value.ToString("dd MMM yyyy")</small>
+                        </div>
+                    }
+                </div>
+
+                <div class="mb-20">
+                    <h6 class="text-lg mb-16 fw-semibold">Contact Information</h6>
+                    <ul class="list-unstyled">
+                        <li class="d-flex align-items-center gap-8 mb-12">
+                            <iconify-icon icon="mage:email" class="icon text-xl text-primary-600"></iconify-icon>
+                            <span class="text-sm">@Model.Email</span>
+                        </li>
+                        <li class="d-flex align-items-center gap-8 mb-12">
+                            <iconify-icon icon="solar:phone-outline" class="icon text-xl text-primary-600"></iconify-icon>
+                            <span class="text-sm">@Model.PhoneNumber</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="mb-20">
+                    <h6 class="text-md mb-12 fw-semibold">Account Details</h6>
+                    <div class="d-flex justify-content-between mb-8">
+                        <span class="text-sm text-secondary-light">Created:</span>
+                        <span class="text-sm fw-semibold">@Model.CreatedAt.ToString("dd MMM yyyy")</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-8">
+                        <span class="text-sm text-secondary-light">Last Login:</span>
+                        <span class="text-sm fw-semibold">@(Model.LastLoginAt?.ToString("dd MMM yyyy") ?? "Never")</span>
+                    </div>
+                </div>
+
+                @if (Model.StudentDetails != null || Model.UniversityRepDetails != null)
+                {
+                    <div class="mb-20">
+                        <h6 class="text-md mb-12 fw-semibold">Activity Statistics</h6>
+                        <div class="d-flex justify-content-between mb-8">
+                            <span class="text-sm text-secondary-light">Applications:</span>
+                            <span class="badge bg-neutral-200 text-neutral-600 px-12 py-4">@Model.ApplicationsCount</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-8">
+                            <span class="text-sm text-secondary-light">Notifications:</span>
+                            <span class="badge bg-neutral-200 text-neutral-600 px-12 py-4">@Model.NotificationsCount</span>
+                        </div>
+                    </div>
+                }
+
+                <div class="d-flex flex-column gap-2">
+                    <a href="@Url.Action("Edit", new { id = Model.Id })" class="btn btn-primary flex-fill text-sm btn-sm px-12 py-8 radius-8">
+                        <iconify-icon icon="lucide:edit" class="icon text-lg me-4"></iconify-icon>
+                        Edit Profile
+                    </a>
+
+                    @if (Model.IsLockedOut)
+                    {
+                        <form asp-action="Unlock" asp-route-id="@Model.Id" method="post">
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="btn btn-success flex-fill text-sm btn-sm px-12 py-8 radius-8 w-100">
+                                <iconify-icon icon="solar:lock-unlocked-outline" class="icon text-lg me-4"></iconify-icon>
+                                Unlock Account
+                            </button>
+                        </form>
+                    }
+                    else
+                    {
+                        <form asp-action="Lock" asp-route-id="@Model.Id" method="post" class="lockForm">
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="btn btn-warning flex-fill text-sm btn-sm px-12 py-8 radius-8 w-100">
+                                <iconify-icon icon="solar:lock-outline" class="icon text-lg me-4"></iconify-icon>
+                                Lock Account
+                            </button>
+                        </form>
+                    }
+
+                    <form asp-action="ResetPassword" asp-route-id="@Model.Id" method="post" class="resetForm">
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="btn btn-outline-secondary flex-fill text-sm btn-sm px-12 py-8 radius-8 w-100">
+                            <iconify-icon icon="solar:key-outline" class="icon text-lg me-4"></iconify-icon>
+                            Reset Password
+                        </button>
+                    </form>
+
+                    <a href="@Url.Action("Index")" class="btn btn-outline-danger flex-fill text-sm btn-sm px-12 py-8 radius-8">
+                        <iconify-icon icon="ep:back" class="icon text-lg me-4"></iconify-icon>
+                        Back to List
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Right Column - Details -->
+    <div class="col-lg-8">
+        @if (Model.StudentDetails != null)
+        {
+            <!-- Student Details -->
+            <div class="card radius-12 mb-24">
+                <div class="card-body p-24">
+                    <h6 class="text-lg mb-16 fw-semibold d-flex align-items-center gap-8">
+                        <iconify-icon icon="solar:user-id-outline" class="text-primary-600 text-xl"></iconify-icon>
+                        Student Information
+                    </h6>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-16">
+                            <span class="text-sm text-secondary-light d-block mb-4">Student ID</span>
+                            <span class="text-md fw-semibold">#@Model.StudentDetails.StudentId</span>
+                        </div>
+                        <div class="col-md-6 mb-16">
+                            <span class="text-sm text-secondary-light d-block mb-4">Date of Birth</span>
+                            <span class="text-md">@Model.StudentDetails.DateOfBirth?.ToString("dd MMM yyyy")</span>
+                        </div>
+                        <div class="col-md-6 mb-16">
+                            <span class="text-sm text-secondary-light d-block mb-4">Gender</span>
+                            <span class="text-md">@Model.StudentDetails.Gender</span>
+                        </div>
+                        <div class="col-md-6 mb-16">
+                            <span class="text-sm text-secondary-light d-block mb-4">GPA</span>
+                            <span class="badge bg-success-focus text-success-600 px-16 py-8 fw-semibold text-md">@Model.StudentDetails.GPA.ToString("N2")</span>
+                        </div>
+                        <div class="col-md-6 mb-16">
+                            <span class="text-sm text-secondary-light d-block mb-4">Province</span>
+                            <span class="text-md">@Model.StudentDetails.Province</span>
+                        </div>
+                        <div class="col-md-6 mb-16">
+                            <span class="text-sm text-secondary-light d-block mb-4">City</span>
+                            <span class="text-md">@Model.StudentDetails.City</span>
+                        </div>
+                        <div class="col-md-6 mb-16">
+                            <span class="text-sm text-secondary-light d-block mb-4">Educational Path</span>
+                            <span class="badge bg-info-focus text-info-600 px-12 py-6">@Model.StudentDetails.Path</span>
+                        </div>
+                        <div class="col-md-6 mb-16">
+                            <span class="text-sm text-secondary-light d-block mb-4">Registration Budget</span>
+                            <span class="text-md fw-semibold text-success-600">@Model.StudentDetails.RegistrationBudget.ToString("N2") JOD</span>
+                        </div>
+                        <div class="col-md-6 mb-16">
+                            <span class="text-sm text-secondary-light d-block mb-4">Profile Status</span>
+                            @if (Model.StudentDetails.ProfileCompleted)
+                            {
+                                <span class="badge bg-success-focus text-success-600 px-16 py-6">Completed</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-warning-focus text-warning-600 px-16 py-6">Incomplete</span>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Application Statistics -->
+            <div class="card radius-12">
+                <div class="card-body p-24">
+                    <h6 class="text-lg mb-16 fw-semibold d-flex align-items-center gap-8">
+                        <iconify-icon icon="solar:document-text-outline" class="text-primary-600 text-xl"></iconify-icon>
+                        Application Statistics
+                    </h6>
+
+                    <div class="row">
+                        <div class="col-md-3 col-sm-6 mb-16">
+                            <div class="text-center">
+                                <div class="w-48-px h-48-px rounded-circle bg-primary-focus d-flex align-items-center justify-content-center mx-auto mb-8">
+                                    <iconify-icon icon="solar:document-bold" class="text-primary-600 text-xl"></iconify-icon>
+                                </div>
+                                <h4 class="fw-bold mb-4">@Model.StudentDetails.TotalApplications</h4>
+                                <span class="text-sm text-secondary-light">Total</span>
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-sm-6 mb-16">
+                            <div class="text-center">
+                                <div class="w-48-px h-48-px rounded-circle bg-warning-focus d-flex align-items-center justify-content-center mx-auto mb-8">
+                                    <iconify-icon icon="solar:clock-circle-bold" class="text-warning-600 text-xl"></iconify-icon>
+                                </div>
+                                <h4 class="fw-bold mb-4">@Model.StudentDetails.PendingApplications</h4>
+                                <span class="text-sm text-secondary-light">Pending</span>
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-sm-6 mb-16">
+                            <div class="text-center">
+                                <div class="w-48-px h-48-px rounded-circle bg-success-focus d-flex align-items-center justify-content-center mx-auto mb-8">
+                                    <iconify-icon icon="solar:check-circle-bold" class="text-success-600 text-xl"></iconify-icon>
+                                </div>
+                                <h4 class="fw-bold mb-4">@Model.StudentDetails.ApprovedApplications</h4>
+                                <span class="text-sm text-secondary-light">Approved</span>
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-sm-6 mb-16">
+                            <div class="text-center">
+                                <div class="w-48-px h-48-px rounded-circle bg-danger-focus d-flex align-items-center justify-content-center mx-auto mb-8">
+                                    <iconify-icon icon="solar:close-circle-bold" class="text-danger-600 text-xl"></iconify-icon>
+                                </div>
+                                <h4 class="fw-bold mb-4">@Model.StudentDetails.RejectedApplications</h4>
+                                <span class="text-sm text-secondary-light">Rejected</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+        else if (Model.UniversityRepDetails != null)
+        {
+            <!-- University Representative Details -->
+            <div class="card radius-12 mb-24">
+                <div class="card-body p-24">
+                    <h6 class="text-lg mb-16 fw-semibold d-flex align-items-center gap-8">
+                        <iconify-icon icon="solar:buildings-outline" class="text-primary-600 text-xl"></iconify-icon>
+                        University Representative Information
+                    </h6>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-16">
+                            <span class="text-sm text-secondary-light d-block mb-4">Representative ID</span>
+                            <span class="text-md fw-semibold">#@Model.UniversityRepDetails.RepresentativeId</span>
+                        </div>
+                        <div class="col-md-6 mb-16">
+                            <span class="text-sm text-secondary-light d-block mb-4">Position</span>
+                            <span class="text-md">@Model.UniversityRepDetails.Position</span>
+                        </div>
+                        <div class="col-12 mb-16">
+                            <span class="text-sm text-secondary-light d-block mb-4">University</span>
+                            <h6 class="text-md fw-semibold mb-0">@Model.UniversityRepDetails.UniversityName</h6>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- University Statistics -->
+            <div class="card radius-12">
+                <div class="card-body p-24">
+                    <h6 class="text-lg mb-16 fw-semibold d-flex align-items-center gap-8">
+                        <iconify-icon icon="solar:chart-outline" class="text-primary-600 text-xl"></iconify-icon>
+                        University Statistics
+                    </h6>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-16">
+                            <div class="text-center">
+                                <div class="w-64-px h-64-px rounded-circle bg-primary-focus d-flex align-items-center justify-content-center mx-auto mb-12">
+                                    <iconify-icon icon="solar:diploma-bold" class="text-primary-600 text-32"></iconify-icon>
+                                </div>
+                                <h3 class="fw-bold mb-4">@Model.UniversityRepDetails.UniversityProgramsCount</h3>
+                                <span class="text-sm text-secondary-light">Total Programs</span>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-16">
+                            <div class="text-center">
+                                <div class="w-64-px h-64-px rounded-circle bg-warning-focus d-flex align-items-center justify-content-center mx-auto mb-12">
+                                    <iconify-icon icon="solar:document-text-bold" class="text-warning-600 text-32"></iconify-icon>
+                                </div>
+                                <h3 class="fw-bold mb-4">@Model.UniversityRepDetails.PendingApplicationsCount</h3>
+                                <span class="text-sm text-secondary-light">Pending Applications</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+        else
+        {
+            <!-- Admin/BTEC Authority Details -->
+            <div class="card radius-12">
+                <div class="card-body p-24">
+                    <h6 class="text-lg mb-16 fw-semibold d-flex align-items-center gap-8">
+                        <iconify-icon icon="solar:shield-user-outline" class="text-primary-600 text-xl"></iconify-icon>
+                        Administrator Information
+                    </h6>
+
+                    <div class="alert alert-info-focus">
+                        <iconify-icon icon="solar:info-circle-outline" class="icon text-xl me-8"></iconify-icon>
+                        <p class="mb-0">This user has administrative privileges. @Model.PrimaryRole role provides full access to platform management features.</p>
+                    </div>
+
+                    <div class="mt-24">
+                        <h6 class="text-md mb-12 fw-semibold">Role Permissions</h6>
+                        <ul class="list-unstyled">
+                            @if (Model.PrimaryRole == "PlatformAdmin")
+                            {
+                                <li class="d-flex align-items-center gap-8 mb-8">
+                                    <iconify-icon icon="solar:check-circle-bold" class="icon text-lg text-success-600"></iconify-icon>
+                                    <span class="text-sm">Full system access</span>
+                                </li>
+                                <li class="d-flex align-items-center gap-8 mb-8">
+                                    <iconify-icon icon="solar:check-circle-bold" class="icon text-lg text-success-600"></iconify-icon>
+                                    <span class="text-sm">User management</span>
+                                </li>
+                                <li class="d-flex align-items-center gap-8 mb-8">
+                                    <iconify-icon icon="solar:check-circle-bold" class="icon text-lg text-success-600"></iconify-icon>
+                                    <span class="text-sm">University management</span>
+                                </li>
+                                <li class="d-flex align-items-center gap-8 mb-8">
+                                    <iconify-icon icon="solar:check-circle-bold" class="icon text-lg text-success-600"></iconify-icon>
+                                    <span class="text-sm">Commission management</span>
+                                </li>
+                                <li class="d-flex align-items-center gap-8 mb-8">
+                                    <iconify-icon icon="solar:check-circle-bold" class="icon text-lg text-success-600"></iconify-icon>
+                                    <span class="text-sm">Application oversight</span>
+                                </li>
+                            }
+                            else if (Model.PrimaryRole == "BtecAuthority")
+                            {
+                                <li class="d-flex align-items-center gap-8 mb-8">
+                                    <iconify-icon icon="solar:check-circle-bold" class="icon text-lg text-success-600"></iconify-icon>
+                                    <span class="text-sm">BTEC program approval</span>
+                                </li>
+                                <li class="d-flex align-items-center gap-8 mb-8">
+                                    <iconify-icon icon="solar:check-circle-bold" class="icon text-lg text-success-600"></iconify-icon>
+                                    <span class="text-sm">BTEC application review</span>
+                                </li>
+                                <li class="d-flex align-items-center gap-8 mb-8">
+                                    <iconify-icon icon="solar:check-circle-bold" class="icon text-lg text-success-600"></iconify-icon>
+                                    <span class="text-sm">Entry requirements management</span>
+                                </li>
+                            }
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        // Lock account confirmation
+        document.querySelectorAll('.lockForm').forEach(form => {
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                Swal.fire({
+                    title: 'Lock User Account?',
+                    text: "The user will not be able to log in until unlocked.",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#FFA500',
+                    cancelButtonColor: '#6c757d',
+                    confirmButtonText: 'Yes, Lock Account',
+                    cancelButtonText: 'Cancel'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        form.submit();
+                    }
+                });
+            });
+        });
+
+        // Reset password confirmation
+        document.querySelectorAll('.resetForm').forEach(form => {
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                Swal.fire({
+                    title: 'Send Password Reset Email?',
+                    text: "The user will receive an email with instructions to reset their password.",
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonColor: '#487FFF',
+                    cancelButtonColor: '#6c757d',
+                    confirmButtonText: 'Yes, Send Email',
+                    cancelButtonText: 'Cancel'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        form.submit();
+                    }
+                });
+            });
+        });
+
+        @if (TempData["Success"] != null)
+        {
+                <text>
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success!',
+                    text: '@TempData["Success"]',
+                    confirmButtonColor: '#198754',
+                    timer: 3000,
+                    timerProgressBar: true
+                });
+                </text>
+        }
+        @if (TempData["Error"] != null)
+        {
+                <text>
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error!',
+                    text: '@TempData["Error"]',
+                    confirmButtonColor: '#dc3545'
+                });
+                </text>
+        }
+    </script>
+}

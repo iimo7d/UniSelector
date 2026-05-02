@@ -1,0 +1,404 @@
+﻿@using Uni_Selector.ViewModels.Home
+@model UniversityDetailsViewModel
+@{
+    ViewData["Title"] = Model.NameEnglish;
+}
+
+<!-- Banner Section -->
+<section>
+    <div class="bg-lightGrey10 dark:bg-lightGrey10-dark relative z-0 overflow-y-visible py-50px">
+        <!-- Animated Icons -->
+        <div>
+            <img class="absolute left-0 bottom-0 md:left-[14px] lg:left-[50px] lg:bottom-[21px] 2xl:left-[165px] 2xl:bottom-[60px] animate-move-var z-10" src="~/assets/images/herobanner/herobanner__1.png" alt="">
+            <img class="absolute left-0 top-0 lg:left-[50px] lg:top-[100px] animate-spin-slow" src="~/assets/images/herobanner/herobanner__2.png" alt="">
+            <img class="absolute right-[30px] top-0 md:right-10 lg:right-[575px] 2xl:top-20 animate-move-var2 opacity-50 hidden md:block" src="~/assets/images/herobanner/herobanner__3.png" alt="">
+            <img class="absolute right-[30px] top-[212px] md:right-10 md:top-[157px] lg:right-[45px] lg:top-[100px] animate-move-hor" src="~/assets/images/herobanner/herobanner__5.png" alt="">
+        </div>
+
+        <div class="container">
+            <div>
+                <ul class="flex gap-1 mb-30px">
+                    <li>
+                        <a asp-controller="Home" asp-action="Index" class="text-lg text-blackColor2 dark:text-blackColor2-dark">
+                            Home <i class="icofont-simple-right"></i>
+                        </a>
+                    </li>
+                    <li>
+                        <a asp-action="Universities" class="text-lg text-blackColor2 dark:text-blackColor2-dark">
+                            Universities <i class="icofont-simple-right"></i>
+                        </a>
+                    </li>
+                    <li>
+                        <span class="text-lg text-blackColor2 dark:text-blackColor2-dark">@Model.NameEnglish</span>
+                    </li>
+                </ul>
+
+                <!-- University Header -->
+                <div class="flex items-center gap-6 mb-30px" data-aos="fade-up">
+                    <button class="text-sm text-whiteColor bg-primaryColor border border-primaryColor px-26px py-0.5 leading-23px font-semibold rounded">
+                        @Model.Type
+                    </button>
+                    <button class="text-sm text-whiteColor bg-secondaryColor border border-secondaryColor px-22px py-0.5 leading-23px font-semibold rounded">
+                        @Model.City
+                    </button>
+                </div>
+
+                <!-- University Title -->
+                <h4 class="text-size-32 md:text-4xl font-bold text-blackColor dark:text-blackColor-dark mb-15px leading-43px md:leading-14.5" data-aos="fade-up">
+                    @Model.NameEnglish
+                </h4>
+                <p class="text-xl text-contentColor dark:text-contentColor-dark mb-15px" data-aos="fade-up">
+                    @Model.NameArabic
+                </p>
+
+                <!-- Stats & Info -->
+                <div class="flex gap-5 flex-wrap items-center mb-30px" data-aos="fade-up">
+                    <div class="flex items-center">
+                        <div>
+                            <i class="icofont-graduate-alt pr-5px text-primaryColor text-sm"></i>
+                        </div>
+                        <div>
+                            <span class="text-sm text-black dark:text-blackColor-dark font-medium">
+                                @Model.TotalPrograms Regular Programs
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center">
+                        <div>
+                            <i class="icofont-certificate-alt-1 pr-5px text-primaryColor text-sm"></i>
+                        </div>
+                        <div>
+                            <span class="text-sm text-black dark:text-blackColor-dark font-medium">
+                                @Model.TotalBTECPrograms BTEC Programs
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center">
+                        <div>
+                            <i class="icofont-users-alt-4 pr-5px text-primaryColor text-sm"></i>
+                        </div>
+                        <div>
+                            <span class="text-sm text-black dark:text-blackColor-dark font-medium">
+                                @Model.TotalStudents Students
+                            </span>
+                        </div>
+                    </div>
+
+                    @if (Model.MinHourPrice > 0)
+                    {
+                        <div>
+                            <p class="text-sm text-contentColor dark:text-contentColor-dark font-medium">
+                                Price Range:
+                                <span class="text-primaryColor font-bold">@Model.MinHourPrice.ToString("N0") - @Model.MaxHourPrice.ToString("N0") JD/hr</span>
+                            </p>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- University Details Section -->
+<section class="py-50px md:py-70px lg:py-100px">
+    <div class="container">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-30px">
+            <!-- Main Content -->
+            <div class="lg:col-start-1 lg:col-span-8">
+
+                <!-- About University -->
+                <div class="mb-50px" data-aos="fade-up">
+                    <div class="p-30px lg:p-10 bg-whiteColor dark:bg-whiteColor-dark shadow-brand dark:shadow-brand-dark rounded-lg">
+                        <h3 class="text-size-26 font-bold text-blackColor dark:text-blackColor-dark mb-15px">
+                            About @Model.NameEnglish
+                        </h3>
+                        <div class="mb-25px">
+                            <img src="@Model.ImagePath" alt="@Model.NameEnglish" class="w-full rounded-lg">
+                        </div>
+
+                        <div class="space-y-15px text-contentColor dark:text-contentColor-dark">
+                            <div class="flex items-start gap-3">
+                                <i class="icofont-location-pin text-primaryColor text-xl mt-1"></i>
+                                <div>
+                                    <p class="font-medium text-blackColor dark:text-blackColor-dark mb-1">Location</p>
+                                    <p>@Model.FullAddress</p>
+                                </div>
+                            </div>
+
+                            @if (!string.IsNullOrEmpty(Model.AcademicAccreditation))
+                            {
+                                <div class="flex items-start gap-3">
+                                    <i class="icofont-award text-primaryColor text-xl mt-1"></i>
+                                    <div>
+                                        <p class="font-medium text-blackColor dark:text-blackColor-dark mb-1">Accreditation</p>
+                                        <p>@Model.AcademicAccreditation</p>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Regular Programs -->
+                @if (Model.RegularPrograms.Any())
+                {
+                    <div class="mb-50px" data-aos="fade-up">
+                        <div class="p-30px lg:p-10 bg-whiteColor dark:bg-whiteColor-dark shadow-brand dark:shadow-brand-dark rounded-lg">
+                            <h3 class="text-size-26 font-bold text-blackColor dark:text-blackColor-dark mb-30px flex items-center">
+                                <i class="icofont-graduate-alt text-primaryColor mr-3"></i>
+                                Academic Programs (@Model.RegularPrograms.Count)
+                            </h3>
+
+                            <div class="space-y-4">
+                                @foreach (var program in Model.RegularPrograms)
+                                {
+                                    <div class="border border-borderColor dark:border-borderColor-dark rounded-lg p-20px hover:shadow-lg transition-all duration-300">
+                                        <div class="flex flex-wrap justify-between items-start gap-4 mb-15px">
+                                            <div class="flex-1">
+                                                <h4 class="text-xl font-bold text-blackColor dark:text-blackColor-dark mb-2">
+                                                    @program.ProgramNameEnglish
+                                                </h4>
+                                                <p class="text-contentColor dark:text-contentColor-dark mb-10px">
+                                                    @program.ProgramNameArabic
+                                                </p>
+                                                <div class="flex flex-wrap gap-2">
+                                                    <span class="px-3 py-1 bg-primaryColor bg-opacity-10 text-primaryColor text-xs font-semibold rounded">
+                                                        @program.Degree
+                                                    </span>
+                                                    <span class="px-3 py-1 bg-secondaryColor bg-opacity-10 text-secondaryColor text-xs font-semibold rounded">
+                                                        @program.StudySystem
+                                                    </span>
+                                                    <span class="px-3 py-1 bg-greencolor bg-opacity-10 text-greencolor text-xs font-semibold rounded">
+                                                        @program.Language
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            <div class="text-right">
+                                                <p class="text-2xl font-bold text-primaryColor">
+                                                    @program.HourPriceBase.ToString("N0") <span class="text-sm font-normal">JD/hr</span>
+                                                </p>
+                                                <p class="text-sm text-contentColor dark:text-contentColor-dark">
+                                                    Registration: @program.RegistrationFeeFirstSemester.ToString("N0") JD
+                                                </p>
+                                            </div>
+                                        </div>
+
+                                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 pt-15px border-t border-borderColor dark:border-borderColor-dark">
+                                            <div class="text-center">
+                                                <i class="icofont-calendar text-primaryColor text-lg block mb-1"></i>
+                                                <p class="text-xs text-contentColor dark:text-contentColor-dark">Duration</p>
+                                                <p class="text-sm font-semibold text-blackColor dark:text-blackColor-dark">@program.DurationInYears Years</p>
+                                            </div>
+                                            <div class="text-center">
+                                                <i class="icofont-book-alt text-primaryColor text-lg block mb-1"></i>
+                                                <p class="text-xs text-contentColor dark:text-contentColor-dark">Credit Hours</p>
+                                                <p class="text-sm font-semibold text-blackColor dark:text-blackColor-dark">@program.TotalCreditHours</p>
+                                            </div>
+                                            <div class="text-center">
+                                                <i class="icofont-users-alt-4 text-primaryColor text-lg block mb-1"></i>
+                                                <p class="text-xs text-contentColor dark:text-contentColor-dark">Capacity</p>
+                                                <p class="text-sm font-semibold text-blackColor dark:text-blackColor-dark">@program.Capacity</p>
+                                            </div>
+                                            <div class="text-center">
+                                                <i class="icofont-chart-bar-graph text-primaryColor text-lg block mb-1"></i>
+                                                <p class="text-xs text-contentColor dark:text-contentColor-dark">Min GPA</p>
+                                                <p class="text-sm font-semibold text-blackColor dark:text-blackColor-dark">@program.MinGPA.ToString("N1")%</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                }
+
+                <!-- BTEC Programs -->
+                @if (Model.BTECPrograms.Any())
+                {
+                    <div class="mb-50px" data-aos="fade-up">
+                        <div class="p-30px lg:p-10 bg-whiteColor dark:bg-whiteColor-dark shadow-brand dark:shadow-brand-dark rounded-lg">
+                            <h3 class="text-size-26 font-bold text-blackColor dark:text-blackColor-dark mb-30px flex items-center">
+                                <i class="icofont-certificate-alt-1 text-primaryColor mr-3"></i>
+                                BTEC Programs (@Model.BTECPrograms.Count)
+                            </h3>
+
+                            <div class="space-y-4">
+                                @foreach (var btec in Model.BTECPrograms)
+                                {
+                                    <div class="border border-borderColor dark:border-borderColor-dark rounded-lg p-20px hover:shadow-lg transition-all duration-300 bg-primaryColor bg-opacity-5">
+                                        <div class="flex flex-wrap justify-between items-start gap-4 mb-15px">
+                                            <div class="flex-1">
+                                                <div class="flex items-center gap-2 mb-2">
+                                                    <h4 class="text-xl font-bold text-blackColor dark:text-blackColor-dark">
+                                                        @btec.NameEnglish
+                                                    </h4>
+                                                    @if (btec.IsApprovedByBtecAuthority)
+                                                    {
+                                                        <span class="px-2 py-1 bg-greencolor text-whiteColor text-xs font-semibold rounded">
+                                                            <i class="icofont-verification-check"></i> Approved
+                                                        </span>
+                                                    }
+                                                </div>
+                                                <p class="text-contentColor dark:text-contentColor-dark mb-10px">
+                                                    @btec.NameArabic
+                                                </p>
+                                                <div class="flex flex-wrap gap-2">
+                                                    <span class="px-3 py-1 bg-secondaryColor bg-opacity-10 text-secondaryColor text-xs font-semibold rounded">
+                                                        @btec.Level
+                                                    </span>
+                                                    <span class="px-3 py-1 bg-primaryColor bg-opacity-10 text-primaryColor text-xs font-semibold rounded">
+                                                        @btec.TechnicalField
+                                                    </span>
+                                                    <span class="px-3 py-1 bg-greencolor bg-opacity-10 text-greencolor text-xs font-semibold rounded">
+                                                        @btec.Language
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            <div class="text-right">
+                                                <p class="text-2xl font-bold text-secondaryColor">
+                                                    @btec.HourPriceBase.ToString("N0") <span class="text-sm font-normal">JD/hr</span>
+                                                </p>
+                                                <p class="text-sm text-contentColor dark:text-contentColor-dark">
+                                                    Registration: @btec.RegistrationFeeFirstSemester.ToString("N0") JD
+                                                </p>
+                                            </div>
+                                        </div>
+
+                                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 pt-15px border-t border-borderColor dark:border-borderColor-dark">
+                                            <div class="text-center">
+                                                <i class="icofont-calendar text-secondaryColor text-lg block mb-1"></i>
+                                                <p class="text-xs text-contentColor dark:text-contentColor-dark">Duration</p>
+                                                <p class="text-sm font-semibold text-blackColor dark:text-blackColor-dark">@btec.DurationInYears Years</p>
+                                            </div>
+                                            <div class="text-center">
+                                                <i class="icofont-book-alt text-secondaryColor text-lg block mb-1"></i>
+                                                <p class="text-xs text-contentColor dark:text-contentColor-dark">Credit Hours</p>
+                                                <p class="text-sm font-semibold text-blackColor dark:text-blackColor-dark">@btec.TotalCreditHours</p>
+                                            </div>
+                                            <div class="text-center">
+                                                <i class="icofont-users-alt-4 text-secondaryColor text-lg block mb-1"></i>
+                                                <p class="text-xs text-contentColor dark:text-contentColor-dark">Capacity</p>
+                                                <p class="text-sm font-semibold text-blackColor dark:text-blackColor-dark">@btec.Capacity</p>
+                                            </div>
+                                            <div class="text-center">
+                                                <i class="icofont-chart-bar-graph text-secondaryColor text-lg block mb-1"></i>
+                                                <p class="text-xs text-contentColor dark:text-contentColor-dark">Min GPA</p>
+                                                <p class="text-sm font-semibold text-blackColor dark:text-blackColor-dark">@btec.MinGPA.ToString("N1")%</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+
+            <!-- Sidebar -->
+            <div class="lg:col-start-9 lg:col-span-4">
+                <div class="flex flex-col gap-30px">
+
+                    <!-- Contact Card -->
+                    <div class="p-25px bg-whiteColor dark:bg-whiteColor-dark shadow-brand dark:shadow-brand-dark rounded-lg" data-aos="fade-up">
+                        <h4 class="text-size-22 font-bold text-blackColor dark:text-blackColor-dark mb-25px">
+                            Contact Information
+                        </h4>
+
+                        <div class="space-y-20px">
+                            <div class="flex items-start gap-3">
+                                <i class="icofont-phone text-primaryColor text-xl mt-1"></i>
+                                <div>
+                                    <p class="text-sm text-contentColor dark:text-contentColor-dark mb-1">Phone</p>
+                                    <a href="tel:@Model.PhoneNumber" class="font-medium text-blackColor dark:text-blackColor-dark hover:text-primaryColor">
+                                        @Model.PhoneNumber
+                                    </a>
+                                </div>
+                            </div>
+
+                            <div class="flex items-start gap-3">
+                                <i class="icofont-email text-primaryColor text-xl mt-1"></i>
+                                <div>
+                                    <p class="text-sm text-contentColor dark:text-contentColor-dark mb-1">Email</p>
+                                    <a href="mailto:@Model.Email" class="font-medium text-blackColor dark:text-blackColor-dark hover:text-primaryColor break-all">
+                                        @Model.Email
+                                    </a>
+                                </div>
+                            </div>
+
+                            @if (!string.IsNullOrEmpty(Model.OfficialWebsite))
+                            {
+                                <div class="flex items-start gap-3">
+                                    <i class="icofont-globe text-primaryColor text-xl mt-1"></i>
+                                    <div>
+                                        <p class="text-sm text-contentColor dark:text-contentColor-dark mb-1">Website</p>
+                                        <a href="@Model.OfficialWebsite"
+                                           target="_blank"
+                                           rel="noopener noreferrer"
+                                           class="font-medium text-blackColor dark:text-blackColor-dark hover:text-primaryColor break-all">
+                                            Visit Website <i class="icofont-external-link text-xs"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+
+                    <!-- Quick Stats -->
+                    <div class="p-25px bg-primaryColor bg-opacity-10 dark:bg-primaryColor dark:bg-opacity-20 rounded-lg" data-aos="fade-up">
+                        <h4 class="text-size-22 font-bold text-blackColor dark:text-blackColor-dark mb-25px">
+                            Quick Stats
+                        </h4>
+
+                        <div class="space-y-15px">
+                            <div class="flex justify-between items-center">
+                                <span class="text-contentColor dark:text-contentColor-dark">Total Programs</span>
+                                <span class="font-bold text-primaryColor">@Model.TotalPrograms</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-contentColor dark:text-contentColor-dark">BTEC Programs</span>
+                                <span class="font-bold text-secondaryColor">@Model.TotalBTECPrograms</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-contentColor dark:text-contentColor-dark">Current Students</span>
+                                <span class="font-bold text-greencolor">@Model.TotalStudents</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Apply CTA -->
+                    @if (User.Identity.IsAuthenticated && User.IsInRole("Student"))
+                    {
+                        <div class="p-25px bg-primaryColor rounded-lg text-center" data-aos="fade-up">
+                            <h4 class="text-xl font-bold text-whiteColor mb-15px">
+                                Ready to Apply?
+                            </h4>
+                            <p class="text-whiteColor text-sm mb-20px opacity-90">
+                                Start your application to @Model.NameEnglish today
+                            </p>
+                            <a href="#" class="inline-block w-full bg-whiteColor text-primaryColor px-30px py-15px rounded font-semibold hover:bg-secondaryColor hover:text-whiteColor transition-all duration-300">
+                                Apply Now
+                            </a>
+                        </div>
+                    }
+                    else if (!User.Identity.IsAuthenticated)
+                    {
+                        <div class="p-25px bg-secondaryColor rounded-lg text-center" data-aos="fade-up">
+                            <h4 class="text-xl font-bold text-whiteColor mb-15px">
+                                Get Started
+                            </h4>
+                            <p class="text-whiteColor text-sm mb-20px opacity-90">
+                                Create an account to apply to universities
+                            </p>
+                            <a asp-controller="Account" asp-action="Login" asp-route-tab="register" class="inline-block w-full bg-whiteColor text-secondaryColor px-30px py-15px rounded font-semibold hover:bg-primaryColor hover:text-whiteColor transition-all duration-300">
+                                Register Now
+                            </a>
+                        </div>
+                    }
+
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

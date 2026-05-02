@@ -1,0 +1,366 @@
+﻿@using Uni_Selector.Models.Enums
+@model Uni_Selector.ViewModels.Commission.CommissionDetailsViewModel
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = "Commission Details";
+}
+
+<div class="dashboard-main-body">
+    <!-- Breadcrumb -->
+    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-24">
+        <h6 class="fw-semibold mb-0">Commission Details</h6>
+        <ul class="d-flex align-items-center gap-2">
+            <li class="fw-medium">
+                <a asp-action="Index" class="d-flex align-items-center gap-1 hover-text-primary">
+                    <iconify-icon icon="solar:home-smile-angle-outline" class="icon text-lg"></iconify-icon>
+                    Commissions
+                </a>
+            </li>
+            <li>-</li>
+            <li class="fw-medium">Details</li>
+        </ul>
+    </div>
+
+    <div class="row gy-4">
+        <!-- Left Sidebar - Commission Calculation Card -->
+        <div class="col-lg-4">
+            <div class="user-grid-card position-relative border radius-16 overflow-hidden bg-base h-100">
+                <div class="bg-primary-600" style="height: 120px;"></div>
+                <div class="pb-24 ms-16 mb-24 me-16 mt--100">
+                    <div class="text-center border border-top-0 border-start-0 border-end-0 pb-24">
+                        <div class="w-200-px h-200-px rounded-circle bg-primary-50 d-inline-flex align-items-center justify-content-center border border-white border-width-2-px">
+                            <iconify-icon icon="solar:dollar-bold-duotone" class="text-primary-600" style="font-size: 80px;"></iconify-icon>
+                        </div>
+                        <h6 class="mb-0 mt-16">2% Commission</h6>
+                        <h4 class="text-primary-600 fw-bold mt-8">@Model.AmountEstimated.ToString("N2") JOD</h4>
+                        <div class="mt-12">
+                            @if (Model.Settled)
+                            {
+                                <span class="bg-success-focus text-success-main px-24 py-4 rounded-pill fw-medium text-sm">Settled</span>
+                            }
+                            else
+                            {
+                                <span class="bg-warning-focus text-warning-main px-24 py-4 rounded-pill fw-medium text-sm">Pending</span>
+                            }
+                        </div>
+                    </div>
+
+                    <div class="mt-24">
+                        <h6 class="text-xl mb-16">Commission Calculation</h6>
+                        <ul>
+                            <li class="d-flex align-items-center gap-1 mb-12">
+                                <span class="w-40 text-md fw-semibold text-primary-light">Mode</span>
+                                <span class="w-60 text-secondary-light fw-medium">: @Model.Mode</span>
+                            </li>
+                            <li class="d-flex align-items-center gap-1 mb-12">
+                                <span class="w-40 text-md fw-semibold text-primary-light">Percentage</span>
+                                <span class="w-60 text-primary-600 fw-bold">: @Model.Percentage%</span>
+                            </li>
+                            <li class="d-flex align-items-center gap-1 mb-12">
+                                <span class="w-40 text-md fw-semibold text-primary-light">Base Amount</span>
+                                <span class="w-60 text-secondary-light fw-medium">: @Model.BaseAmount.ToString("N2") JOD</span>
+                            </li>
+                            <li class="d-flex align-items-center gap-1 mb-12">
+                                <span class="w-40 text-md fw-semibold text-primary-light">Commission</span>
+                                <span class="w-60 text-primary-600 fw-bold">: @Model.AmountEstimated.ToString("N2") JOD</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="mt-24">
+                        <h6 class="text-xl mb-16">Calculation Details</h6>
+                        <ul>
+                            @if (Model.HoursCountUsed.HasValue)
+                            {
+                                <li class="d-flex align-items-center gap-1 mb-12">
+                                    <span class="w-40 text-md fw-semibold text-primary-light">Hours Used</span>
+                                    <span class="w-60 text-secondary-light fw-medium">: @Model.HoursCountUsed</span>
+                                </li>
+                            }
+                            @if (Model.RegistrationFeeUsed.HasValue)
+                            {
+                                <li class="d-flex align-items-center gap-1 mb-12">
+                                    <span class="w-40 text-md fw-semibold text-primary-light">Reg. Fee</span>
+                                    <span class="w-60 text-secondary-light fw-medium">: @Model.RegistrationFeeUsed.Value.ToString("N2") JOD</span>
+                                </li>
+                            }
+                            @if (Model.HourPriceUsed.HasValue)
+                            {
+                                <li class="d-flex align-items-center gap-1 mb-12">
+                                    <span class="w-40 text-md fw-semibold text-primary-light">Hour Price</span>
+                                    <span class="w-60 text-secondary-light fw-medium">: @Model.HourPriceUsed.Value.ToString("N2") JOD</span>
+                                </li>
+                            }
+                            @if (Model.DiscountPercentApplied.HasValue)
+                            {
+                                <li class="d-flex align-items-center gap-1 mb-12">
+                                    <span class="w-40 text-md fw-semibold text-primary-light">Discount %</span>
+                                    <span class="w-60 text-secondary-light fw-medium">: @Model.DiscountPercentApplied.Value%</span>
+                                </li>
+                            }
+                        </ul>
+                    </div>
+
+                    @if (Model.Settled && Model.MonthlySettlementId.HasValue)
+                    {
+                        <div class="mt-24">
+                            <h6 class="text-xl mb-16">Settlement Info</h6>
+                            <ul>
+                                <li class="d-flex align-items-center gap-1 mb-12">
+                                    <span class="w-40 text-md fw-semibold text-primary-light">Period</span>
+                                    <span class="w-60 text-secondary-light fw-medium">: @Model.SettlementPeriod</span>
+                                </li>
+                                @if (Model.SettlementClosedAt.HasValue)
+                                {
+                                    <li class="d-flex align-items-center gap-1 mb-12">
+                                        <span class="w-40 text-md fw-semibold text-primary-light">Closed At</span>
+                                        <span class="w-60 text-secondary-light fw-medium">: @Model.SettlementClosedAt.Value.ToString("MMM dd, yyyy")</span>
+                                    </li>
+                                }
+                                @if (!string.IsNullOrWhiteSpace(Model.SettlementClosedByUserName))
+                                {
+                                    <li class="d-flex align-items-center gap-1 mb-12">
+                                        <span class="w-40 text-md fw-semibold text-primary-light">Closed By</span>
+                                        <span class="w-60 text-secondary-light fw-medium">: @Model.SettlementClosedByUserName</span>
+                                    </li>
+                                }
+                            </ul>
+                            <div class="mt-16">
+                                <a asp-action="Settlement" asp-route-settlementId="@Model.MonthlySettlementId" class="btn btn-outline-primary-600 w-100 radius-8 px-20 py-11">
+                                    <iconify-icon icon="solar:document-text-bold-duotone" class="icon text-xl"></iconify-icon>
+                                    View Settlement Details
+                                </a>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Side - Application & Student Details -->
+        <div class="col-lg-8">
+            <div class="card h-100">
+                <div class="card-body p-24">
+                    <!-- Application Info Section -->
+                    <div class="mb-20">
+                        <h6 class="text-xl mb-16 fw-bold">Application Information</h6>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <div class="p-16 border radius-8">
+                                    <span class="text-secondary-light text-sm">Application Number</span>
+                                    <h6 class="fw-semibold mt-4">@Model.ApplicationNumber</h6>
+                                </div>
+                            </div>
+                            @if (!string.IsNullOrWhiteSpace(Model.AdmissionNumber))
+                            {
+                                <div class="col-md-6">
+                                    <div class="p-16 border radius-8 bg-success-50">
+                                        <span class="text-secondary-light text-sm">Admission Number</span>
+                                        <h6 class="fw-semibold mt-4 text-success-600">@Model.AdmissionNumber</h6>
+                                    </div>
+                                </div>
+                            }
+                            <div class="col-md-4">
+                                <div class="p-16 border radius-8">
+                                    <span class="text-secondary-light text-sm">Status</span>
+                                    <h6 class="fw-semibold mt-4">@Model.ApplicationStatus</h6>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="p-16 border radius-8">
+                                    <span class="text-secondary-light text-sm">Application Date</span>
+                                    <h6 class="fw-semibold mt-4">@Model.ApplicationDate.ToString("MMM dd, yyyy")</h6>
+                                </div>
+                            </div>
+                            @if (Model.ApprovalDate.HasValue)
+                            {
+                                <div class="col-md-4">
+                                    <div class="p-16 border radius-8">
+                                        <span class="text-secondary-light text-sm">Approval Date</span>
+                                        <h6 class="fw-semibold mt-4">@Model.ApprovalDate.Value.ToString("MMM dd, yyyy")</h6>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+
+                    <!-- Student Info Section -->
+                    <div class="mb-20">
+                        <h6 class="text-xl mb-16 fw-bold">Student Information</h6>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <div class="p-16 border radius-8">
+                                    <span class="text-secondary-light text-sm">Full Name</span>
+                                    <h6 class="fw-semibold mt-4">@Model.StudentName</h6>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="p-16 border radius-8">
+                                    <span class="text-secondary-light text-sm">Email</span>
+                                    <h6 class="fw-semibold mt-4">@Model.StudentEmail</h6>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="p-16 border radius-8">
+                                    <span class="text-secondary-light text-sm">National ID</span>
+                                    <h6 class="fw-semibold mt-4">@Model.NationalId</h6>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="p-16 border radius-8">
+                                    <span class="text-secondary-light text-sm">Seat Number</span>
+                                    <h6 class="fw-semibold mt-4">@Model.SeatNumber</h6>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="p-16 border radius-8">
+                                    <span class="text-secondary-light text-sm">GPA</span>
+                                    <h6 class="fw-semibold mt-4 text-primary-600">@Model.GPA.ToString("F1")%</h6>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Program Info Section -->
+                    <div class="mb-20">
+                        <h6 class="text-xl mb-16 fw-bold">Program Information</h6>
+                        <div class="border radius-8 p-20">
+                            <div class="d-flex justify-content-between align-items-start mb-16">
+                                <div>
+                                    <h5 class="fw-bold mb-8">@Model.ProgramNameEnglish</h5>
+                                    <p class="text-secondary-light mb-8">@Model.ProgramNameArabic</p>
+                                    @if (Model.IsBtecProgram)
+                                    {
+                                        <span class="badge bg-info-focus text-info-main">BTEC Program</span>
+                                    }
+                                </div>
+                            </div>
+
+                            <div class="row g-3 mt-16">
+                                <div class="col-md-4">
+                                    <span class="text-secondary-light text-sm d-block">
+                                        @if (Model.IsBtecProgram)
+                                        {
+                                            <text>BTEC Level</text>
+                                        }
+                                        else
+                                        {
+                                            <text>Degree</text>
+                                        }
+                                    </span>
+                                    <span class="fw-semibold">
+                                        @if (Model.IsBtecProgram)
+                                        {
+                                            @Model.BtecLevel
+                                        }
+                                        else
+                                        {
+                                            @Model.Degree
+                                        }
+                                    </span>
+                                </div>
+                                <div class="col-md-4">
+                                    <span class="text-secondary-light text-sm d-block">Total Credit Hours</span>
+                                    <span class="fw-semibold">@Model.TotalCreditHours Hours</span>
+                                </div>
+                                <div class="col-md-4">
+                                    <span class="text-secondary-light text-sm d-block">Hour Price</span>
+                                    <span class="fw-semibold text-primary-600">@Model.HourPriceBase.ToString("N2") JOD</span>
+                                </div>
+                                <div class="col-md-6">
+                                    <span class="text-secondary-light text-sm d-block">Registration Fee (1st Semester)</span>
+                                    <span class="fw-semibold">@Model.RegistrationFeeFirstSemester.ToString("N2") JOD</span>
+                                </div>
+                                <div class="col-md-6">
+                                    <span class="text-secondary-light text-sm d-block">Registration Fee (Regular)</span>
+                                    <span class="fw-semibold">@Model.RegistrationFeeRegularSemester.ToString("N2") JOD</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Discount Info -->
+                    @if (Model.HasDiscount)
+                    {
+                        <div class="mb-20">
+                            <h6 class="text-xl mb-16 fw-bold">Discount Information</h6>
+                            <div class="border radius-8 p-16 bg-success-50">
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <span class="text-sm d-block">Code</span>
+                                        <span class="fw-semibold">@Model.DiscountCode</span>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <span class="text-sm d-block">Percentage</span>
+                                        <span class="fw-semibold">@Model.DiscountPercentage%</span>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <span class="text-sm d-block">Status</span>
+                                        @switch (Model.DiscountStatus)
+                                        {
+                                            case DiscountStatus.Issued:
+                                                <span class="badge bg-warning-focus text-warning-main">Issued</span>
+                                                break;
+                                            case DiscountStatus.Redeemed:
+                                                <span class="badge bg-success-focus text-success-main">Redeemed</span>
+                                                break;
+                                            case DiscountStatus.Expired:
+                                                <span class="badge bg-danger-focus text-danger-main">Expired</span>
+                                                break;
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+
+                    <!-- Action Buttons -->
+                    <div class="d-flex gap-3 flex-wrap">
+                        <a asp-action="Index" class="btn btn-outline-secondary px-24 py-12 radius-8">
+                            <iconify-icon icon="solar:arrow-left-bold" class="icon text-lg"></iconify-icon>
+                            Back to List
+                        </a>
+                        @if (Model.MonthlySettlementId.HasValue)
+                        {
+                            <a asp-action="Settlement" asp-route-settlementId="@Model.MonthlySettlementId" class="btn btn-primary px-24 py-12 radius-8">
+                                <iconify-icon icon="solar:document-text-bold-duotone" class="icon text-lg"></iconify-icon>
+                                View Settlement
+                            </a>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        @if (TempData["Success"] != null)
+        {
+                <text>
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success!',
+                    text: '@TempData["Success"]',
+                    timer: 3000,
+                    showConfirmButton: false
+                });
+                </text>
+        }
+
+        @if (TempData["Error"] != null)
+        {
+                <text>
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error!',
+                    text: '@TempData["Error"]',
+                    timer: 3000,
+                    showConfirmButton: false
+                });
+                </text>
+        }
+    </script>
+}

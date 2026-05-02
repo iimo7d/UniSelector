@@ -1,0 +1,368 @@
+@{
+    var title = ViewData["Title"]?.ToString() ?? "لوحة تحكم الطالب";
+}
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@title | UniSelector</title>
+    <link rel="shortcut icon" type="image/x-icon" href="~/assets/images/favicon.ico">
+    
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="~/assets/css/icofont.min.css">
+    <link rel="stylesheet" href="~/assets/css/site.css">
+    <link rel="stylesheet" href="~/assets/css/popup.css">
+    <link rel="stylesheet" href="~/assets/css/swiper-bundle.min.css">
+    <link rel="stylesheet" href="~/assets/css/video-modal.css">
+    <link rel="stylesheet" href="~/assets/css/aos.css">
+    <link rel="stylesheet" href="~/assets/css/style.css">
+    
+    <!-- SweetAlert2 -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    
+    @await RenderSectionAsync("Styles", required: false)
+</head>
+<body class="relative font-inter font-normal text-base leading-[1.8] bg-bodyBg dark:bg-bodyBg-dark" dir="rtl">
+    <!-- Preloader -->
+    <div class="preloader flex fixed top-0 left-0 h-screen w-full items-center justify-center z-xxl bg-whiteColor opacity-100 visible transition-all duration-700">
+        <div class="w-90px h-90px border-5px border-t-blue border-r-blue border-b-blue-light border-l-blue-light rounded-full animate-spin-infinit"></div>
+        <div class="absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2">
+            <img src="~/assets/images/pre.png" alt="" class="h-10 w-10 block">
+        </div>
+    </div>
+
+    <!-- Theme Fixed Shadow -->
+    <div>
+        <div class="fixed-shadow left-[-250px]"></div>
+        <div class="fixed-shadow right-[-250px]"></div>
+    </div>
+
+    <!-- Theme Controller -->
+    <div class="fixed top-[100px] 2xl:top-[300px] transition-all duration-300 left-[-50px] hover:left-0 z-xl">
+        <button class="theme-controller w-90px h-10 bg-primaryColor dark:bg-whiteColor-dark rounded-r-lg2 text-whiteColor px-10px flex items-center dark:shadow-theme-controller">
+            <!-- Dark -->
+            <svg xmlns="http://www.w3.org/2000/svg" class="mr-10px w-5 block dark:hidden" viewBox="0 0 512 512">
+                <path d="M160 136c0-30.62 4.51-61.61 16-88C99.57 81.27 48 159.32 48 248c0 119.29 96.71 216 216 216 88.68 0 166.73-51.57 200-128-26.39 11.49-57.38 16-88 16-119.29 0-216-96.71-216-216z" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32"></path>
+            </svg>
+            <span class="text-base block dark:hidden">داكن</span>
+            <!-- Light -->
+            <svg xmlns="http://www.w3.org/2000/svg" class="hidden mr-10px w-5 dark:block" viewBox="0 0 512 512">
+                <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-miterlimit="10" stroke-width="32" d="M256 48v48M256 416v48M403.08 108.92l-33.94 33.94M142.86 369.14l-33.94 33.94M464 256h-48M96 256H48M403.08 403.08l-33.94-33.94M142.86 142.86l-33.94-33.94"></path>
+                <circle cx="256" cy="256" r="80" fill="none" stroke="currentColor" stroke-linecap="round" stroke-miterlimit="10" stroke-width="32"></circle>
+            </svg>
+            <span class="text-base hidden dark:block">فاتح</span>
+        </button>
+    </div>
+
+    <!-- Scroll Up Button -->
+    <div>
+        <button class="scroll-up w-50px h-50px leading-50px text-center text-primaryColor bg-white hover:text-whiteColor hover:bg-primaryColor rounded-full fixed left-5 bottom-[60px] shadow-scroll-up z-medium text-xl dark:text-whiteColor dark:bg-primaryColor dark:hover:text-whiteColor-dark hidden">
+            <i class="icofont-rounded-up"></i>
+        </button>
+    </div>
+
+    <!-- Header -->
+    <header>
+        <!-- Header Top -->
+        <div class="bg-blackColor2 dark:bg-lightGrey10-dark hidden lg:block">
+            <div class="container 3xl:container-secondary-lg 4xl:container mx-auto text-whiteColor text-size-12 xl:text-sm py-5px xl:py-9px">
+                <div class="flex justify-between items-center">
+                    <div>
+                        <p>اتصل بنا: +962 6 123 4567 - البريد: info@uniselector.jo</p>
+                    </div>
+                    <div class="flex gap-37px items-center">
+                        <div>
+                            <p>
+                                <i class="icofont-location-pin text-primaryColor text-size-15 mr-5px"></i>
+                                <span>عمان، الأردن</span>
+                            </p>
+                        </div>
+                        <div>
+                            <ul class="flex gap-13px text-size-15">
+                                <li><a class="hover:text-primaryColor" href="#"><i class="icofont-facebook"></i></a></li>
+                                <li><a class="hover:text-primaryColor" href="#"><i class="icofont-twitter"></i></a></li>
+                                <li><a class="hover:text-primaryColor" href="#"><i class="icofont-instagram"></i></a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navbar -->
+        <div class="transition-all duration-500 sticky-header z-medium dark:bg-whiteColor-dark bg-whiteColor shadow-sm">
+            <nav>
+                <div class="py-15px lg:py-0 px-15px lg:container 3xl:container-secondary-lg 4xl:container mx-auto relative">
+                    <div class="grid grid-cols-2 lg:grid-cols-12 items-center gap-15px">
+                        <!-- Logo -->
+                        <div class="lg:col-start-1 lg:col-span-2">
+                            <a asp-controller="Home" asp-action="Index" class="block">
+                                <img src="~/assets/images/logo/logo_1.png" alt="UniSelector" class="w-logo-sm lg:w-auto py-2">
+                            </a>
+                        </div>
+
+                        <!-- Main Menu -->
+                        <div class="hidden lg:block lg:col-start-3 lg:col-span-7">
+                            <ul class="nav-list flex justify-center">
+                                <li class="nav-item group">
+                                    <a asp-controller="Home" asp-action="Index" class="px-5 lg:px-10px 2xl:px-15px 3xl:px-5 py-10 lg:py-5 2xl:py-30px 3xl:py-10 leading-sm 2xl:leading-lg text-base lg:text-sm 2xl:text-base font-semibold block group-hover:text-primaryColor dark:text-whiteColor">
+                                        الرئيسية
+                                    </a>
+                                </li>
+                                <li class="nav-item group">
+                                    <a asp-controller="Universities" asp-action="Index" class="px-5 lg:px-10px 2xl:px-15px 3xl:px-5 py-10 lg:py-5 2xl:py-30px 3xl:py-10 leading-sm 2xl:leading-lg text-base lg:text-sm 2xl:text-base font-semibold block group-hover:text-primaryColor dark:text-whiteColor">
+                                        الجامعات
+                                    </a>
+                                </li>
+                                <li class="nav-item group">
+                                    <a asp-controller="Home" asp-action="Universities" class="px-5 lg:px-10px 2xl:px-15px 3xl:px-5 py-10 lg:py-5 2xl:py-30px 3xl:py-10 leading-sm 2xl:leading-lg text-base lg:text-sm 2xl:text-base font-semibold block group-hover:text-primaryColor dark:text-whiteColor">
+                                        البرامج
+                                    </a>
+                                </li>
+                                <li class="nav-item group">
+                                    <a asp-controller="Home" asp-action="Faq" class="px-5 lg:px-10px 2xl:px-15px 3xl:px-5 py-10 lg:py-5 2xl:py-30px 3xl:py-10 leading-sm 2xl:leading-lg text-base lg:text-sm 2xl:text-base font-semibold block group-hover:text-primaryColor dark:text-whiteColor">
+                                        اتصل بنا
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <!-- Right Side -->
+                        <div class="lg:col-start-10 lg:col-span-3 flex justify-end items-center">
+                            <!-- Notifications -->
+                            <div class="relative group ml-4">
+                                <button class="text-blackColor dark:text-whiteColor text-2xl relative">
+                                    <i class="icofont-notification"></i>
+                                    <span class="absolute -top-1 -right-1 w-4 h-4 bg-secondaryColor text-whiteColor text-xs rounded-full flex items-center justify-center notification-badge">0</span>
+                                </button>
+                            </div>
+
+                            <!-- User Menu -->
+                            <div class="relative group">
+                                <button class="flex items-center gap-2 text-blackColor dark:text-whiteColor">
+                                    <div class="w-10 h-10 rounded-full bg-primaryColor/10 flex items-center justify-center">
+                                        <i class="icofont-user-alt-3 text-primaryColor"></i>
+                                    </div>
+                                    <span class="hidden lg:block text-sm font-medium">@User.Identity?.Name</span>
+                                    <i class="icofont-rounded-down text-xs"></i>
+                                </button>
+                                
+                                <!-- Dropdown -->
+                                <div class="dropdown absolute left-0 top-full mt-2 z-50 hidden group-hover:block">
+                                    <div class="bg-whiteColor dark:bg-whiteColor-dark shadow-lg rounded-lg p-3 min-w-[200px]">
+                                        <ul>
+                                            <li class="border-b border-borderColor dark:border-borderColor-dark pb-2 mb-2">
+                                                <a asp-controller="Account" asp-action="Me" class="flex items-center gap-2 py-2 px-3 rounded hover:bg-lightGrey5 dark:hover:bg-lightGrey10-dark text-contentColor dark:text-contentColor-dark hover:text-primaryColor">
+                                                    <i class="icofont-dashboard"></i>
+                                                    لوحة التحكم
+                                                </a>
+                                            </li>
+                                            <li class="border-b border-borderColor dark:border-borderColor-dark pb-2 mb-2">
+                                                <a asp-controller="Student" asp-action="Edit" class="flex items-center gap-2 py-2 px-3 rounded hover:bg-lightGrey5 dark:hover:bg-lightGrey10-dark text-contentColor dark:text-contentColor-dark hover:text-primaryColor">
+                                                    <i class="icofont-ui-user"></i>
+                                                    الملف الشخصي
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <form asp-controller="Account" asp-action="Logout" method="post" class="w-full">
+                                                    <button type="submit" class="w-full flex items-center gap-2 py-2 px-3 rounded hover:bg-lightGrey5 dark:hover:bg-lightGrey10-dark text-contentColor dark:text-contentColor-dark hover:text-primaryColor text-start">
+                                                        <i class="icofont-logout"></i>
+                                                        تسجيل الخروج
+                                                    </button>
+                                                </form>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Mobile Menu Button -->
+                        <div class="lg:hidden flex justify-end col-start-2">
+                            <button class="mobile-menu-button text-blackColor dark:text-whiteColor text-3xl">
+                                <i class="icofont-navigation-menu"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="py-10">
+        @RenderBody()
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-darkblack">
+        <div class="container pt-65px">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-y-5 md:gap-y-0 items-center pb-45px border-b border-darkcolor">
+                <div>
+                    <a asp-controller="Home" asp-action="Index">
+                        <img src="~/assets/images/logo/logo_2.png" alt="UniSelector">
+                    </a>
+                </div>
+                <div class="flex justify-start md:justify-end">
+                    <ul class="flex gap-3">
+                        <li>
+                            <a href="#" class="w-40px h-40px leading-40px text-center text-whiteColor border border-whiteColor/20 rounded-full hover:bg-primaryColor hover:border-primaryColor transition-all inline-block">
+                                <i class="icofont-facebook"></i>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#" class="w-40px h-40px leading-40px text-center text-whiteColor border border-whiteColor/20 rounded-full hover:bg-primaryColor hover:border-primaryColor transition-all inline-block">
+                                <i class="icofont-twitter"></i>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#" class="w-40px h-40px leading-40px text-center text-whiteColor border border-whiteColor/20 rounded-full hover:bg-primaryColor hover:border-primaryColor transition-all inline-block">
+                                <i class="icofont-instagram"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-30px py-50px">
+                <!-- About -->
+                <div>
+                    <h4 class="text-size-22 font-bold text-whiteColor mb-4">عن UniSelector</h4>
+                    <p class="text-darkgray mb-4">منصة ذكية لاختيار الجامعة المناسبة لطلاب الثانوية العامة في الأردن. نساعدك على اتخاذ القرار الصحيح.</p>
+                </div>
+
+                <!-- Quick Links -->
+                <div>
+                    <h4 class="text-size-22 font-bold text-whiteColor mb-4">روابط سريعة</h4>
+                    <ul class="flex flex-col gap-y-3">
+                        <li><a asp-controller="Home" asp-action="Index" class="text-darkgray hover:text-primaryColor">الرئيسية</a></li>
+                        <li><a asp-controller="Universities" asp-action="Index" class="text-darkgray hover:text-primaryColor">الجامعات</a></li>
+                        <li><a asp-controller="Home" asp-action="Universities" class="text-darkgray hover:text-primaryColor">البرامج</a></li>
+                        <li><a asp-controller="Home" asp-action="Faq" class="text-darkgray hover:text-primaryColor">اتصل بنا</a></li>
+                    </ul>
+                </div>
+
+                <!-- Services -->
+                <div>
+                    <h4 class="text-size-22 font-bold text-whiteColor mb-4">خدماتنا</h4>
+                    <ul class="flex flex-col gap-y-3">
+                        <li><a href="#" class="text-darkgray hover:text-primaryColor">توصيات الجامعات</a></li>
+                        <li><a href="#" class="text-darkgray hover:text-primaryColor">مقارنة البرامج</a></li>
+                        <li><a href="#" class="text-darkgray hover:text-primaryColor">التقديم الإلكتروني</a></li>
+                        <li><a href="#" class="text-darkgray hover:text-primaryColor">خصومات التسجيل</a></li>
+                    </ul>
+                </div>
+
+                <!-- Contact -->
+                <div>
+                    <h4 class="text-size-22 font-bold text-whiteColor mb-4">تواصل معنا</h4>
+                    <ul class="flex flex-col gap-y-3">
+                        <li class="text-darkgray flex items-center gap-2">
+                            <i class="icofont-location-pin text-primaryColor"></i>
+                            عمان، الأردن
+                        </li>
+                        <li class="text-darkgray flex items-center gap-2">
+                            <i class="icofont-phone text-primaryColor"></i>
+                            +962 6 123 4567
+                        </li>
+                        <li class="text-darkgray flex items-center gap-2">
+                            <i class="icofont-email text-primaryColor"></i>
+                            info@uniselector.jo
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Copyright -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-5 py-5 lg:py-10 items-center border-t border-darkcolor">
+                <div>
+                    <p class="text-base text-darkgray">
+                        © @DateTime.Now.Year UniSelector. جميع الحقوق محفوظة.
+                    </p>
+                </div>
+                <div>
+                    <ul class="flex items-center justify-start sm:justify-end gap-4">
+                        <li><a href="#" class="text-base text-darkgray hover:text-primaryColor">شروط الاستخدام</a></li>
+                        <li><a href="#" class="text-base text-darkgray hover:text-primaryColor">سياسة الخصوصية</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="~/assets/js/swiper-bundle.min.js"></script>
+    <script src="~/assets/js/isotope.pkgd.min.js"></script>
+    <script src="~/assets/js/accordion.js"></script>
+    <script src="~/assets/js/chart.js"></script>
+    <script src="~/assets/js/count.js"></script>
+    <script src="~/assets/js/countdown.js"></script>
+    <script src="~/assets/js/counterup.js"></script>
+    <script src="~/assets/js/dropdown.js"></script>
+    <script src="~/assets/js/filter.js"></script>
+    <script src="~/assets/js/mobileMenu.js"></script>
+    <script src="~/assets/js/modal.js"></script>
+    <script src="~/assets/js/popup.js"></script>
+    <script src="~/assets/js/preloader.js"></script>
+    <script src="~/assets/js/scrollUp.js"></script>
+    <script src="~/assets/js/slider.js"></script>
+    <script src="~/assets/js/smoothScroll.js"></script>
+    <script src="~/assets/js/stickyHeader.js"></script>
+    <script src="~/assets/js/tabs.js"></script>
+    <script src="~/assets/js/theme.js"></script>
+    <script src="~/assets/js/videoModal.js"></script>
+    <script src="~/assets/js/vanilla-tilt.js"></script>
+    <script src="~/assets/js/aos.js"></script>
+    <script src="~/assets/js/main.js"></script>t>
+    
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+    <!-- TempData Messages -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            @if (TempData["Success"] != null)
+            {
+                <text>
+                Swal.fire({
+                    icon: 'success',
+                    title: 'نجاح',
+                    text: '@TempData["Success"]',
+                    confirmButtonText: 'حسناً',
+                    confirmButtonColor: '#3b82f6'
+                });
+                </text>
+            }
+            
+            @if (TempData["Error"] != null)
+            {
+                <text>
+                Swal.fire({
+                    icon: 'error',
+                    title: 'خطأ',
+                    text: '@TempData["Error"]',
+                    confirmButtonText: 'حسناً',
+                    confirmButtonColor: '#ef4444'
+                });
+                </text>
+            }
+            
+            @if (TempData["Warning"] != null)
+            {
+                <text>
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'تنبيه',
+                    text: '@TempData["Warning"]',
+                    confirmButtonText: 'حسناً',
+                    confirmButtonColor: '#f59e0b'
+                });
+                </text>
+            }
+        });
+    </script>
+    
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

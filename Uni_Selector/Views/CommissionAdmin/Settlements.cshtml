@@ -1,0 +1,125 @@
+﻿@using Uni_Selector.ViewModels.AdminCommission
+@model SettlementListViewModel
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml"; 
+    ViewData["Title"] = "Monthly Settlements";
+}
+<div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-24">
+    <h6 class="fw-semibold mb-0">Monthly Settlements</h6>
+    <ul class="d-flex align-items-center gap-2"><li class="fw-medium"><a href="@Url.Action("Index", "Admin")" class="d-flex align-items-center gap-1 hover-text-primary"><iconify-icon icon="solar:home-smile-angle-outline" class="icon text-lg"></iconify-icon> Dashboard</a></li><li>-</li><li class="fw-medium"><a href="@Url.Action("Index")" class="hover-text-primary">Commissions</a></li><li>-</li><li class="fw-medium">Settlements</li></ul>
+</div>
+<div class="row gy-4 mb-24">
+    <div class="col-xxl-3 col-sm-6"><div class="card p-0 radius-12"><div class="card-body p-20"><div class="d-flex align-items-center justify-content-between"><div><span class="text-secondary-light mb-4 fw-medium text-sm d-block">Total Amount</span><h4 class="mb-0 fw-bold text-primary-600">@Model.TotalSettlementAmount.ToString("N2") JOD</h4></div><div class="w-64-px h-64-px rounded-circle bg-primary-600 d-flex align-items-center justify-content-center"><iconify-icon icon="solar:wallet-bold" class="text-white text-32"></iconify-icon></div></div></div></div></div>
+    <div class="col-xxl-3 col-sm-6"><div class="card p-0 radius-12"><div class="card-body p-20"><div class="d-flex align-items-center justify-content-between"><div><span class="text-secondary-light mb-4 fw-medium text-sm d-block">Closed (@Model.ClosedCount)</span><h4 class="mb-0 fw-bold text-success-600">@Model.ClosedAmount.ToString("N2") JOD</h4></div><div class="w-64-px h-64-px rounded-circle bg-success-600 d-flex align-items-center justify-content-center"><iconify-icon icon="solar:check-circle-bold" class="text-white text-32"></iconify-icon></div></div></div></div></div>
+    <div class="col-xxl-3 col-sm-6"><div class="card p-0 radius-12"><div class="card-body p-20"><div class="d-flex align-items-center justify-content-between"><div><span class="text-secondary-light mb-4 fw-medium text-sm d-block">Open (@Model.OpenCount)</span><h4 class="mb-0 fw-bold text-warning-600">@Model.OpenAmount.ToString("N2") JOD</h4></div><div class="w-64-px h-64-px rounded-circle bg-warning-600 d-flex align-items-center justify-content-center"><iconify-icon icon="solar:clock-circle-bold" class="text-white text-32"></iconify-icon></div></div></div></div></div>
+    <div class="col-xxl-3 col-sm-6"><div class="card p-0 radius-12"><div class="card-body p-20"><div class="d-flex align-items-center justify-content-between"><div><span class="text-secondary-light mb-4 fw-medium text-sm d-block">Total Settlements</span><h4 class="mb-0 fw-bold">@Model.TotalSettlements</h4></div><div class="w-64-px h-64-px rounded-circle bg-info-600 d-flex align-items-center justify-content-center"><iconify-icon icon="solar:document-bold" class="text-white text-32"></iconify-icon></div></div></div></div></div>
+</div>
+<div class="card h-100 p-0 radius-12">
+    <div class="card-header border-bottom bg-base py-16 px-24"><div class="d-flex align-items-center justify-content-between flex-wrap gap-3"><div class="d-flex align-items-center gap-2"><a href="@Url.Action("CreateSettlement")" class="btn btn-primary text-sm btn-sm px-12 py-12 radius-8"><iconify-icon icon="ic:baseline-plus" class="icon text-xl me-4"></iconify-icon>Create Settlement</a><a href="@Url.Action("Index")" class="btn btn-outline-secondary text-sm btn-sm px-12 py-12 radius-8"><iconify-icon icon="ep:back" class="icon text-xl me-4"></iconify-icon>Back to Commissions</a></div></div></div>
+    <div class="card-body p-24">
+        <form asp-action="Settlements" method="get" class="mb-24">
+            <div class="row align-items-end gy-3">
+                <div class="col-md-2"><label class="form-label fw-medium text-sm mb-8">Show</label><select name="pageSize" class="form-select form-select-sm radius-8" onchange="this.form.submit()"><option value="10" selected="@(Model.PageSize == 10)">10</option><option value="20" selected="@(Model.PageSize == 20)">20</option><option value="50" selected="@(Model.PageSize == 50)">50</option></select></div>
+                <div class="col-md-3">
+                    <label class="form-label fw-medium text-sm mb-8">University</label><select name="universityId" class="form-select form-select-sm radius-8">
+                        <option value="">All Universities</option>@foreach (var uni in Model.Universities)
+                        {
+                            <option value="@uni.Id" selected="@(Model.UniversityId == uni.Id)">@uni.Name</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-2"><label class="form-label fw-medium text-sm mb-8">Status</label><select name="closed" class="form-select form-select-sm radius-8"><option value="">All</option><option value="true" selected="@(Model.Closed == true)">Closed</option><option value="false" selected="@(Model.Closed == false)">Open</option></select></div>
+                <div class="col-md-2">
+                    <label class="form-label fw-medium text-sm mb-8">Year</label><select name="year" class="form-select form-select-sm radius-8">
+                        <option value="">All Years</option>@foreach (var yr in Model.AvailableYears)
+                        {
+                            <option value="@yr" selected="@(Model.Year == yr)">@yr</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label fw-medium text-sm mb-8">Month</label><select name="month" class="form-select form-select-sm radius-8">
+                        <option value="">All Months</option>@for (int m = 1; m <= 12; m++)
+                        {
+                            <option value="@m" selected="@(Model.Month == m)">@(new DateTime(2000, m, 1).ToString("MMMM"))</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-auto"><button type="submit" class="btn btn-primary btn-sm radius-8 px-20">Filter</button><a href="@Url.Action("Settlements")" class="btn btn-outline-secondary btn-sm radius-8 px-16">Clear</a></div>
+            </div>
+        </form>
+        <div class="table-responsive scroll-sm">
+            <table class="table bordered-table sm-table mb-0">
+                <thead><tr><th>ID</th><th>University</th><th>Period</th><th>Total Commission</th><th>Students</th><th>Status</th><th>Created</th><th class="text-center">Actions</th></tr></thead>
+                <tbody>
+                    @if (Model.Settlements.Any())
+                    {
+                        foreach (var settlement in Model.Settlements)
+                        {
+                            <tr>
+                                <td><span class="text-sm fw-semibold text-primary-600">#@settlement.Id</span></td>
+                                <td><span class="text-sm">@settlement.UniversityName</span></td>
+                                <td><span class="text-sm fw-semibold">@settlement.Period</span></td>
+                                <td><span class="text-lg fw-bold text-success-600">@settlement.TotalCommission.ToString("N2") JOD</span></td>
+                                <td><span class="badge bg-neutral-200 text-neutral-600 px-12 py-4">@settlement.StudentCount</span></td>
+                                <td>
+                                    @if (settlement.Closed)
+                                    {
+                                        <span class="badge bg-success-focus text-success-600 px-16 py-4 radius-4">Closed</span>
+                                    }
+                                    else
+                                    {
+
+                                        <span class="badge bg-warning-focus text-warning-600 px-16 py-4 radius-4">Open</span>
+                                    }
+                                </td>
+                                <td><div class="d-flex flex-column"><span class="text-sm">@settlement.CreatedAt.ToString("dd MMM yyyy")</span><span class="text-xs text-secondary-light">@settlement.CreatedAt.ToString("HH:mm")</span></div></td>
+                                <td class="text-center">
+                                    <div class="d-flex align-items-center gap-10 justify-content-center">
+                                        <a asp-action="SettlementDetails" asp-route-id="@settlement.Id" class="bg-info-focus bg-hover-info-200 text-info-600 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle" title="View Details"><iconify-icon icon="majesticons:eye-line" class="icon text-xl"></iconify-icon></a>
+                                        <form asp-action="ExportSettlement" asp-route-id="@settlement.Id" method="post" style="display:inline;">@Html.AntiForgeryToken()<button type="submit" class="bg-success-focus text-success-600 bg-hover-success-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle border-0" title="Export"><iconify-icon icon="solar:download-outline" class="icon text-xl"></iconify-icon></button></form>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr><td colspan="8" class="text-center py-32"><iconify-icon icon="solar:checklist-outline" class="icon text-64 text-secondary-light mb-12"></iconify-icon><p class="text-secondary-light mb-0">No settlements found</p></td></tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        @if (Model.TotalPages > 1)
+        {
+            <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mt-24">
+                <span class="text-sm fw-medium text-secondary-light">Showing @((Model.CurrentPage - 1) * Model.PageSize + 1) to @Math.Min(Model.CurrentPage * Model.PageSize, Model.TotalSettlements) of @Model.TotalSettlements</span>
+                <ul class="pagination d-flex flex-wrap align-items-center gap-2 justify-content-center">
+                    @if (Model.CurrentPage > 1)
+                    {
+                        <li class="page-item"><a class="page-link bg-neutral-200 text-secondary-light fw-semibold radius-8 border-0 d-flex align-items-center justify-content-center h-32-px w-32-px" href="@Url.Action("Settlements", new { page = Model.CurrentPage - 1, pageSize = Model.PageSize, universityId = Model.UniversityId, closed = Model.Closed, year = Model.Year, month = Model.Month })"><iconify-icon icon="ep:d-arrow-left"></iconify-icon></a></li>
+                    }
+                    @for (int i = Math.Max(1, Model.CurrentPage - 2); i <= Math.Min(Model.TotalPages, Model.CurrentPage + 2); i++)
+                    {
+                        <li class="page-item"><a class="page-link @(i == Model.CurrentPage ? "bg-primary-600 text-white" : "bg-neutral-200 text-secondary-light") fw-semibold radius-8 border-0 d-flex align-items-center justify-content-center h-32-px w-32-px" href="@Url.Action("Settlements", new { page = i, pageSize = Model.PageSize, universityId = Model.UniversityId, closed = Model.Closed, year = Model.Year, month = Model.Month })">@i</a></li>
+                    }
+                    @if (Model.CurrentPage < Model.TotalPages)
+                    {
+                        <li class="page-item"><a class="page-link bg-neutral-200 text-secondary-light fw-semibold radius-8 border-0 d-flex align-items-center justify-content-center h-32-px w-32-px" href="@Url.Action("Settlements", new { page = Model.CurrentPage + 1, pageSize = Model.PageSize, universityId = Model.UniversityId, closed = Model.Closed, year = Model.Year, month = Model.Month })"><iconify-icon icon="ep:d-arrow-right"></iconify-icon></a></li>
+                    }
+                </ul>
+            </div>
+        }
+    </div>
+</div>
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>@if (TempData["Success"] != null){
+    <text>Swal.fire({icon: 'success',title: 'Success!',text: '@TempData["Success"]',confirmButtonColor: '#198754',timer: 3000,timerProgressBar: true});</text>
+}
+@if (TempData["Error"] != null)
+{
+    <text>Swal.fire({icon: 'error',title: 'Error!',text: '@TempData["Error"]',confirmButtonColor: '#dc3545'});</text>
+}
+</script>
+}

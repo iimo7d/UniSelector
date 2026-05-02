@@ -1,0 +1,257 @@
+﻿@{
+    ViewData["Title"] = "Home";
+}
+
+<!-- Hero Section -->
+<section class="hero relative z-0">
+    <div>
+        <!-- Animated Icons -->
+        <div>
+            <img class="absolute left-10 bottom-[233px] md:left-[248px] md:bottom-[143px] lg:left-10 lg:bottom-[112px] 3xl:bottom-[233px] animate-move-var opacity-35 z-10" src="~/assets/images/herobanner/herobanner__1.png" alt="">
+            <img class="absolute md:left-[210px] md:top-[50px] animate-move-var2 hidden md:block z-10" src="~/assets/images/herobanner/herobanner__3.png" alt="">
+        </div>
+
+        <!-- Hero Content -->
+        <div style="background-image:url('@Url.Content("~/assets/images/herobanner/university_1.jpg")')"
+             class="bg-cover bg-center bg-no-repeat relative z-0">
+            <div class="bg-black bg-opacity-70 overflow-hidden pt-50px pb-100px md:pt-35 md:pb-170px lg:pt-100px lg:pb-150px 2xl:pt-35 2xl:pb-170px">
+                <div class="container 2xl:container-secondary-md relative overflow-hidden text-center">
+                    <div data-aos="fade-up">
+                        <h3 class="uppercase text-secondaryColor text-size-15 mb-5px md:mb-15px font-inter tracking-[4px] font-semibold">
+                            SMART UNIVERSITY SELECTION
+                        </h3>
+
+                        <h1 class="text-size-35 md:text-size-50 lg:text-5xl 2xl:text-size-75 leading-42px md:leading-15 lg:leading-14 2xl:leading-90px text-whiteColor md:tracking-half lg:tracking-normal 2xl:tracking-half font-bold mb-5 md:mb-50px">
+                            Find Your Perfect <br class="hidden 2xl:block">
+                            <span class="text-secondaryColor">University</span> Match
+                        </h1>
+
+                        <div class="flex gap-5 justify-center flex-wrap">
+                            @if (User.Identity?.IsAuthenticated == true)
+                            {
+                                <a  asp-controller="Recommendations" asp-action="Generate" class="text-whiteColor bg-primaryColor border border-primaryColor px-10 py-15px hover:text-primaryColor hover:bg-whiteColor rounded-full inline-block dark:hover:bg-whiteColor-dark dark:hover:text-whiteColor">
+                                    Get Recommendations
+                                </a>
+                            }
+                            else
+                            {
+                                <a asp-area="" asp-controller="Account" asp-action="Login" class="text-whiteColor bg-primaryColor border border-primaryColor px-10 py-15px hover:text-primaryColor hover:bg-whiteColor rounded-full inline-block dark:hover:bg-whiteColor-dark dark:hover:text-whiteColor">
+                                    Get Started
+                                </a>
+                            }
+                            <a asp-area="" asp-controller="Home" asp-action="Universities" class="text-primaryColor bg-whiteColor border border-whiteColor px-10 py-15px hover:text-whiteColor hover:bg-primaryColor rounded-full inline-block">
+                                Browse Universities
+                            </a>
+                        </div>
+
+                        <div class="mt-20 md:mt-50px">
+                            <p class="text-whiteColor mb-15px">Follow us on:</p>
+                            <ul class="flex gap-3 items-center justify-center">
+                                <li><a href="#" class="w-50px h-50px md:w-15 md:h-15 leading-50px md:leading-15 text-whiteColor bg-white bg-opacity-10 hover:bg-primaryColor text-sm md:text-xl rounded-100"><i class="icofont-facebook"></i></a></li>
+                                <li><a href="#" class="w-50px h-50px md:w-15 md:h-15 leading-50px md:leading-15 text-whiteColor bg-white bg-opacity-10 hover:bg-primaryColor text-sm md:text-xl rounded-100"><i class="icofont-twitter"></i></a></li>
+                                <li><a href="#" class="w-50px h-50px md:w-15 md:h-15 leading-50px md:leading-15 text-whiteColor bg-white bg-opacity-10 hover:bg-primaryColor text-sm md:text-xl rounded-100"><i class="icofont-instagram"></i></a></li>
+                                <li><a href="#" class="w-50px h-50px md:w-15 md:h-15 leading-50px md:leading-15 text-whiteColor bg-white bg-opacity-10 hover:bg-primaryColor text-sm md:text-xl rounded-100"><i class="icofont-linkedin"></i></a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section>
+    <div class="container pt-100px pb-70px">
+        <div class="text-center mb-10" data-aos="fade-up">
+            <span class="text-sm font-semibold text-primaryColor bg-whitegrey3 px-6 py-5px mb-5 rounded-full inline-block">
+                Why Choose Us
+            </span>
+            <h3 class="text-3xl md:text-[35px] lg:text-size-38 3xl:text-size-42 leading-10 mf:leading-45px 2xl:leading-50px 3xl:leading-2xl font-bold text-blackColor dark:text-blackColor-dark">
+                Your Smart Path to
+                <span class="relative after:w-full after:h-[7px] z-0 after:bg-secondaryColor after:absolute after:left-0 after:bottom-3 md:after:bottom-5 after:z-[-1]">Higher Education</span>
+            </h3>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-30px">
+            <!-- Feature 1 -->
+            <div class="text-center p-30px bg-whiteColor dark:bg-whiteColor-dark shadow-brand hover:shadow-brand-hover transition-all duration-300 group" data-aos="fade-up">
+                <div class="mb-5">
+                    <i class="icofont-brain-alt text-6xl text-primaryColor group-hover:text-secondaryColor transition-all duration-300"></i>
+                </div>
+                <h4 class="text-xl font-semibold text-blackColor dark:text-blackColor-dark mb-3">AI-Powered Matching</h4>
+                <p class="text-contentColor dark:text-contentColor-dark">
+                    Our intelligent algorithm matches you with universities based on your GPA, budget, location preferences, and desired majors.
+                </p>
+            </div>
+
+            <!-- Feature 2 -->
+            <div class="text-center p-30px bg-whiteColor dark:bg-whiteColor-dark shadow-brand hover:shadow-brand-hover transition-all duration-300 group" data-aos="fade-up" data-aos-delay="100">
+                <div class="mb-5">
+                    <i class="icofont-money text-6xl text-primaryColor group-hover:text-secondaryColor transition-all duration-300"></i>
+                </div>
+                <h4 class="text-xl font-semibold text-blackColor dark:text-blackColor-dark mb-3">Exclusive Discounts</h4>
+                <p class="text-contentColor dark:text-contentColor-dark">
+                    Get automatic 5% student discounts on tuition fees through our partnered universities with transparent commission structure.
+                </p>
+            </div>
+
+            <!-- Feature 3 -->
+            <div class="text-center p-30px bg-whiteColor dark:bg-whiteColor-dark shadow-brand hover:shadow-brand-hover transition-all duration-300 group" data-aos="fade-up" data-aos-delay="200">
+                <div class="mb-5">
+                    <i class="icofont-verification-check text-6xl text-primaryColor group-hover:text-secondaryColor transition-all duration-300"></i>
+                </div>
+                <h4 class="text-xl font-semibold text-blackColor dark:text-blackColor-dark mb-3">All Jordan Tracks</h4>
+                <p class="text-contentColor dark:text-contentColor-dark">
+                    Support for Academic (Scientific, Literary, Sharia), Vocational, and BTEC programs - all educational paths covered.
+                </p>
+            </div>
+
+            <!-- Feature 4 -->
+            <div class="text-center p-30px bg-whiteColor dark:bg-whiteColor-dark shadow-brand hover:shadow-brand-hover transition-all duration-300 group" data-aos="fade-up" data-aos-delay="300">
+                <div class="mb-5">
+                    <i class="icofont-ui-messaging text-6xl text-primaryColor group-hover:text-secondaryColor transition-all duration-300"></i>
+                </div>
+                <h4 class="text-xl font-semibold text-blackColor dark:text-blackColor-dark mb-3">Real-Time Updates</h4>
+                <p class="text-contentColor dark:text-contentColor-dark">
+                    Stay informed with instant notifications about application status, university responses, and new opportunities.
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Stats Counter Section -->
+<section class="bg-lightGrey10 dark:bg-lightGrey10-dark">
+    <div class="container py-100px">
+        <div class="counter flex flex-wrap gap-y-30px lg:gap-y-0">
+            <div class="basis-full sm:basis-1/2 lg:basis-1/4" data-aos="fade-up">
+                <div class="flex gap-4 justify-center">
+                    <div><img src="~/assets/images/counter/counter__1.png" alt=""></div>
+                    <div>
+                        <p class="text-size-34 leading-[1.1] text-blackColor font-bold font-hind dark:text-blackColor-dark">
+                            <span data-countup-number="50">50</span><span>+</span>
+                        </p>
+                        <p class="uppercase text-blackColor font-medium leading-[18px] dark:text-blackColor-dark">Partner Universities</p>
+                    </div>
+                </div>
+            </div>
+            <div class="basis-full sm:basis-1/2 lg:basis-1/4" data-aos="fade-up">
+                <div class="flex gap-4 justify-center">
+                    <div><img src="~/assets/images/counter/counter__2.png" alt=""></div>
+                    <div>
+                        <p class="text-size-34 leading-[1.1] text-blackColor font-bold font-hind dark:text-blackColor-dark">
+                            <span data-countup-number="5000">5000</span><span>+</span>
+                        </p>
+                        <p class="uppercase text-blackColor font-medium leading-[18px] dark:text-blackColor-dark">Happy Students</p>
+                    </div>
+                </div>
+            </div>
+            <div class="basis-full sm:basis-1/2 lg:basis-1/4" data-aos="fade-up">
+                <div class="flex gap-4 justify-center">
+                    <div><img src="~/assets/images/counter/counter__3.png" alt=""></div>
+                    <div>
+                        <p class="text-size-34 leading-[1.1] text-blackColor font-bold font-hind dark:text-blackColor-dark">
+                            <span data-countup-number="200">200</span><span>+</span>
+                        </p>
+                        <p class="uppercase text-blackColor font-medium leading-[18px] dark:text-blackColor-dark">Available Programs</p>
+                    </div>
+                </div>
+            </div>
+            <div class="basis-full sm:basis-1/2 lg:basis-1/4" data-aos="fade-up">
+                <div class="flex gap-4 justify-center">
+                    <div><img src="~/assets/images/counter/counter__4.png" alt=""></div>
+                    <div>
+                        <p class="text-size-34 leading-[1.1] text-blackColor font-bold font-hind dark:text-blackColor-dark">
+                            <span data-countup-number="95">95</span><span>%</span>
+                        </p>
+                        <p class="uppercase text-blackColor font-medium leading-[18px] dark:text-blackColor-dark">Success Rate</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- How It Works Section -->
+<section>
+    <div class="container py-100px">
+        <div class="text-center mb-10" data-aos="fade-up">
+            <span class="text-sm font-semibold text-primaryColor bg-whitegrey3 px-6 py-5px mb-5 rounded-full inline-block">
+                Simple Process
+            </span>
+            <h3 class="text-3xl md:text-[35px] lg:text-size-38 3xl:text-size-42 leading-10 mf:leading-45px 2xl:leading-50px 3xl:leading-2xl font-bold text-blackColor dark:text-blackColor-dark">
+                How Uni Selector <span class="relative after:w-full after:h-[7px] z-0 after:bg-secondaryColor after:absolute after:left-0 after:bottom-3 md:after:bottom-5 after:z-[-1]">Works</span>
+            </h3>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-30px">
+            <div class="text-center" data-aos="fade-up">
+                <div class="mb-5 relative">
+                    <div class="w-20 h-20 bg-primaryColor rounded-full flex items-center justify-center mx-auto">
+                        <span class="text-3xl font-bold text-whiteColor">1</span>
+                    </div>
+                </div>
+                <h4 class="text-xl font-semibold text-blackColor dark:text-blackColor-dark mb-3">Create Profile</h4>
+                <p class="text-contentColor dark:text-contentColor-dark">Register and complete your academic profile with GPA, preferences, and budget.</p>
+            </div>
+
+            <div class="text-center" data-aos="fade-up" data-aos-delay="100">
+                <div class="mb-5">
+                    <div class="w-20 h-20 bg-primaryColor rounded-full flex items-center justify-center mx-auto">
+                        <span class="text-3xl font-bold text-whiteColor">2</span>
+                    </div>
+                </div>
+                <h4 class="text-xl font-semibold text-blackColor dark:text-blackColor-dark mb-3">Get Matched</h4>
+                <p class="text-contentColor dark:text-contentColor-dark">Our AI analyzes your profile and recommends the best university matches.</p>
+            </div>
+
+            <div class="text-center" data-aos="fade-up" data-aos-delay="200">
+                <div class="mb-5">
+                    <div class="w-20 h-20 bg-primaryColor rounded-full flex items-center justify-center mx-auto">
+                        <span class="text-3xl font-bold text-whiteColor">3</span>
+                    </div>
+                </div>
+                <h4 class="text-xl font-semibold text-blackColor dark:text-blackColor-dark mb-3">Apply</h4>
+                <p class="text-contentColor dark:text-contentColor-dark">Submit applications directly through our platform with automated discount application.</p>
+            </div>
+
+            <div class="text-center" data-aos="fade-up" data-aos-delay="300">
+                <div class="mb-5">
+                    <div class="w-20 h-20 bg-primaryColor rounded-full flex items-center justify-center mx-auto">
+                        <span class="text-3xl font-bold text-whiteColor">4</span>
+                    </div>
+                </div>
+                <h4 class="text-xl font-semibold text-blackColor dark:text-blackColor-dark mb-3">Get Accepted</h4>
+                <p class="text-contentColor dark:text-contentColor-dark">Track application status and receive your acceptance with confirmed discount!</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="bg-primaryColor">
+    <div class="container py-100px">
+        <div class="text-center" data-aos="fade-up">
+            <h2 class="text-3xl md:text-4xl lg:text-5xl font-bold text-whiteColor mb-5">
+                Ready to Find Your Perfect University?
+            </h2>
+            <p class="text-xl text-whiteColor mb-10 max-w-2xl mx-auto">
+                Join thousands of students who have already found their ideal university match with Uni Selector.
+            </p>
+            <a asp-area="" asp-controller="Account" asp-action="Login" asp-route-tab="register" class="text-primaryColor bg-whiteColor border border-whiteColor px-10 py-15px hover:text-whiteColor hover:bg-transparent hover:border-whiteColor rounded-full inline-block text-lg font-semibold">
+                Get Started Now - It's Free!
+            </a>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    <script>
+        // Initialize AOS (Animate On Scroll)
+        AOS.init({
+            duration: 1000,
+            once: true
+        });
+    </script>
+}

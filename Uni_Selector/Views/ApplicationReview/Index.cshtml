@@ -1,0 +1,259 @@
+﻿@using Uni_Selector.Models.Enums
+@model Uni_Selector.ViewModels.ApplicationReview.ApplicationListViewModel
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = "Student Applications";
+}
+
+<div class="dashboard-main-body">
+    <!-- Breadcrumb -->
+    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-24">
+        <h6 class="fw-semibold mb-0">Student Applications</h6>
+        <ul class="d-flex align-items-center gap-2">
+            <li class="fw-medium">
+                <a asp-controller="UniversityRep" asp-action="Index" class="d-flex align-items-center gap-1 hover-text-primary">
+                    <iconify-icon icon="solar:home-smile-angle-outline" class="icon text-lg"></iconify-icon>
+                    Dashboard
+                </a>
+            </li>
+            <li>-</li>
+            <li class="fw-medium">Applications</li>
+        </ul>
+    </div>
+
+    <div class="card h-100 p-0 radius-12">
+        <div class="card-header border-bottom bg-base py-16 px-24 d-flex align-items-center justify-content-between">
+            <h6 class="text-lg fw-semibold mb-0">Applications for @Model.UniversityName</h6>
+        </div>
+
+        <div class="card-body p-24">
+            <!-- Filters -->
+            <form method="get" class="row mb-20 gy-3">
+                <div class="col-md-4">
+                    <input type="text" name="search" value="@Model.Search" class="form-control radius-8" placeholder="Search by number, name, or email...">
+                </div>
+                <div class="col-md-3">
+                    <select name="status" class="form-control radius-8 form-select">
+                        <option value="">All Status</option>
+                        @foreach (ApplicationStatus status in Enum.GetValues(typeof(ApplicationStatus)))
+                        {
+                            <option value="@((int)status)" selected="@(Model.StatusFilter == status)">@status</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-primary w-100 radius-8">
+                        <iconify-icon icon="ic:baseline-search" class="icon"></iconify-icon> Search
+                    </button>
+                </div>
+                <div class="col-md-3">
+                    <a asp-action="Index" class="btn btn-outline-secondary w-100 radius-8">Clear Filters</a>
+                </div>
+            </form>
+
+            <!-- Results count -->
+            <div class="d-flex justify-content-between align-items-center mb-16">
+                <span class="text-md text-secondary-light">Showing @Model.Applications.Count of @Model.TotalCount applications</span>
+            </div>
+
+            <!-- Table -->
+            <div class="table-responsive">
+                <table class="table bordered-table mb-0" id="dataTable">
+                    <thead>
+                        <tr>
+                            <th scope="col">Application #</th>
+                            <th scope="col">Student</th>
+                            <th scope="col">Program</th>
+                            <th scope="col">GPA</th>
+                            <th scope="col">Path</th>
+                            <th scope="col">Application Date</th>
+                            <th scope="col">Status</th>
+                            <th scope="col" class="text-center">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.Applications.Any())
+                        {
+                            @foreach (var app in Model.Applications)
+                            {
+                                <tr>
+                                    <td>
+                                        <a asp-action="Details" asp-route-id="@app.Id" class="text-primary-600 fw-semibold">
+                                            @app.ApplicationNumber
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="flex-shrink-0 me-12 radius-8 bg-primary-50 d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                                                <iconify-icon icon="solar:user-bold" class="text-primary-600 text-xl"></iconify-icon>
+                                            </div>
+                                            <div>
+                                                <h6 class="text-md mb-0 fw-medium">@app.StudentName</h6>
+                                                <span class="text-sm text-secondary-light">@app.StudentEmail</span>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div>
+                                            <span class="fw-medium">@app.ProgramName</span>
+                                            @if (app.IsBtecProgram)
+                                            {
+                                                <span class="badge bg-info-focus text-info-main ms-2">BTEC</span>
+                                            }
+                                        </div>
+                                    </td>
+                                    <td><span class="fw-semibold text-primary-600">@app.StudentGPA.ToString("F1")%</span></td>
+                                    <td>
+                                        @switch (app.StudentPath)
+                                        {
+                                            case PathType.Academic:
+                                                <span class="badge bg-success-focus text-success-main">Academic</span>
+                                                break;
+                                            case PathType.Vocational:
+                                                <span class="badge bg-warning-focus text-warning-main">Vocational</span>
+                                                break;
+                                            case PathType.BTEC:
+                                                <span class="badge bg-info-focus text-info-main">BTEC</span>
+                                                break;
+                                        }
+                                    </td>
+                                    <td>@app.ApplicationDate.ToString("MMM dd, yyyy")</td>
+                                    <td>
+                                        @switch (app.Status)
+                                        {
+                                            case ApplicationStatus.Pending:
+                                                <span class="bg-warning-focus text-warning-main px-24 py-4 rounded-pill fw-medium text-sm">Pending</span>
+                                                break;
+                                            case ApplicationStatus.UnderReview:
+                                                <span class="bg-info-focus text-info-main px-24 py-4 rounded-pill fw-medium text-sm">Under Review</span>
+                                                break;
+                                            case ApplicationStatus.Approved:
+                                                <span class="bg-success-focus text-success-main px-24 py-4 rounded-pill fw-medium text-sm">Approved</span>
+                                                break;
+                                            case ApplicationStatus.Rejected:
+                                                <span class="bg-danger-focus text-danger-main px-24 py-4 rounded-pill fw-medium text-sm">Rejected</span>
+                                                break;
+                                            case ApplicationStatus.Enrolled:
+                                                <span class="bg-primary-600 text-white px-24 py-4 rounded-pill fw-medium text-sm">Enrolled</span>
+                                                break;
+                                            case ApplicationStatus.Cancelled:
+                                                <span class="bg-neutral-500 text-white px-24 py-4 rounded-pill fw-medium text-sm">Cancelled</span>
+                                                break;
+                                        }
+                                    </td>
+                                    <td class="text-center">
+                                        <a asp-action="Details" asp-route-id="@app.Id"
+                                           class="w-32-px h-32-px bg-primary-light text-primary-600 rounded-circle d-inline-flex align-items-center justify-content-center"
+                                           title="View Details">
+                                            <iconify-icon icon="iconamoon:eye-light"></iconify-icon>
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="8" class="text-center text-secondary-light py-24">
+                                    <iconify-icon icon="tabler:database-off" class="text-xxl mb-12"></iconify-icon>
+                                    <p class="mb-0">No applications found.</p>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            @if (Model.TotalPages > 1)
+            {
+                <div class="d-flex justify-content-center mt-24">
+                    <ul class="pagination">
+                        @if (Model.CurrentPage > 1)
+                        {
+                            <li class="page-item">
+                                <a class="page-link" asp-action="Index" asp-route-page="@(Model.CurrentPage - 1)" asp-route-search="@Model.Search" asp-route-status="@Model.StatusFilter">Previous</a>
+                            </li>
+                        }
+                        @for (int i = 1; i <= Model.TotalPages; i++)
+                        {
+                            <li class="page-item @(i == Model.CurrentPage ? "active" : "")">
+                                <a class="page-link" asp-action="Index" asp-route-page="@i" asp-route-search="@Model.Search" asp-route-status="@Model.StatusFilter">@i</a>
+                            </li>
+                        }
+                        @if (Model.CurrentPage < Model.TotalPages)
+                        {
+                            <li class="page-item">
+                                <a class="page-link" asp-action="Index" asp-route-page="@(Model.CurrentPage + 1)" asp-route-search="@Model.Search" asp-route-status="@Model.StatusFilter">Next</a>
+                            </li>
+                        }
+                    </ul>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        // ✅ Put Razor values into JS variables safely
+        const successMsg = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(TempData["Success"]?.ToString()));
+        const errorMsg   = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(TempData["Error"]?.ToString()));
+
+        if (successMsg) {
+            Swal.fire({
+                icon: 'success',
+                title: 'Success!',
+                text: successMsg,
+                timer: 3000,
+                showConfirmButton: false
+            });
+        }
+
+        if (errorMsg) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error!',
+                text: errorMsg,
+                timer: 3000,
+                showConfirmButton: false
+            });
+        }
+    </script>
+}
+
+
+
+@* @section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        @if (TempData["Success"] != null)
+        {
+                <text>
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success!',
+                    text: '@TempData["Success"]',
+                    timer: 3000,
+                    showConfirmButton: false
+                });
+                </text>
+        }
+
+        @if (TempData["Error"] != null)
+        {
+                <text>
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error!',
+                    text: '@TempData["Error"]',
+                    timer: 3000,
+                    showConfirmButton: false
+                });
+                </text>
+        }
+    </script>
+}
+ *@

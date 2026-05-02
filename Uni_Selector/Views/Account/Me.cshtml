@@ -1,0 +1,731 @@
+﻿@model UserProfileViewModel
+@{
+    ViewData["Title"] = "My Profile";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<!-- main body -->
+<main class="bg-transparent">
+    <!-- banner section -->
+    <section>
+        <div class="container-fluid-2">
+            <div class="bg-skycolor p-5 md:p-10 rounded-5 flex justify-center md:justify-between items-center flex-wrap gap-2">
+                <div class="flex items-center flex-wrap justify-center sm:justify-start">
+                    <div class="mr-5">
+                        <div class="w-27 h-27 md:w-22 md:h-22 lg:w-27 lg:h-27 rounded-full p-1 border-2 border-darkdeep7 box-content bg-white flex items-center justify-center">
+                            <i class="icofont-user text-5xl text-primaryColor"></i>
+                        </div>
+                    </div>
+                    <div class="text-whiteColor font-bold text-center sm:text-start">
+                        <h5 class="text-2xl leading-1.24 mb-5px">Hello, @Model.FullName</h5>
+                        <ul class="flex items-center gap-15px flex-wrap">
+                            <li class="text-sm font-normal flex items-center gap-0.5">
+                                <i class="icofont-ui-user"></i>
+                                @Model.Role
+                            </li>
+                            @if (Model.LastLoginAt.HasValue)
+                            {
+                                <li class="text-sm font-normal flex items-center gap-0.5">
+                                    <i class="icofont-clock-time"></i>
+                                    Last Login: @Model.LastLoginAt.Value.ToString("MMM dd, yyyy")
+                                </li>
+                            }
+                        </ul>
+                    </div>
+                </div>
+
+                @if (User.IsInRole("Student"))
+                {
+
+                    @if (Model.ProfileCompleted == false || Model.ProfileCompleted == null)
+                    {
+
+                        <div>
+                            <a href="@Url.Action("CompleteProfile", "Student")" class="text-size-15 text-whiteColor bg-secondaryColor px-25px py-10px border border-secondaryColor hover:text-secondaryColor hover:bg-whiteColor rounded group text-nowrap flex gap-1 items-center">
+                                Complete Profile
+                                <i class="icofont-arrow-right"></i>
+                            </a>
+                        </div>
+                    }
+                    else
+                    {
+                        <div>
+                            <a href="@Url.Action("Edit", "Student")" class="text-size-15 text-whiteColor bg-secondaryColor px-25px py-10px border border-secondaryColor hover:text-secondaryColor hover:bg-whiteColor rounded group text-nowrap flex gap-1 items-center">
+                                Edit Profile
+                                <i class="icofont-arrow-right"></i>
+                            </a>
+                        </div>
+                    }
+
+                }
+            </div>
+        </div>
+    </section>
+
+
+
+
+
+    <!--dashboard menu section -->
+    <section>
+        <div class="container-fluid-2">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-30px pt-30px pb-100px">
+                <div class="lg:col-start-1 lg:col-span-3">
+                    <!-- navigation menu -->
+                    <div class="p-30px pt-5 lg:p-5 2xl:p-30px 2xl:pt-5 rounded-lg2 shadow-accordion dark:shadow-accordion-dark bg-whiteColor dark:bg-whiteColor-dark">
+                        <!-- greeting -->
+                        <h5 class="text-sm leading-1 font-semibold uppercase text-contentColor dark:text-contentColor-dark bg-lightGrey5 dark:bg-whiteColor-dark p-10px pb-7px mt-5 mb-10px">
+                            WELCOME, @Model.FullName.ToUpper()
+                        </h5>
+                        <ul>
+                            @if (Model.Role == "Student")
+                            {
+                                <li class="py-10px border-b border-borderColor dark:border-borderColor-dark bg-lightGrey5">
+                                    <a href="@Url.Action("Me", "Account")" class="text-primaryColor leading-1.8 flex gap-3 text-nowrap font-semibold">
+                                        <i class="icofont-ui-user"></i>
+                                        My Profile
+                                    </a>
+                                </li>
+                                <li class="py-10px border-b border-borderColor dark:border-borderColor-dark">
+                                    <a href="@Url.Action("Index", "Applications")" class="text-contentColor dark:text-contentColor-dark hover:text-primaryColor dark:hover:text-primaryColor leading-1.8 flex gap-3 text-nowrap">
+                                        <i class="icofont-paper"></i>
+                                        My Applications
+                                    </a>
+                                </li>
+                                <li class="py-10px border-b border-borderColor dark:border-borderColor-dark">
+                                    <a href="@Url.Action("Index", "Recommendations")" class="text-contentColor dark:text-contentColor-dark hover:text-primaryColor dark:hover:text-primaryColor leading-1.8 flex gap-3 text-nowrap">
+                                        <i class="icofont-star"></i>
+                                        Recommendations
+                                    </a>
+                                </li>
+                                <li class="py-10px border-b border-borderColor dark:border-borderColor-dark">
+                                    <a href="@Url.Action("Index", "Discounts")" class="text-contentColor dark:text-contentColor-dark hover:text-primaryColor dark:hover:text-primaryColor leading-1.8 flex gap-3 text-nowrap">
+                                        <i class="icofont-sale-discount"></i>
+                                        Discounts
+                                    </a>
+                                </li>
+
+                            }
+                            else if (Model.Role == "UniversityRep")
+                            {
+                                <li class="py-10px border-b border-borderColor dark:border-borderColor-dark">
+                                    <a href="@Url.Action("Dashboard", "UniversityRep")" class="text-contentColor dark:text-contentColor-dark hover:text-primaryColor dark:hover:text-primaryColor leading-1.8 flex gap-3 text-nowrap">
+                                        <i class="icofont-dashboard-web"></i>
+                                        Dashboard
+                                    </a>
+                                </li>
+                                <li class="py-10px border-b border-borderColor dark:border-borderColor-dark bg-lightGrey5">
+                                    <a href="@Url.Action("Me", "Account")" class="text-primaryColor leading-1.8 flex gap-3 text-nowrap font-semibold">
+                                        <i class="icofont-ui-user"></i>
+                                        My Profile
+                                    </a>
+                                </li>
+                                <li class="py-10px border-b border-borderColor dark:border-borderColor-dark">
+                                    <a href="@Url.Action("Applications", "UniversityRep")" class="text-contentColor dark:text-contentColor-dark hover:text-primaryColor dark:hover:text-primaryColor leading-1.8 flex gap-3 text-nowrap">
+                                        <i class="icofont-paper"></i>
+                                        Applications
+                                    </a>
+                                </li>
+                                <li class="py-10px border-b border-borderColor dark:border-borderColor-dark">
+                                    <a href="@Url.Action("Programs", "UniversityRep")" class="text-contentColor dark:text-contentColor-dark hover:text-primaryColor dark:hover:text-primaryColor leading-1.8 flex gap-3 text-nowrap">
+                                        <i class="icofont-graduate"></i>
+                                        Programs
+                                    </a>
+                                </li>
+                            }
+                            else if (Model.Role == "PlatformAdmin")
+                            {
+                                <li class="py-10px border-b border-borderColor dark:border-borderColor-dark">
+                                    <a href="@Url.Action("Dashboard", "Admin")" class="text-contentColor dark:text-contentColor-dark hover:text-primaryColor dark:hover:text-primaryColor leading-1.8 flex gap-3 text-nowrap">
+                                        <i class="icofont-dashboard-web"></i>
+                                        Dashboard
+                                    </a>
+                                </li>
+                                <li class="py-10px border-b border-borderColor dark:border-borderColor-dark bg-lightGrey5">
+                                    <a href="@Url.Action("Me", "Account")" class="text-primaryColor leading-1.8 flex gap-3 text-nowrap font-semibold">
+                                        <i class="icofont-ui-user"></i>
+                                        My Profile
+                                    </a>
+                                </li>
+                                <li class="py-10px border-b border-borderColor dark:border-borderColor-dark">
+                                    <a href="@Url.Action("Index", "UserManagement")" class="text-contentColor dark:text-contentColor-dark hover:text-primaryColor dark:hover:text-primaryColor leading-1.8 flex gap-3 text-nowrap">
+                                        <i class="icofont-users"></i>
+                                        Manage Users
+                                    </a>
+                                </li>
+                                <li class="py-10px border-b border-borderColor dark:border-borderColor-dark">
+                                    <a href="@Url.Action("Index", "UniversityAdmin")" class="text-contentColor dark:text-contentColor-dark hover:text-primaryColor dark:hover:text-primaryColor leading-1.8 flex gap-3 text-nowrap">
+                                        <i class="icofont-building"></i>
+                                        Universities
+                                    </a>
+                                </li>
+                            }
+                            else if (Model.Role == "BtecAuthority")
+                            {
+                                <li class="py-10px border-b border-borderColor dark:border-borderColor-dark">
+                                    <a href="@Url.Action("Dashboard", "BTECAuthority")" class="text-contentColor dark:text-contentColor-dark hover:text-primaryColor dark:hover:text-primaryColor leading-1.8 flex gap-3 text-nowrap">
+                                        <i class="icofont-dashboard-web"></i>
+                                        Dashboard
+                                    </a>
+                                </li>
+                                <li class="py-10px border-b border-borderColor dark:border-borderColor-dark bg-lightGrey5">
+                                    <a href="@Url.Action("Me", "Account")" class="text-primaryColor leading-1.8 flex gap-3 text-nowrap font-semibold">
+                                        <i class="icofont-ui-user"></i>
+                                        My Profile
+                                    </a>
+                                </li>
+                                <li class="py-10px border-b border-borderColor dark:border-borderColor-dark">
+                                    <a href="@Url.Action("Index", "BTECProgramReview")" class="text-contentColor dark:text-contentColor-dark hover:text-primaryColor dark:hover:text-primaryColor leading-1.8 flex gap-3 text-nowrap">
+                                        <i class="icofont-verification-check"></i>
+                                        Pending Approvals
+                                    </a>
+                                </li>
+                            }
+                            <li class="py-10px">
+                                <form asp-action="Logout" asp-controller="Account" method="post">
+                                    <button type="submit" class="text-contentColor dark:text-contentColor-dark hover:text-red-600 dark:hover:text-red-600 leading-1.8 flex gap-3 text-nowrap w-full">
+                                        <i class="icofont-logout"></i>
+                                        Logout
+                                    </button>
+                                </form>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="lg:col-start-4 lg:col-span-9">
+                    <!-- profile details -->
+                    <div class="p-10px md:px-10 md:py-50px mb-30px bg-whiteColor dark:bg-whiteColor-dark shadow-accordion dark:shadow-accordion-dark rounded-5">
+                        <div class="mb-6 pb-5 border-b-2 border-borderColor dark:border-borderColor-dark">
+                            <h2 class="text-2xl font-bold text-blackColor dark:text-blackColor-dark">
+                                My Profile
+                            </h2>
+                        </div>
+
+                        <div>
+                            <ul>
+                                <!-- Common Fields -->
+                                <li class="text-lg text-contentColor dark:text-contentColor-dark leading-1.67 grid grid-cols-1 md:grid-cols-12 gap-x-30px">
+                                    <div class="md:col-start-1 md:col-span-4">
+                                        <span class="inline-block font-semibold">Full Name</span>
+                                    </div>
+                                    <div class="md:col-start-5 md:col-span-8">
+                                        <span class="inline-block">@Model.FullName</span>
+                                    </div>
+                                </li>
+
+                                <li class="text-lg text-contentColor dark:text-contentColor-dark leading-1.67 grid grid-cols-1 md:grid-cols-12 gap-x-30px mt-15px">
+                                    <div class="md:col-start-1 md:col-span-4">
+                                        <span class="inline-block font-semibold">Email</span>
+                                    </div>
+                                    <div class="md:col-start-5 md:col-span-8">
+                                        <span class="inline-block">@Model.Email</span>
+                                    </div>
+                                </li>
+
+                                @if (!string.IsNullOrEmpty(Model.PhoneNumber))
+                                {
+                                    <li class="text-lg text-contentColor dark:text-contentColor-dark leading-1.67 grid grid-cols-1 md:grid-cols-12 gap-x-30px mt-15px">
+                                        <div class="md:col-start-1 md:col-span-4">
+                                            <span class="inline-block font-semibold">Phone Number</span>
+                                        </div>
+                                        <div class="md:col-start-5 md:col-span-8">
+                                            <span class="inline-block">@Model.PhoneNumber</span>
+                                        </div>
+                                    </li>
+                                }
+
+                                <li class="text-lg text-contentColor dark:text-contentColor-dark leading-1.67 grid grid-cols-1 md:grid-cols-12 gap-x-30px mt-15px">
+                                    <div class="md:col-start-1 md:col-span-4">
+                                        <span class="inline-block font-semibold">Role</span>
+                                    </div>
+                                    <div class="md:col-start-5 md:col-span-8">
+                                        <span class="inline-block px-3 py-1 bg-primaryColor text-white rounded">@Model.Role</span>
+                                    </div>
+                                </li>
+
+                                <li class="text-lg text-contentColor dark:text-contentColor-dark leading-1.67 grid grid-cols-1 md:grid-cols-12 gap-x-30px mt-15px">
+                                    <div class="md:col-start-1 md:col-span-4">
+                                        <span class="inline-block font-semibold">Account Status</span>
+                                    </div>
+                                    <div class="md:col-start-5 md:col-span-8">
+                                        @if (Model.IsActive)
+                                        {
+                                            <span class="inline-block px-3 py-1 bg-green-500 text-success rounded">Active</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="inline-block px-3 py-1 bg-red-500 text-danger rounded">Inactive</span>
+                                        }
+                                    </div>
+                                </li>
+
+                                <li class="text-lg text-contentColor dark:text-contentColor-dark leading-1.67 grid grid-cols-1 md:grid-cols-12 gap-x-30px mt-15px">
+                                    <div class="md:col-start-1 md:col-span-4">
+                                        <span class="inline-block font-semibold">Registration Date</span>
+                                    </div>
+                                    <div class="md:col-start-5 md:col-span-8">
+                                        <span class="inline-block">@Model.CreatedAt.ToString("MMMM dd, yyyy hh:mm tt")</span>
+                                    </div>
+                                </li>
+
+                                @if (Model.LastLoginAt.HasValue)
+                                {
+                                    <li class="text-lg text-contentColor dark:text-contentColor-dark leading-1.67 grid grid-cols-1 md:grid-cols-12 gap-x-30px mt-15px">
+                                        <div class="md:col-start-1 md:col-span-4">
+                                            <span class="inline-block font-semibold">Last Login</span>
+                                        </div>
+                                        <div class="md:col-start-5 md:col-span-8">
+                                            <span class="inline-block">@Model.LastLoginAt.Value.ToString("MMMM dd, yyyy hh:mm tt")</span>
+                                        </div>
+                                    </li>
+                                }
+
+                                <!-- Student-specific fields -->
+                                @if (Model.Role == "Student")
+                                {
+                                    <li class="mt-30px mb-15px">
+                                        <h3 class="text-xl font-bold text-primaryColor">Personal Information</h3>
+                                        <hr class="mt-2" />
+                                    </li>
+
+                                    @if (!string.IsNullOrEmpty(Model.NationalId))
+                                    {
+                                        <li class="text-lg text-contentColor dark:text-contentColor-dark leading-1.67 grid grid-cols-1 md:grid-cols-12 gap-x-30px mt-15px">
+                                            <div class="md:col-start-1 md:col-span-4">
+                                                <span class="inline-block font-semibold">National ID</span>
+                                            </div>
+                                            <div class="md:col-start-5 md:col-span-8">
+                                                <span class="inline-block">@Model.NationalId</span>
+                                            </div>
+                                        </li>
+                                    }
+
+                                    @if (!string.IsNullOrEmpty(Model.SeatNumber))
+                                    {
+                                        <li class="text-lg text-contentColor dark:text-contentColor-dark leading-1.67 grid grid-cols-1 md:grid-cols-12 gap-x-30px mt-15px">
+                                            <div class="md:col-start-1 md:col-span-4">
+                                                <span class="inline-block font-semibold">Seat Number</span>
+                                            </div>
+                                            <div class="md:col-start-5 md:col-span-8">
+                                                <span class="inline-block">@Model.SeatNumber</span>
+                                            </div>
+                                        </li>
+                                    }
+
+                                    @if (!string.IsNullOrEmpty(Model.Gender))
+                                    {
+                                        <li class="text-lg text-contentColor dark:text-contentColor-dark leading-1.67 grid grid-cols-1 md:grid-cols-12 gap-x-30px mt-15px">
+                                            <div class="md:col-start-1 md:col-span-4">
+                                                <span class="inline-block font-semibold">Gender</span>
+                                            </div>
+                                            <div class="md:col-start-5 md:col-span-8">
+                                                <span class="inline-block">@Model.Gender</span>
+                                            </div>
+                                        </li>
+                                    }
+
+                                    @if (Model.DateOfBirth.HasValue)
+                                    {
+                                        <li class="text-lg text-contentColor dark:text-contentColor-dark leading-1.67 grid grid-cols-1 md:grid-cols-12 gap-x-30px mt-15px">
+                                            <div class="md:col-start-1 md:col-span-4">
+                                                <span class="inline-block font-semibold">Date of Birth</span>
+                                            </div>
+                                            <div class="md:col-start-5 md:col-span-8">
+                                                <span class="inline-block">@Model.DateOfBirth.Value.ToString("MMMM dd, yyyy")</span>
+                                            </div>
+                                        </li>
+                                    }
+
+                                    @if (!string.IsNullOrEmpty(Model.Nationality))
+                                    {
+                                        <li class="text-lg text-contentColor dark:text-contentColor-dark leading-1.67 grid grid-cols-1 md:grid-cols-12 gap-x-30px mt-15px">
+                                            <div class="md:col-start-1 md:col-span-4">
+                                                <span class="inline-block font-semibold">Nationality</span>
+                                            </div>
+                                            <div class="md:col-start-5 md:col-span-8">
+                                                <span class="inline-block">@Model.Nationality</span>
+                                            </div>
+                                        </li>
+                                    }
+
+                                    <li class="mt-30px mb-15px">
+                                        <h3 class="text-xl font-bold text-primaryColor">Guardian Information</h3>
+                                        <hr class="mt-2" />
+                                    </li>
+
+                                    @if (!string.IsNullOrEmpty(Model.GuardianName))
+                                    {
+                                        <li class="text-lg text-contentColor dark:text-contentColor-dark leading-1.67 grid grid-cols-1 md:grid-cols-12 gap-x-30px mt-15px">
+                                            <div class="md:col-start-1 md:col-span-4">
+                                                <span class="inline-block font-semibold">Guardian Name</span>
+                                            </div>
+                                            <div class="md:col-start-5 md:col-span-8">
+                                                <span class="inline-block">@Model.GuardianName</span>
+                                            </div>
+                                        </li>
+                                    }
+
+                                    @if (!string.IsNullOrEmpty(Model.GuardianPhone))
+                                    {
+                                        <li class="text-lg text-contentColor dark:text-contentColor-dark leading-1.67 grid grid-cols-1 md:grid-cols-12 gap-x-30px mt-15px">
+                                            <div class="md:col-start-1 md:col-span-4">
+                                                <span class="inline-block font-semibold">Guardian Phone</span>
+                                            </div>
+                                            <div class="md:col-start-5 md:col-span-8">
+                                                <span class="inline-block">@Model.GuardianPhone</span>
+                                            </div>
+                                        </li>
+                                    }
+
+                                    @if (!string.IsNullOrEmpty(Model.GuardianRelation))
+                                    {
+                                        <li class="text-lg text-contentColor dark:text-contentColor-dark leading-1.67 grid grid-cols-1 md:grid-cols-12 gap-x-30px mt-15px">
+                                            <div class="md:col-start-1 md:col-span-4">
+                                                <span class="inline-block font-semibold">Guardian Relation</span>
+                                            </div>
+                                            <div class="md:col-start-5 md:col-span-8">
+                                                <span class="inline-block">@Model.GuardianRelation</span>
+                                            </div>
+                                        </li>
+                                    }
+
+                                    <li class="mt-30px mb-15px">
+                                        <h3 class="text-xl font-bold text-primaryColor">Academic Information</h3>
+                                        <hr class="mt-2" />
+                                    </li>
+
+                                    @if (!string.IsNullOrEmpty(Model.Province))
+                                    {
+                                        <li class="text-lg text-contentColor dark:text-contentColor-dark leading-1.67 grid grid-cols-1 md:grid-cols-12 gap-x-30px mt-15px">
+                                            <div class="md:col-start-1 md:col-span-4">
+                                                <span class="inline-block font-semibold">Location</span>
+                                            </div>
+                                            <div class="md:col-start-5 md:col-span-8">
+                                                <span class="inline-block">@Model.City, @Model.Province @(!string.IsNullOrEmpty(Model.Area) ? $", {Model.Area}" : "")</span>
+                                            </div>
+                                        </li>
+                                    }
+
+                                    @if (Model.GPA.HasValue)
+                                    {
+                                        <li class="text-lg text-contentColor dark:text-contentColor-dark leading-1.67 grid grid-cols-1 md:grid-cols-12 gap-x-30px mt-15px">
+                                            <div class="md:col-start-1 md:col-span-4">
+                                                <span class="inline-block font-semibold">GPA</span>
+                                            </div>
+                                            <div class="md:col-start-5 md:col-span-8">
+                                                <span class="inline-block font-bold text-primaryColor">@Model.GPA.Value.ToString("F2")%</span>
+                                            </div>
+                                        </li>
+                                    }
+
+                                    @if (!string.IsNullOrEmpty(Model.PathType))
+                                    {
+                                        <li class="text-lg text-contentColor dark:text-contentColor-dark leading-1.67 grid grid-cols-1 md:grid-cols-12 gap-x-30px mt-15px">
+                                            <div class="md:col-start-1 md:col-span-4">
+                                                <span class="inline-block font-semibold">Educational Path</span>
+                                            </div>
+                                            <div class="md:col-start-5 md:col-span-8">
+                                                <span class="inline-block">@Model.PathType</span>
+                                            </div>
+                                        </li>
+                                    }
+
+                                    @if (!string.IsNullOrEmpty(Model.AcademicTrack))
+                                    {
+                                        <li class="text-lg text-contentColor dark:text-contentColor-dark leading-1.67 grid grid-cols-1 md:grid-cols-12 gap-x-30px mt-15px">
+                                            <div class="md:col-start-1 md:col-span-4">
+                                                <span class="inline-block font-semibold">Academic Track</span>
+                                            </div>
+                                            <div class="md:col-start-5 md:col-span-8">
+                                                <span class="inline-block">@Model.AcademicTrack</span>
+                                            </div>
+                                        </li>
+                                    }
+
+                                    @if (!string.IsNullOrEmpty(Model.VocationalBranch))
+                                    {
+                                        <li class="text-lg text-contentColor dark:text-contentColor-dark leading-1.67 grid grid-cols-1 md:grid-cols-12 gap-x-30px mt-15px">
+                                            <div class="md:col-start-1 md:col-span-4">
+                                                <span class="inline-block font-semibold">Vocational Branch</span>
+                                            </div>
+                                            <div class="md:col-start-5 md:col-span-8">
+                                                <span class="inline-block">@Model.VocationalBranch</span>
+                                            </div>
+                                        </li>
+                                    }
+
+                                    @if (Model.BtecLevel2Completed.HasValue || Model.BtecLevel3Completed.HasValue)
+                                    {
+                                        <li class="text-lg text-contentColor dark:text-contentColor-dark leading-1.67 grid grid-cols-1 md:grid-cols-12 gap-x-30px mt-15px">
+                                            <div class="md:col-start-1 md:col-span-4">
+                                                <span class="inline-block font-semibold">BTEC Certifications</span>
+                                            </div>
+                                            <div class="md:col-start-5 md:col-span-8">
+                                                <div class="flex flex-wrap gap-2">
+                                                    @if (Model.BtecLevel2Completed == true)
+                                                    {
+                                                        <span class="px-3 py-1 bg-green-500 text-white rounded text-sm">Level 2 ✓</span>
+                                                    }
+                                                    @if (Model.BtecLevel3Completed == true)
+                                                    {
+                                                        <span class="px-3 py-1 bg-green-500 text-white rounded text-sm">Level 3 ✓</span>
+                                                    }
+                                                </div>
+                                            </div>
+                                        </li>
+                                    }
+
+                                    <li class="mt-30px mb-15px">
+                                        <h3 class="text-xl font-bold text-primaryColor">Preferences & Requirements</h3>
+                                        <hr class="mt-2" />
+                                    </li>
+
+                                    @if (!string.IsNullOrEmpty(Model.DesiredMajors))
+                                    {
+                                        <li class="text-lg text-contentColor dark:text-contentColor-dark leading-1.67 grid grid-cols-1 md:grid-cols-12 gap-x-30px mt-15px">
+                                            <div class="md:col-start-1 md:col-span-4">
+                                                <span class="inline-block font-semibold">Desired Majors</span>
+                                            </div>
+                                            <div class="md:col-start-5 md:col-span-8">
+                                                <span class="inline-block">@Model.DesiredMajors</span>
+                                            </div>
+                                        </li>
+                                    }
+
+                                    @if (!string.IsNullOrEmpty(Model.PreferredCity))
+                                    {
+                                        <li class="text-lg text-contentColor dark:text-contentColor-dark leading-1.67 grid grid-cols-1 md:grid-cols-12 gap-x-30px mt-15px">
+                                            <div class="md:col-start-1 md:col-span-4">
+                                                <span class="inline-block font-semibold">Preferred City</span>
+                                            </div>
+                                            <div class="md:col-start-5 md:col-span-8">
+                                                <span class="inline-block">@Model.PreferredCity</span>
+                                            </div>
+                                        </li>
+                                    }
+
+                                    @if (Model.MaxDistanceKm.HasValue)
+                                    {
+                                        <li class="text-lg text-contentColor dark:text-contentColor-dark leading-1.67 grid grid-cols-1 md:grid-cols-12 gap-x-30px mt-15px">
+                                            <div class="md:col-start-1 md:col-span-4">
+                                                <span class="inline-block font-semibold">Max Distance</span>
+                                            </div>
+                                            <div class="md:col-start-5 md:col-span-8">
+                                                <span class="inline-block">@Model.MaxDistanceKm km</span>
+                                            </div>
+                                        </li>
+                                    }
+
+                                    @if (!string.IsNullOrEmpty(Model.PreferredLanguage))
+                                    {
+                                        <li class="text-lg text-contentColor dark:text-contentColor-dark leading-1.67 grid grid-cols-1 md:grid-cols-12 gap-x-30px mt-15px">
+                                            <div class="md:col-start-1 md:col-span-4">
+                                                <span class="inline-block font-semibold">Preferred Language</span>
+                                            </div>
+                                            <div class="md:col-start-5 md:col-span-8">
+                                                <span class="inline-block">@Model.PreferredLanguage</span>
+                                            </div>
+                                        </li>
+                                    }
+
+                                    @if (Model.RegistrationBudget.HasValue)
+                                    {
+                                        <li class="text-lg text-contentColor dark:text-contentColor-dark leading-1.67 grid grid-cols-1 md:grid-cols-12 gap-x-30px mt-15px">
+                                            <div class="md:col-start-1 md:col-span-4">
+                                                <span class="inline-block font-semibold">Registration Budget</span>
+                                            </div>
+                                            <div class="md:col-start-5 md:col-span-8">
+                                                <span class="inline-block">@Model.RegistrationBudget.Value.ToString("N0") JOD</span>
+                                            </div>
+                                        </li>
+                                    }
+
+                                    @if (Model.HasFamilyConnection == true && !string.IsNullOrEmpty(Model.FamilyConnectionUniversityName))
+                                    {
+                                        <li class="text-lg text-contentColor dark:text-contentColor-dark leading-1.67 grid grid-cols-1 md:grid-cols-12 gap-x-30px mt-15px">
+                                            <div class="md:col-start-1 md:col-span-4">
+                                                <span class="inline-block font-semibold">Family Connection</span>
+                                            </div>
+                                            <div class="md:col-start-5 md:col-span-8">
+                                                <span class="inline-block">@Model.FamilyConnectionUniversityName</span>
+                                            </div>
+                                        </li>
+                                    }
+
+                                    <li class="mt-30px mb-15px">
+                                        <h3 class="text-xl font-bold text-primaryColor">Additional Information</h3>
+                                        <hr class="mt-2" />
+                                    </li>
+
+                                    <li class="text-lg text-contentColor dark:text-contentColor-dark leading-1.67 grid grid-cols-1 md:grid-cols-12 gap-x-30px mt-15px">
+                                        <div class="md:col-start-1 md:col-span-4">
+                                            <span class="inline-block font-semibold">Special Circumstances</span>
+                                        </div>
+                                        <div class="md:col-start-5 md:col-span-8">
+                                            <div class="flex flex-wrap gap-2">
+                                                @if (Model.HasDisability == true)
+                                                {
+                                                    <span class="px-3 py-1 bg-blue-500 text-white rounded text-sm">
+                                                        Has Disability @(!string.IsNullOrEmpty(Model.DisabilityType) ? $"({Model.DisabilityType})" : "")
+                                                    </span>
+                                                }
+                                                @if (Model.IsOrphan == true)
+                                                {
+                                                    <span class="px-3 py-1 bg-blue-500 text-white rounded text-sm">Orphan</span>
+                                                }
+                                                @if (Model.IsEmployeeChild == true)
+                                                {
+                                                    <span class="px-3 py-1 bg-blue-500 text-white rounded text-sm">Employee Child</span>
+                                                }
+                                                @if (Model.HasDisability != true && Model.IsOrphan != true && Model.IsEmployeeChild != true)
+                                                {
+                                                    <span class="inline-block text-gray-500">None</span>
+                                                }
+                                            </div>
+                                        </div>
+                                    </li>
+
+                                    @if (Model.ProfileCompleted.HasValue)
+                                    {
+                                        <li class="text-lg text-contentColor dark:text-contentColor-dark leading-1.67 grid grid-cols-1 md:grid-cols-12 gap-x-30px mt-15px">
+                                            <div class="md:col-start-1 md:col-span-4">
+                                                <span class="inline-block font-semibold">Profile Status</span>
+                                            </div>
+                                            <div class="md:col-start-5 md:col-span-8">
+                                                @if (Model.ProfileCompleted == true)
+                                                {
+                                                    <span class="px-3 py-1 bg-green-500 text-dark rounded">Complete ✓</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="px-3 py-1 bg-yellow-500 text-dark rounded">Incomplete</span>
+                                                }
+                                            </div>
+                                        </li>
+                                    }
+                                }
+
+                                <!-- University Representative-specific fields -->
+                                @if (Model.Role == "UniversityRep")
+                                {
+                                    <li class="mt-30px mb-15px">
+                                        <h3 class="text-xl font-bold text-primaryColor">University Representative Information</h3>
+                                        <hr class="mt-2" />
+                                    </li>
+
+                                    @if (!string.IsNullOrEmpty(Model.UniversityName))
+                                    {
+                                        <li class="text-lg text-contentColor dark:text-contentColor-dark leading-1.67 grid grid-cols-1 md:grid-cols-12 gap-x-30px mt-15px">
+                                            <div class="md:col-start-1 md:col-span-4">
+                                                <span class="inline-block font-semibold">University</span>
+                                            </div>
+                                            <div class="md:col-start-5 md:col-span-8">
+                                                <span class="inline-block font-bold">@Model.UniversityName</span>
+                                            </div>
+                                        </li>
+                                    }
+
+                                    @if (!string.IsNullOrEmpty(Model.Position))
+                                    {
+                                        <li class="text-lg text-contentColor dark:text-contentColor-dark leading-1.67 grid grid-cols-1 md:grid-cols-12 gap-x-30px mt-15px">
+                                            <div class="md:col-start-1 md:col-span-4">
+                                                <span class="inline-block font-semibold">Position</span>
+                                            </div>
+                                            <div class="md:col-start-5 md:col-span-8">
+                                                <span class="inline-block">@Model.Position</span>
+                                            </div>
+                                        </li>
+                                    }
+
+                                    @if (Model.AssignedAt.HasValue)
+                                    {
+                                        <li class="text-lg text-contentColor dark:text-contentColor-dark leading-1.67 grid grid-cols-1 md:grid-cols-12 gap-x-30px mt-15px">
+                                            <div class="md:col-start-1 md:col-span-4">
+                                                <span class="inline-block font-semibold">Assigned Date</span>
+                                            </div>
+                                            <div class="md:col-start-5 md:col-span-8">
+                                                <span class="inline-block">@Model.AssignedAt.Value.ToString("MMMM dd, yyyy")</span>
+                                            </div>
+                                        </li>
+                                    }
+
+                                    @if (Model.RepIsActive.HasValue)
+                                    {
+                                        <li class="text-lg text-contentColor dark:text-contentColor-dark leading-1.67 grid grid-cols-1 md:grid-cols-12 gap-x-30px mt-15px">
+                                            <div class="md:col-start-1 md:col-span-4">
+                                                <span class="inline-block font-semibold">Representative Status</span>
+                                            </div>
+                                            <div class="md:col-start-5 md:col-span-8">
+                                                @if (Model.RepIsActive == true)
+                                                {
+                                                    <span class="px-3 py-1 bg-green-500 text-success rounded">Active</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="px-3 py-1 bg-red-500 text-danger rounded">Inactive</span>
+                                                }
+                                            </div>
+                                        </li>
+                                    }
+
+                                    <li class="text-lg text-contentColor dark:text-contentColor-dark leading-1.67 grid grid-cols-1 md:grid-cols-12 gap-x-30px mt-15px">
+                                        <div class="md:col-start-1 md:col-span-4">
+                                            <span class="inline-block font-semibold">Permissions</span>
+                                        </div>
+                                        <div class="md:col-start-5 md:col-span-8">
+                                            <div class="flex flex-wrap gap-2">
+                                                @if (Model.CanManagePrograms == true)
+                                                {
+                                                    <span class="px-3 py-1 bg-blue-500 text-white rounded text-sm"><i class="icofont-graduate mr-1"></i>Manage Programs</span>
+                                                }
+                                                @if (Model.CanManageFees == true)
+                                                {
+                                                    <span class="px-3 py-1 bg-blue-500 text-white rounded text-sm"><i class="icofont-cur-dollar mr-1"></i>Manage Fees</span>
+                                                }
+                                                @if (Model.CanViewApplications == true)
+                                                {
+                                                    <span class="px-3 py-1 bg-blue-500 text-white rounded text-sm"><i class="icofont-eye mr-1"></i>View Applications</span>
+                                                }
+                                            </div>
+                                        </div>
+                                    </li>
+                                }
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        // Show success/error messages using SweetAlert
+        @if (TempData["Success"] != null)
+        {
+                        <text>
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Success!',
+                            text: '@TempData["SuccessMessage"]',
+                            confirmButtonColor: '#5F2DED'
+                        });
+                        </text>
+        }
+
+        @if (TempData["Error"] != null)
+        {
+                        <text>
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error!',
+                            text: '@TempData["ErrorMessage"]',
+                            confirmButtonColor: '#5F2DED'
+                        });
+                        </text>
+        }
+    </script>
+}

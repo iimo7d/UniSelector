@@ -1,0 +1,527 @@
+﻿@model Uni_Selector.ViewModels.UniversityManagement.UniversityDetailsViewModel
+
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = $"{Model.NameEnglish} - My University";
+}
+
+<div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-24">
+    <h6 class="fw-semibold mb-0">My University</h6>
+    <ul class="d-flex align-items-center gap-2">
+        <li class="fw-medium">
+            <a asp-controller="UniversityRep" asp-action="Dashboard" class="d-flex align-items-center gap-1 hover-text-primary">
+                <iconify-icon icon="solar:home-smile-angle-outline" class="icon text-lg"></iconify-icon>
+                Dashboard
+            </a>
+        </li>
+        <li>-</li>
+        <li class="fw-medium">My University</li>
+    </ul>
+</div>
+
+<div class="row gy-4">
+    <div class="col-lg-4">
+        <div class="user-grid-card position-relative border radius-16 overflow-hidden bg-base h-100">
+            @if (!string.IsNullOrEmpty(Model.ImagePath))
+            {
+                <img src="@Model.ImagePath" alt="@Model.NameEnglish" class="w-100 object-fit-cover" style="height: 200px;">
+            }
+            else
+            {
+                <div class="w-100 bg-primary-50" style="height: 200px;"></div>
+            }
+
+            <div class="pb-24 ms-16 mb-24 me-16 mt--100">
+                <div class="text-center border border-top-0 border-start-0 border-end-0">
+                    @if (!string.IsNullOrEmpty(Model.LogoPath))
+                    {
+                        <img src="@Model.LogoPath" alt="@Model.NameEnglish"
+                             class="border br-white border-width-2-px w-200-px h-200-px rounded-circle object-fit-cover">
+                    }
+                    else
+                    {
+                        <div class="border br-white border-width-2-px w-200-px h-200-px rounded-circle object-fit-cover bg-primary-50 d-flex align-items-center justify-content-center mx-auto">
+                            <span class="text-primary-600 fw-bold" style="font-size: 72px;">@Model.NameEnglish[0]</span>
+                        </div>
+                    }
+                    <h6 class="mb-0 mt-16">@Model.NameEnglish</h6>
+                    <span class="text-secondary-light mb-16">@Model.NameArabic</span>
+                </div>
+
+                <div class="mt-24">
+                    <h6 class="text-xl mb-16">Basic Information</h6>
+                    <ul>
+                        <li class="d-flex align-items-center gap-1 mb-12">
+                            <span class="w-30 text-md fw-semibold text-primary-light">University Type</span>
+                            <span class="w-70 text-secondary-light fw-medium">: @Model.Type</span>
+                        </li>
+                        <li class="d-flex align-items-center gap-1 mb-12">
+                            <span class="w-30 text-md fw-semibold text-primary-light">Email</span>
+                            <span class="w-70 text-secondary-light fw-medium">: @Model.Email</span>
+                        </li>
+                        <li class="d-flex align-items-center gap-1 mb-12">
+                            <span class="w-30 text-md fw-semibold text-primary-light">Phone</span>
+                            <span class="w-70 text-secondary-light fw-medium">: @Model.PhoneNumber</span>
+                        </li>
+                        <li class="d-flex align-items-center gap-1 mb-12">
+                            <span class="w-30 text-md fw-semibold text-primary-light">Province</span>
+                            <span class="w-70 text-secondary-light fw-medium">: @Model.Province</span>
+                        </li>
+                        <li class="d-flex align-items-center gap-1 mb-12">
+                            <span class="w-30 text-md fw-semibold text-primary-light">City</span>
+                            <span class="w-70 text-secondary-light fw-medium">: @Model.City</span>
+                        </li>
+                        @if (!string.IsNullOrEmpty(Model.OfficialWebsite))
+                        {
+                            <li class="d-flex align-items-center gap-1 mb-12">
+                                <span class="w-30 text-md fw-semibold text-primary-light">Website</span>
+                                <span class="w-70 text-secondary-light fw-medium">
+                                    : <a href="@Model.OfficialWebsite" target="_blank" class="text-primary-600">Visit Website</a>
+                                </span>
+                            </li>
+                        }
+                        <li class="d-flex align-items-center gap-1 mb-12">
+                            <span class="w-30 text-md fw-semibold text-primary-light">Commission Mode</span>
+                            <span class="w-70 text-secondary-light fw-medium">: @Model.CommissionMode</span>
+                        </li>
+                        <li class="d-flex align-items-center gap-1 mb-12">
+                            <span class="w-30 text-md fw-semibold text-primary-light">Status</span>
+                            <span class="w-70 text-secondary-light fw-medium">
+                                : @if (Model.IsActive)
+                                {
+                                    <span class="badge bg-success-focus text-success-600">Active</span>
+                                }
+                                                                else
+                                {
+                                    <span class="badge bg-danger-focus text-danger-600">Inactive</span>
+                                }
+                            </span>
+                        </li>
+                        <li class="d-flex align-items-center gap-1 mb-12">
+                            <span class="w-30 text-md fw-semibold text-primary-light">Created</span>
+                            <span class="w-70 text-secondary-light fw-medium">: @Model.CreatedAt.ToString("dd MMM yyyy")</span>
+                        </li>
+                        @if (Model.UpdatedAt.HasValue)
+                        {
+                            <li class="d-flex align-items-center gap-1 mb-12">
+                                <span class="w-30 text-md fw-semibold text-primary-light">Last Updated</span>
+                                <span class="w-70 text-secondary-light fw-medium">: @Model.UpdatedAt.Value.ToString("dd MMM yyyy")</span>
+                            </li>
+                        }
+                    </ul>
+                </div>
+
+                <!-- My Permissions -->
+                <div class="mt-24">
+                    <h6 class="text-xl mb-16">My Permissions</h6>
+                    <ul>
+                        <li class="d-flex align-items-center gap-1 mb-12">
+                            <span class="w-50 text-md fw-semibold text-primary-light">Manage Programs</span>
+                            <span class="w-50 text-secondary-light fw-medium">
+                                : @if (Model.CanManagePrograms)
+                                {
+                                    <iconify-icon icon="mdi:check-circle" class="text-success-600 text-xl"></iconify-icon>
+                                }
+                                                                else
+                                {
+                                    <iconify-icon icon="mdi:close-circle" class="text-danger-600 text-xl"></iconify-icon>
+                                }
+                            </span>
+                        </li>
+                        <li class="d-flex align-items-center gap-1 mb-12">
+                            <span class="w-50 text-md fw-semibold text-primary-light">Manage Fees</span>
+                            <span class="w-50 text-secondary-light fw-medium">
+                                : @if (Model.CanManageFees)
+                                {
+                                    <iconify-icon icon="mdi:check-circle" class="text-success-600 text-xl"></iconify-icon>
+                                }
+                                                                else
+                                {
+                                    <iconify-icon icon="mdi:close-circle" class="text-danger-600 text-xl"></iconify-icon>
+                                }
+                            </span>
+                        </li>
+                        <li class="d-flex align-items-center gap-1 mb-12">
+                            <span class="w-50 text-md fw-semibold text-primary-light">View Applications</span>
+                            <span class="w-50 text-secondary-light fw-medium">
+                                : @if (Model.CanViewApplications)
+                                {
+                                    <iconify-icon icon="mdi:check-circle" class="text-success-600 text-xl"></iconify-icon>
+                                }
+                                                                else
+                                {
+                                    <iconify-icon icon="mdi:close-circle" class="text-danger-600 text-xl"></iconify-icon>
+                                }
+                            </span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-8">
+        <div class="card h-100">
+            <div class="card-body p-24">
+                <!-- Statistics Cards -->
+                <div class="row gy-4 mb-24">
+                    <div class="col-sm-6 col-xl-3">
+                        <div class="card shadow-none border bg-gradient-start-1 h-100">
+                            <div class="card-body p-20">
+                                <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
+                                    <div>
+                                        <p class="fw-medium text-primary-light mb-1">Total Programs</p>
+                                        <h6 class="mb-0">@Model.TotalPrograms</h6>
+                                    </div>
+                                    <div class="w-50-px h-50-px bg-cyan rounded-circle d-flex justify-content-center align-items-center">
+                                        <iconify-icon icon="gridicons:pages" class="text-white text-2xl mb-0"></iconify-icon>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 col-xl-3">
+                        <div class="card shadow-none border bg-gradient-start-2 h-100">
+                            <div class="card-body p-20">
+                                <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
+                                    <div>
+                                        <p class="fw-medium text-primary-light mb-1">Active Programs</p>
+                                        <h6 class="mb-0">@Model.ActivePrograms</h6>
+                                    </div>
+                                    <div class="w-50-px h-50-px bg-purple rounded-circle d-flex justify-content-center align-items-center">
+                                        <iconify-icon icon="mdi:check-circle" class="text-white text-2xl mb-0"></iconify-icon>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 col-xl-3">
+                        <div class="card shadow-none border bg-gradient-start-3 h-100">
+                            <div class="card-body p-20">
+                                <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
+                                    <div>
+                                        <p class="fw-medium text-primary-light mb-1">Representatives</p>
+                                        <h6 class="mb-0">@Model.TotalRepresentatives</h6>
+                                    </div>
+                                    <div class="w-50-px h-50-px bg-info rounded-circle d-flex justify-content-center align-items-center">
+                                        <iconify-icon icon="solar:users-group-rounded-bold-duotone" class="text-white text-2xl mb-0"></iconify-icon>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 col-xl-3">
+                        <div class="card shadow-none border bg-gradient-start-4 h-100">
+                            <div class="card-body p-20">
+                                <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
+                                    <div>
+                                        <p class="fw-medium text-primary-light mb-1">Total Applications</p>
+                                        <h6 class="mb-0">@Model.ApplicationStats.Sum(a => a.Count)</h6>
+                                    </div>
+                                    <div class="w-50-px h-50-px bg-success-main rounded-circle d-flex justify-content-center align-items-center">
+                                        <iconify-icon icon="mdi:file-document-multiple" class="text-white text-2xl mb-0"></iconify-icon>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <ul class="nav border-gradient-tab nav-pills mb-20 d-inline-flex" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link d-flex align-items-center px-24 active" id="pills-details-tab" data-bs-toggle="pill" data-bs-target="#pills-details" type="button" role="tab" aria-controls="pills-details" aria-selected="true">
+                            Details
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link d-flex align-items-center px-24" id="pills-programs-tab" data-bs-toggle="pill" data-bs-target="#pills-programs" type="button" role="tab" aria-controls="pills-programs" aria-selected="false">
+                            Programs (@Model.TotalPrograms)
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link d-flex align-items-center px-24" id="pills-btec-tab" data-bs-toggle="pill" data-bs-target="#pills-btec" type="button" role="tab" aria-controls="pills-btec" aria-selected="false">
+                            BTEC Programs (@Model.BtecPrograms.Count)
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link d-flex align-items-center px-24" id="pills-reps-tab" data-bs-toggle="pill" data-bs-target="#pills-reps" type="button" role="tab" aria-controls="pills-reps" aria-selected="false">
+                            Representatives (@Model.TotalRepresentatives)
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link d-flex align-items-center px-24" id="pills-applications-tab" data-bs-toggle="pill" data-bs-target="#pills-applications" type="button" role="tab" aria-controls="pills-applications" aria-selected="false">
+                            Applications
+                        </button>
+                    </li>
+                </ul>
+
+                <div class="tab-content" id="pills-tabContent">
+                    <!-- Details Tab -->
+                    <div class="tab-pane fade show active" id="pills-details" role="tabpanel" aria-labelledby="pills-details-tab" tabindex="0">
+                        <h6 class="text-md text-primary-light mb-16">University Details</h6>
+                        <div class="mb-20">
+                            <label class="form-label fw-semibold text-primary-light text-sm mb-8">Full Address</label>
+                            <p class="text-secondary-light">@Model.FullAddress</p>
+                        </div>
+                        @if (!string.IsNullOrEmpty(Model.AcademicAccreditation))
+                        {
+                            <div class="mb-20">
+                                <label class="form-label fw-semibold text-primary-light text-sm mb-8">Academic Accreditation</label>
+                                <p class="text-secondary-light">@Model.AcademicAccreditation</p>
+                            </div>
+                        }
+                        @if (Model.Latitude.HasValue && Model.Longitude.HasValue)
+                        {
+                            <div class="mb-20">
+                                <label class="form-label fw-semibold text-primary-light text-sm mb-8">Location Coordinates</label>
+                                <p class="text-secondary-light">Latitude: @Model.Latitude, Longitude: @Model.Longitude</p>
+                            </div>
+                        }
+                        <div class="d-flex align-items-center justify-content-end gap-3 mt-24">
+                            <a asp-action="Edit" class="btn btn-primary px-20 py-11">
+                                <iconify-icon icon="lucide:edit" class="icon me-1"></iconify-icon>
+                                Edit University Information
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- University Programs Tab -->
+                    <div class="tab-pane fade" id="pills-programs" role="tabpanel" aria-labelledby="pills-programs-tab" tabindex="0">
+                        <h6 class="text-md text-primary-light mb-16">University Programs</h6>
+                        @if (Model.UniversityPrograms.Any())
+                        {
+                            <div class="table-responsive">
+                                <table class="table bordered-table mb-0">
+                                    <thead>
+                                        <tr>
+                                            <th>Program Name</th>
+                                            <th>Degree</th>
+                                            <th>Duration</th>
+                                            <th>Hour Price</th>
+                                            <th>Registration Fee</th>
+                                            <th>Capacity</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var program in Model.UniversityPrograms)
+                                        {
+                                            <tr>
+                                                <td>
+                                                    <div>
+                                                        <span class="d-block fw-medium">@program.ProgramNameEnglish</span>
+                                                        <small class="text-secondary-light">@program.ProgramNameArabic</small>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <span class="badge bg-primary-focus text-primary-600">@program.Degree</span>
+                                                </td>
+                                                <td>@program.DurationInYears Years</td>
+                                                <td>JOD @program.HourPriceBase.ToString("N2")</td>
+                                                <td>JOD @program.RegistrationFeeFirstSemester.ToString("N2")</td>
+                                                <td>@program.Capacity</td>
+                                                <td>
+                                                    @if (program.IsActive)
+                                                    {
+                                                        <span class="badge bg-success-focus text-success-600">Active</span>
+                                                    }
+                                                    else
+                                                    {
+                                                        <span class="badge bg-neutral-200 text-neutral-600">Inactive</span>
+                                                    }
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="text-center py-32">
+                                <iconify-icon icon="mdi:book-off" class="icon text-48 text-secondary-light mb-12"></iconify-icon>
+                                <p class="text-secondary-light">No programs available yet.</p>
+                            </div>
+                        }
+                    </div>
+
+                    <!-- BTEC Programs Tab -->
+                    <div class="tab-pane fade" id="pills-btec" role="tabpanel" aria-labelledby="pills-btec-tab" tabindex="0">
+                        <h6 class="text-md text-primary-light mb-16">BTEC Programs</h6>
+                        @if (Model.BtecPrograms.Any())
+                        {
+                            <div class="table-responsive">
+                                <table class="table bordered-table mb-0">
+                                    <thead>
+                                        <tr>
+                                            <th>Program Name</th>
+                                            <th>Level</th>
+                                            <th>Technical Field</th>
+                                            <th>Hour Price</th>
+                                            <th>Registration Fee</th>
+                                            <th>Capacity</th>
+                                            <th>BTEC Approved</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var program in Model.BtecPrograms)
+                                        {
+                                            <tr>
+                                                <td>
+                                                    <div>
+                                                        <span class="d-block fw-medium">@program.NameEnglish</span>
+                                                        <small class="text-secondary-light">@program.NameArabic</small>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <span class="badge bg-info-focus text-info-600">@program.Level</span>
+                                                </td>
+                                                <td>@program.TechnicalField</td>
+                                                <td>JOD @program.HourPriceBase.ToString("N2")</td>
+                                                <td>JOD @program.RegistrationFeeFirstSemester.ToString("N2")</td>
+                                                <td>@program.Capacity</td>
+                                                <td>
+                                                    @if (program.IsApprovedByBtecAuthority)
+                                                    {
+                                                        <span class="badge bg-success-focus text-success-600">
+                                                            <iconify-icon icon="mdi:check-circle"></iconify-icon> Approved
+                                                        </span>
+                                                    }
+                                                    else
+                                                    {
+                                                        <span class="badge bg-warning-focus text-warning-600">
+                                                            <iconify-icon icon="mdi:clock-outline"></iconify-icon> Pending
+                                                        </span>
+                                                    }
+                                                </td>
+                                                <td>
+                                                    @if (program.IsActive)
+                                                    {
+                                                        <span class="badge bg-success-focus text-success-600">Active</span>
+                                                    }
+                                                    else
+                                                    {
+                                                        <span class="badge bg-neutral-200 text-neutral-600">Inactive</span>
+                                                    }
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="text-center py-32">
+                                <iconify-icon icon="mdi:certificate-off" class="icon text-48 text-secondary-light mb-12"></iconify-icon>
+                                <p class="text-secondary-light">No BTEC programs available yet.</p>
+                            </div>
+                        }
+                    </div>
+
+                    <!-- Representatives Tab -->
+                    <div class="tab-pane fade" id="pills-reps" role="tabpanel" aria-labelledby="pills-reps-tab" tabindex="0">
+                        <h6 class="text-md text-primary-light mb-16">University Representatives</h6>
+                        @if (Model.Representatives.Any())
+                        {
+                            <div class="table-responsive">
+                                <table class="table bordered-table mb-0">
+                                    <thead>
+                                        <tr>
+                                            <th>Name</th>
+                                            <th>Email</th>
+                                            <th>Position</th>
+                                            <th>Assigned Date</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var rep in Model.Representatives)
+                                        {
+                                            <tr>
+                                                <td>@rep.FullName</td>
+                                                <td>@rep.Email</td>
+                                                <td>@(!string.IsNullOrEmpty(rep.Position) ? rep.Position : "N/A")</td>
+                                                <td>@rep.AssignedAt.ToString("dd MMM yyyy")</td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="text-center py-32">
+                                <iconify-icon icon="mdi:account-off" class="icon text-48 text-secondary-light mb-12"></iconify-icon>
+                                <p class="text-secondary-light">No representatives assigned yet.</p>
+                            </div>
+                        }
+                    </div>
+
+                    <!-- Applications Tab -->
+                    <div class="tab-pane fade" id="pills-applications" role="tabpanel" aria-labelledby="pills-applications-tab" tabindex="0">
+                        <h6 class="text-md text-primary-light mb-16">Application Statistics</h6>
+                        @if (Model.ApplicationStats.Any())
+                        {
+                            <div class="table-responsive">
+                                <table class="table bordered-table mb-0">
+                                    <thead>
+                                        <tr>
+                                            <th>Status</th>
+                                            <th>Count</th>
+                                            <th>Percentage</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @{
+                                            var totalApps = Model.ApplicationStats.Sum(a => a.Count);
+                                        }
+                                        @foreach (var stat in Model.ApplicationStats)
+                                        {
+                                            var percentage = totalApps > 0 ? (stat.Count * 100.0 / totalApps) : 0;
+                                            <tr>
+                                                <td>
+                                                    @switch (stat.Status)
+                                                    {
+                                                        case "Pending":
+                                                            <span class="badge bg-warning-focus text-warning-600">@stat.Status</span>
+                                                            break;
+                                                        case "Approved":
+                                                            <span class="badge bg-success-focus text-success-600">@stat.Status</span>
+                                                            break;
+                                                        case "Rejected":
+                                                            <span class="badge bg-danger-focus text-danger-600">@stat.Status</span>
+                                                            break;
+                                                        default:
+                                                            <span class="badge bg-info-focus text-info-600">@stat.Status</span>
+                                                            break;
+                                                    }
+                                                </td>
+                                                <td>
+                                                    <span class="fw-semibold text-primary-600">@stat.Count</span>
+                                                </td>
+                                                <td>
+                                                    <div class="progress w-100 bg-primary-50 rounded-pill h-8-px" role="progressbar">
+                                                        <div class="progress-bar bg-primary-600 rounded-pill" style="width: @percentage%"></div>
+                                                    </div>
+                                                    <span class="text-sm text-secondary-light fw-medium mt-4">@percentage.ToString("F1")%</span>
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="text-center py-32">
+                                <iconify-icon icon="mdi:file-document-off" class="icon text-48 text-secondary-light mb-12"></iconify-icon>
+                                <p class="text-secondary-light">No applications received yet.</p>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

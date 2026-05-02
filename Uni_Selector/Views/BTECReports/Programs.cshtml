@@ -1,0 +1,305 @@
+﻿@model Uni_Selector.ViewModels.BTECAuthority.ProgramComplianceReportViewModel
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = "Program Compliance Report";
+}
+
+<!-- Page Header -->
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h4 class="mb-1">📋 Program Compliance Report</h4>
+        <p class="text-muted mb-0">Track BTEC program compliance and performance</p>
+    </div>
+    <div>
+        <a asp-action="Index" class="btn btn-outline-secondary me-2">
+            <iconify-icon icon="solar:arrow-left-outline" width="20"></iconify-icon>
+            Back to Dashboard
+        </a>
+        <a asp-action="Export" asp-route-reportType="ProgramCompliance" asp-route-exportType="Excel" class="btn btn-primary">
+            <iconify-icon icon="solar:download-outline" width="20"></iconify-icon>
+            Export to Excel
+        </a>
+    </div>
+</div>
+
+<!-- Filters Card -->
+<div class="card mb-4">
+    <div class="card-header">
+        <h6 class="card-title mb-0">
+            <iconify-icon icon="solar:filter-outline" width="20"></iconify-icon>
+            Filters
+        </h6>
+    </div>
+    <div class="card-body">
+        <form method="get" asp-action="Programs">
+            <div class="row g-3">
+                <!-- Search -->
+                <div class="col-md-3">
+                    <label class="form-label">Search</label>
+                    <input type="text" name="searchTerm" value="@Model.SearchTerm" class="form-control" placeholder="Program or university name...">
+                </div>
+
+                <!-- BTEC Level -->
+                <div class="col-md-2">
+                    <label class="form-label">BTEC Level</label>
+                    <select name="level" class="form-select">
+                        <option value="">All Levels</option>
+                        <option value="2" selected="@(Model.Level == Uni_Selector.Models.Enums.BtecLevel.Level2)">Level 2</option>
+                        <option value="3" selected="@(Model.Level == Uni_Selector.Models.Enums.BtecLevel.Level3)">Level 3</option>
+                        <option value="4" selected="@(Model.Level == Uni_Selector.Models.Enums.BtecLevel.Level4)">Level 4</option>
+                        <option value="5" selected="@(Model.Level == Uni_Selector.Models.Enums.BtecLevel.Level5)">Level 5</option>
+                        <option value="6" selected="@(Model.Level == Uni_Selector.Models.Enums.BtecLevel.Level6)">Level 6</option>
+                        <option value="7" selected="@(Model.Level == Uni_Selector.Models.Enums.BtecLevel.Level7)">Level 7</option>
+                        <option value="8" selected="@(Model.Level == Uni_Selector.Models.Enums.BtecLevel.Level8)">Level 8</option>
+                    </select>
+                </div>
+
+                <!-- Technical Field -->
+                <div class="col-md-2">
+                    <label class="form-label">Technical Field</label>
+                    <select name="technicalField" class="form-select">
+                        <option value="">All Fields</option>
+                        @foreach (var field in Model.TechnicalFields)
+                        {
+                            <option value="@field" selected="@(Model.TechnicalField == field)">@field</option>
+                        }
+                    </select>
+                </div>
+
+                <!-- University -->
+                <div class="col-md-3">
+                    <label class="form-label">University</label>
+                    <select name="universityId" class="form-select">
+                        <option value="">All Universities</option>
+                        @foreach (var uni in Model.Universities)
+                        {
+                            <option value="@uni.Id" selected="@(Model.UniversityId == uni.Id)">@uni.NameEnglish (@uni.ProgramCount)</option>
+                        }
+                    </select>
+                </div>
+
+                <!-- Compliance Status -->
+                <div class="col-md-2">
+                    <label class="form-label">Compliance Status</label>
+                    <select name="complianceStatus" class="form-select">
+                        <option value="">All Status</option>
+                        <option value="1" selected="@(Model.ComplianceStatus == Uni_Selector.ViewModels.BTECAuthority.ComplianceStatus.FullyCompliant)">Fully Compliant</option>
+                        <option value="2" selected="@(Model.ComplianceStatus == Uni_Selector.ViewModels.BTECAuthority.ComplianceStatus.MinorIssues)">Minor Issues</option>
+                        <option value="3" selected="@(Model.ComplianceStatus == Uni_Selector.ViewModels.BTECAuthority.ComplianceStatus.MajorIssues)">Major Issues</option>
+                        <option value="4" selected="@(Model.ComplianceStatus == Uni_Selector.ViewModels.BTECAuthority.ComplianceStatus.NonCompliant)">Non-Compliant</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="row mt-3">
+                <div class="col-12">
+                    <button type="submit" class="btn btn-primary">
+                        <iconify-icon icon="solar:magnifer-outline" width="18"></iconify-icon>
+                        Apply Filters
+                    </button>
+                    <a asp-action="Programs" class="btn btn-outline-secondary">
+                        <iconify-icon icon="solar:refresh-outline" width="18"></iconify-icon>
+                        Clear Filters
+                    </a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Results Card -->
+<div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h6 class="card-title mb-0">Program Compliance Results</h6>
+        <div class="d-flex align-items-center gap-2">
+            <span class="text-muted">Show:</span>
+            <select class="form-select form-select-sm" style="width: auto;" onchange="changePageSize(this.value)">
+                <option value="10" selected="@(Model.PageSize == 10)">10</option>
+                <option value="25" selected="@(Model.PageSize == 25)">25</option>
+                <option value="50" selected="@(Model.PageSize == 50)">50</option>
+                <option value="100" selected="@(Model.PageSize == 100)">100</option>
+            </select>
+            <span class="text-muted">entries</span>
+        </div>
+    </div>
+    <div class="card-body">
+        @if (Model.Programs.Any())
+        {
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Program Name</th>
+                            <th>University</th>
+                            <th>Level</th>
+                            <th>Field</th>
+                            <th class="text-center">Total Students</th>
+                            <th class="text-center">Active Students</th>
+                            <th class="text-center">Compliance</th>
+                            <th class="text-center">Last Review</th>
+                            <th class="text-center">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var program in Model.Programs)
+                        {
+                            <tr>
+                                <td>@program.ProgramId</td>
+                                <td>
+                                    <div>
+                                        <strong>@program.ProgramName</strong>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <iconify-icon icon="solar:buildings-3-outline" width="18" class="text-primary"></iconify-icon>
+                                        <div>
+                                            <div>@program.University</div>
+                                            <small class="text-muted">@program.UniversityCity</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="badge bg-primary-focus text-primary-main">@program.Level</span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-info-focus text-info-main">@program.TechnicalField</span>
+                                </td>
+                                <td class="text-center">
+                                    <span class="badge bg-secondary-focus text-secondary-main">@program.TotalStudents</span>
+                                </td>
+                                <td class="text-center">
+                                    <span class="badge bg-success-focus text-success-main">@program.ActiveStudents</span>
+                                </td>
+                                <td class="text-center">
+                                    @switch (program.ComplianceStatus)
+                                    {
+                                        case Uni_Selector.ViewModels.BTECAuthority.ComplianceStatus.FullyCompliant:
+                                            <span class="badge bg-success-focus text-success-main">
+                                                <iconify-icon icon="solar:check-circle-outline" width="16"></iconify-icon>
+                                                Compliant
+                                            </span>
+                                            break;
+                                        case Uni_Selector.ViewModels.BTECAuthority.ComplianceStatus.MinorIssues:
+                                            <span class="badge bg-warning-focus text-warning-main">
+                                                <iconify-icon icon="solar:danger-triangle-outline" width="16"></iconify-icon>
+                                                Minor Issues
+                                            </span>
+                                            break;
+                                        case Uni_Selector.ViewModels.BTECAuthority.ComplianceStatus.MajorIssues:
+                                            <span class="badge bg-danger-focus text-danger-main">
+                                                <iconify-icon icon="solar:close-circle-outline" width="16"></iconify-icon>
+                                                Major Issues
+                                            </span>
+                                            break;
+                                        case Uni_Selector.ViewModels.BTECAuthority.ComplianceStatus.NonCompliant:
+                                            <span class="badge bg-danger text-white">
+                                                <iconify-icon icon="solar:shield-cross-outline" width="16"></iconify-icon>
+                                                Non-Compliant
+                                            </span>
+                                            break;
+                                    }
+                                </td>
+                                <td class="text-center">
+                                    @if (program.LastReviewDate.HasValue)
+                                    {
+                                        <small class="text-muted">@program.LastReviewDate.Value.ToString("MMM dd, yyyy")</small>
+                                    }
+                                    else
+                                    {
+                                        <small class="text-muted">Not reviewed</small>
+                                    }
+                                </td>
+                                <td class="text-center">
+                                    <a asp-controller="BTECProgramReview" asp-action="Details" asp-route-id="@program.ProgramId" class="btn btn-sm btn-outline-primary">
+                                        <iconify-icon icon="solar:eye-outline" width="16"></iconify-icon>
+                                        View
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            <div class="d-flex justify-content-between align-items-center mt-3">
+                <div class="text-muted">
+                    Showing @((Model.CurrentPage - 1) * Model.PageSize + 1) to @Math.Min(Model.CurrentPage * Model.PageSize, Model.TotalRecords) of @Model.TotalRecords programs
+                </div>
+
+                @if (Model.TotalPages > 1)
+                {
+                    <nav>
+                        <ul class="pagination mb-0">
+                            <!-- Previous Button -->
+                            <li class="page-item @(Model.CurrentPage == 1 ? "disabled" : "")">
+                                <a class="page-link" href="@GetPageUrl(Model.CurrentPage - 1)">Previous</a>
+                            </li>
+
+                            <!-- Page Numbers -->
+                            @for (int i = Math.Max(1, Model.CurrentPage - 2); i <= Math.Min(Model.TotalPages, Model.CurrentPage + 2); i++)
+                            {
+                                <li class="page-item @(i == Model.CurrentPage ? "active" : "")">
+                                    <a class="page-link" href="@GetPageUrl(i)">@i</a>
+                                </li>
+                            }
+
+                            <!-- Next Button -->
+                            <li class="page-item @(Model.CurrentPage == Model.TotalPages ? "disabled" : "")">
+                                <a class="page-link" href="@GetPageUrl(Model.CurrentPage + 1)">Next</a>
+                            </li>
+                        </ul>
+                    </nav>
+                }
+            </div>
+        }
+        else
+        {
+            <!-- Empty State -->
+            <div class="text-center py-5">
+                <iconify-icon icon="solar:document-text-outline" width="64" class="text-muted"></iconify-icon>
+                <h5 class="mt-3">No BTEC Programs Found</h5>
+                <p class="text-muted">Try adjusting your filters to see more results</p>
+                <a asp-action="Programs" class="btn btn-primary">Clear All Filters</a>
+            </div>
+        }
+    </div>
+</div>
+
+@functions {
+    string GetPageUrl(int page)
+    {
+        var routeValues = new Dictionary<string, string>
+        {
+            { "page", page.ToString() },
+            { "pageSize", Model.PageSize.ToString() }
+        };
+
+        if (!string.IsNullOrWhiteSpace(Model.SearchTerm))
+            routeValues["searchTerm"] = Model.SearchTerm;
+        if (Model.Level.HasValue)
+            routeValues["level"] = ((int)Model.Level.Value).ToString();
+        if (!string.IsNullOrWhiteSpace(Model.TechnicalField))
+            routeValues["technicalField"] = Model.TechnicalField;
+        if (Model.UniversityId.HasValue)
+            routeValues["universityId"] = Model.UniversityId.Value.ToString();
+        if (Model.ComplianceStatus.HasValue)
+            routeValues["complianceStatus"] = ((int)Model.ComplianceStatus.Value).ToString();
+
+        var queryString = string.Join("&", routeValues.Select(kv => $"{kv.Key}={Uri.EscapeDataString(kv.Value)}"));
+        return $"?{queryString}";
+    }
+}
+
+@section Scripts {
+    <script>
+        function changePageSize(newSize) {
+            var currentUrl = new URL(window.location.href);
+            currentUrl.searchParams.set('pageSize', newSize);
+            currentUrl.searchParams.set('page', '1'); // Reset to first page
+            window.location.href = currentUrl.toString();
+        }
+    </script>
+}

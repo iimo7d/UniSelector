@@ -1,0 +1,413 @@
+﻿@using Uni_Selector.ViewModels.Admin
+@model AdminDashboardViewModel
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "Admin Dashboard";
+}
+
+<div class="dashboard-main-body">
+    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-24">
+        <h6 class="fw-semibold mb-0">Admin Dashboard</h6>
+        <ul class="d-flex align-items-center gap-2">
+            <li class="fw-medium">
+                <a href="/" class="d-flex align-items-center gap-1 hover-text-primary">
+                    <iconify-icon icon="solar:home-smile-angle-outline" class="icon text-lg"></iconify-icon>
+                    Home
+                </a>
+            </li>
+            <li>-</li>
+            <li class="fw-medium">Dashboard</li>
+        </ul>
+    </div>
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            @TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <!-- KPI Cards Row -->
+    <div class="row row-cols-xxxl-5 row-cols-lg-3 row-cols-sm-2 row-cols-1 gy-4">
+        <!-- Total Users Card -->
+        <div class="col">
+            <div class="card shadow-none border bg-gradient-start-1 h-100">
+                <div class="card-body p-20">
+                    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
+                        <div>
+                            <p class="fw-medium text-primary-light mb-1">Total Users</p>
+                            <h6 class="mb-0">@Model.TotalUsers.ToString("N0")</h6>
+                        </div>
+                        <div class="w-50-px h-50-px bg-cyan rounded-circle d-flex justify-content-center align-items-center">
+                            <iconify-icon icon="gridicons:multiple-users" class="text-white text-2xl mb-0"></iconify-icon>
+                        </div>
+                    </div>
+                    <p class="fw-medium text-sm text-primary-light mt-12 mb-0 d-flex align-items-center gap-2">
+                        <span class="d-inline-flex align-items-center gap-1 text-@(Model.UserGrowthTrend == "up" ? "success" : "neutral")-main">
+                            <iconify-icon icon="bxs:@(Model.UserGrowthTrend == "up" ? "up" : "minus")-arrow" class="text-xs"></iconify-icon>
+                            @Model.NewUsersLast30Days.ToString("N0")
+                        </span>
+                        Last 30 days users
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Total Universities Card -->
+        <div class="col">
+            <div class="card shadow-none border bg-gradient-start-2 h-100">
+                <div class="card-body p-20">
+                    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
+                        <div>
+                            <p class="fw-medium text-primary-light mb-1">Total Universities</p>
+                            <h6 class="mb-0">@Model.TotalUniversities.ToString("N0")</h6>
+                        </div>
+                        <div class="w-50-px h-50-px bg-purple rounded-circle d-flex justify-content-center align-items-center">
+                            <iconify-icon icon="mdi:school" class="text-white text-2xl mb-0"></iconify-icon>
+                        </div>
+                    </div>
+                    <p class="fw-medium text-sm text-primary-light mt-12 mb-0 d-flex align-items-center gap-2">
+                        <span class="d-inline-flex align-items-center gap-1 text-success-main">
+                            <iconify-icon icon="mdi:check-circle" class="text-xs"></iconify-icon>
+                            @Model.ActiveUniversities.ToString("N0")
+                        </span>
+                        Active universities
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Total Programs Card -->
+        <div class="col">
+            <div class="card shadow-none border bg-gradient-start-3 h-100">
+                <div class="card-body p-20">
+                    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
+                        <div>
+                            <p class="fw-medium text-primary-light mb-1">Total Programs</p>
+                            <h6 class="mb-0">@Model.TotalPrograms.ToString("N0")</h6>
+                        </div>
+                        <div class="w-50-px h-50-px bg-info rounded-circle d-flex justify-content-center align-items-center">
+                            <iconify-icon icon="mdi:book-open-page-variant" class="text-white text-2xl mb-0"></iconify-icon>
+                        </div>
+                    </div>
+                    <p class="fw-medium text-sm text-primary-light mt-12 mb-0 d-flex align-items-center gap-2">
+                        <span class="d-inline-flex align-items-center gap-1 text-success-main">
+                            <iconify-icon icon="mdi:check-circle" class="text-xs"></iconify-icon>
+                            @Model.ActivePrograms.ToString("N0")
+                        </span>
+                        Active programs
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Total Applications Card -->
+        <div class="col">
+            <div class="card shadow-none border bg-gradient-start-4 h-100">
+                <div class="card-body p-20">
+                    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
+                        <div>
+                            <p class="fw-medium text-primary-light mb-1">Total Applications</p>
+                            <h6 class="mb-0">@Model.TotalApplications.ToString("N0")</h6>
+                        </div>
+                        <div class="w-50-px h-50-px bg-success-main rounded-circle d-flex justify-content-center align-items-center">
+                            <iconify-icon icon="mdi:file-document" class="text-white text-2xl mb-0"></iconify-icon>
+                        </div>
+                    </div>
+                    <p class="fw-medium text-sm text-primary-light mt-12 mb-0 d-flex align-items-center gap-2">
+                        <span class="d-inline-flex align-items-center gap-1 text-@(Model.ApplicationGrowthTrend == "up" ? "success" : "neutral")-main">
+                            <iconify-icon icon="bxs:@(Model.ApplicationGrowthTrend == "up" ? "up" : "minus")-arrow" class="text-xs"></iconify-icon>
+                            @Model.NewApplicationsLast30Days.ToString("N0")
+                        </span>
+                        Last 30 days applications
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Total Commissions Card -->
+        <div class="col">
+            <div class="card shadow-none border bg-gradient-start-5 h-100">
+                <div class="card-body p-20">
+                    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
+                        <div>
+                            <p class="fw-medium text-primary-light mb-1">Total Commissions</p>
+                            <h6 class="mb-0">@Model.TotalCommissionsGenerated.ToString("C0")</h6>
+                        </div>
+                        <div class="w-50-px h-50-px bg-red rounded-circle d-flex justify-content-center align-items-center">
+                            <iconify-icon icon="solar:wallet-bold" class="text-white text-2xl mb-0"></iconify-icon>
+                        </div>
+                    </div>
+                    <p class="fw-medium text-sm text-primary-light mt-12 mb-0 d-flex align-items-center gap-2">
+                        <span class="d-inline-flex align-items-center gap-1 text-warning-main">
+                            <iconify-icon icon="mdi:clock-outline" class="text-xs"></iconify-icon>
+                            @Model.PendingCommissions.ToString("C0")
+                        </span>
+                        Pending commissions
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts and Tables Row -->
+    <div class="row gy-4 mt-1">
+        <!-- Monthly Applications Chart -->
+        <div class="col-xxl-8 col-xl-12">
+            <div class="card h-100">
+                <div class="card-body">
+                    <div class="d-flex flex-wrap align-items-center justify-content-between">
+                        <h6 class="text-lg mb-0">Applications Trend</h6>
+                        <span class="text-sm text-secondary-light">Last 12 Months</span>
+                    </div>
+                    <div id="applicationsChart" class="pt-28 apexcharts-tooltip-style-1"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Application Status Distribution -->
+        <div class="col-xxl-4 col-xl-6">
+            <div class="card h-100 radius-8 border-0 overflow-hidden">
+                <div class="card-body p-24">
+                    <h6 class="mb-2 fw-bold text-lg">Application Status</h6>
+                    <div id="statusDonutChart" class="apexcharts-tooltip-z-none mt-4"></div>
+                    <ul class="d-flex flex-wrap align-items-center justify-content-between mt-3 gap-3">
+                        @foreach (var status in Model.ApplicationsByStatus.Take(4))
+                        {
+                            <li class="d-flex align-items-center gap-2">
+                                <span class="w-12-px h-12-px radius-2" style="background-color: @status.Color"></span>
+                                <span class="text-secondary-light text-sm fw-normal">
+                                    @status.StatusName:
+                                    <span class="text-primary-light fw-semibold">@status.Count</span>
+                                </span>
+                            </li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Applications Table -->
+        <div class="col-xxl-8 col-xl-12">
+            <div class="card h-100">
+                <div class="card-body p-24">
+                    <div class="d-flex flex-wrap align-items-center justify-content-between mb-16">
+                        <h6 class="text-lg mb-0">Recent Applications</h6>
+                        <a href="@Url.Action("Index", "ApplicationAdmin")" class="text-primary-600 hover-text-primary d-flex align-items-center gap-1">
+                            View All
+                            <iconify-icon icon="solar:alt-arrow-right-linear" class="icon"></iconify-icon>
+                        </a>
+                    </div>
+                    <div class="table-responsive scroll-sm">
+                        <table class="table bordered-table sm-table mb-0">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Application #</th>
+                                    <th scope="col">Student</th>
+                                    <th scope="col">University</th>
+                                    <th scope="col">Program</th>
+                                    <th scope="col">Date</th>
+                                    <th scope="col">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var app in Model.RecentApplications)
+                                {
+                                    <tr>
+                                        <td>
+                                            <span class="text-sm fw-semibold">@app.ApplicationNumber</span>
+                                        </td>
+                                        <td>@app.StudentName</td>
+                                        <td>@app.UniversityName</td>
+                                        <td>@app.ProgramName</td>
+                                        <td>@app.ApplicationDate.ToString("MMM dd, yyyy")</td>
+                                        <td>
+                                            <span class="badge @app.StatusBadgeClass px-12 py-6 radius-4 fw-medium text-sm">
+                                                @app.StatusText
+                                            </span>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Top Universities Stats -->
+        <div class="col-xxl-4 col-xl-6">
+            <div class="card h-100">
+                <div class="card-body p-24">
+                    <h6 class="text-lg mb-16">Top Universities</h6>
+                    <div class="d-flex flex-column gap-16">
+                        @foreach (var uni in Model.UniversityStats)
+                        {
+                            <div class="d-flex align-items-center justify-content-between gap-3">
+                                <div class="flex-grow-1">
+                                    <h6 class="text-md mb-0">@uni.UniversityName</h6>
+                                    <span class="text-sm text-secondary-light">
+                                        @uni.TotalPrograms Programs · @uni.TotalApplications Applications
+                                    </span>
+                                </div>
+                                <span class="text-sm fw-semibold text-success-main">@uni.ApprovalRate.ToString("F1")%</span>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- System Alerts -->
+    <div class="row gy-4 mt-1">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body p-24">
+                    <h6 class="text-lg mb-16">System Alerts</h6>
+                    <div class="d-flex flex-wrap gap-3">
+                        @if (Model.PendingApplications > 0)
+                        {
+                            <div class="alert alert-warning mb-0" role="alert">
+                                <strong>@Model.PendingApplications</strong> applications pending review
+                            </div>
+                        }
+                        @if (Model.PendingBtecApprovals > 0)
+                        {
+                            <div class="alert alert-info mb-0" role="alert">
+                                <strong>@Model.PendingBtecApprovals</strong> BTEC programs awaiting approval
+                            </div>
+                        }
+                        @if (Model.UnreadNotifications > 100)
+                        {
+                            <div class="alert alert-danger mb-0" role="alert">
+                                <strong>@Model.UnreadNotifications</strong> unread notifications
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@using System.Text.Json
+
+@section Scripts {
+
+    <script>
+
+
+        const monthlyCounts = @Html.Raw(JsonSerializer.Serialize(Model.MonthlyApplications.Select(m => m.Count)));
+        const monthlyMonths = @Html.Raw(JsonSerializer.Serialize(Model.MonthlyApplications.Select(m => m.Month)));
+
+        const statusCounts = @Html.Raw(JsonSerializer.Serialize(Model.ApplicationsByStatus.Select(s => s.Count)));
+        const statusLabels = @Html.Raw(JsonSerializer.Serialize(Model.ApplicationsByStatus.Select(s => s.StatusName)));
+        const statusColors = @Html.Raw(JsonSerializer.Serialize(Model.ApplicationsByStatus.Select(s => s.Color)));
+
+        // Monthly Applications Chart
+        var applicationsOptions = {
+            series: [{
+                name: 'Applications',
+                data: monthlyCounts
+            }],
+            chart: {
+                type: 'area',
+                height: 350,
+                toolbar: { show: false }
+            },
+            dataLabels: { enabled: false },
+            stroke: { curve: 'smooth', width: 3 },
+            xaxis: { categories: monthlyMonths },
+            fill: {
+                type: 'gradient',
+                gradient: { shadeIntensity: 1, opacityFrom: 0.7, opacityTo: 0.3 }
+            }
+        };
+
+        var applicationsEl = document.querySelector("#applicationsChart");
+        if (applicationsEl) new ApexCharts(applicationsEl, applicationsOptions).render();
+        else console.error("#applicationsChart not found in DOM");
+
+        // Status Donut Chart
+        var statusOptions = {
+            series: statusCounts,
+            chart: { type: 'donut', height: 280 },
+            labels: statusLabels,
+            colors: statusColors,
+            legend: { show: false },
+            dataLabels: {
+                enabled: true,
+                formatter: function (val) { return Math.round(val) + "%" }
+            }
+        };
+
+        var statusEl = document.querySelector("#statusDonutChart");
+        if (statusEl) new ApexCharts(statusEl, statusOptions).render();
+        else console.error("#statusDonutChart not found in DOM");
+    </script>
+}
+
+
+
+@* @section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    <script>
+        // Monthly Applications Chart
+        var applicationsOptions = {
+            series: [{
+                name: 'Applications',
+                data: [@string.Join(",", Model.MonthlyApplications.Select(m => m.Count))]
+            }],
+            chart: {
+                type: 'area',
+                height: 350,
+                toolbar: { show: false }
+            },
+            colors: ['#487FFF'],
+            dataLabels: { enabled: false },
+            stroke: {
+                curve: 'smooth',
+                width: 3
+            },
+            xaxis: {
+                categories: [@string.Join(",", Model.MonthlyApplications.Select(m => $"'{m.Month}'"))]
+            },
+            fill: {
+                type: 'gradient',
+                gradient: {
+                    shadeIntensity: 1,
+                    opacityFrom: 0.7,
+                    opacityTo: 0.3,
+                }
+            }
+        };
+        var applicationsChart = new ApexCharts(document.querySelector("#applicationsChart"), applicationsOptions);
+        applicationsChart.render();
+
+        // Status Donut Chart
+        var statusOptions = {
+            series: [@string.Join(",", Model.ApplicationsByStatus.Select(s => s.Count))],
+            chart: {
+                type: 'donut',
+                height: 280
+            },
+            labels: [@string.Join(",", Model.ApplicationsByStatus.Select(s => $"'{s.StatusName}'"))],
+            colors: [@string.Join(",", Model.ApplicationsByStatus.Select(s => $"'{s.Color}'"))],
+            legend: {
+                show: false
+            },
+            dataLabels: {
+                enabled: true,
+                formatter: function (val) {
+                    return Math.round(val) + "%"
+                }
+            }
+        };
+        var statusChart = new ApexCharts(document.querySelector("#statusDonutChart"), statusOptions);
+        statusChart.render();
+    </script>
+}
+ *@

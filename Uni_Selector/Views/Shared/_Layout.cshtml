@@ -1,0 +1,761 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using Uni_Selector.Models
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Smart University Platform - Find the perfect private university in Jordan based on your academic profile and preferences.">
+    <meta name="keywords" content="university, jordan, education, private university, btec, student, admission">
+    <meta name="author" content="Smart University Platform">
+    <meta name="csrf-token" content="@Antiforgery.GetAndStoreTokens(Context).RequestToken" />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="@ViewData["Title"] - Smart University Platform">
+    <meta property="og:description" content="Find your perfect university in Jordan">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:title" content="@ViewData["Title"] - Smart University Platform">
+
+    <title>@ViewData["Title"] - Smart University Platform</title>
+
+    <link rel="icon" type="image/png" href="~/assets/images/favicon.ico" sizes="16x16">
+
+    <!-- link stylesheet -->
+    <link rel="stylesheet" href="~/assets/css/icofont.min.css">
+    <link rel="stylesheet" href="~/assets/css/popup.css">
+    <link rel="stylesheet" href="~/assets/css/swiper-bundle.min.css">
+    <link rel="stylesheet" href="~/assets/css/video-modal.css">
+    <link rel="stylesheet" href="~/assets/css/aos.css">
+    <link rel="stylesheet" href="~/assets/css/style.css">
+
+    @if (SignInManager.IsSignedIn(User))
+    {
+        <style>
+            /* Notification item hover effect */
+            .notification-item {
+                transition: all 0.3s ease;
+                cursor: pointer;
+                padding: 0.5rem;
+                border-radius: 0.375rem;
+            }
+
+                .notification-item:hover {
+                    background-color: rgba(249, 115, 22, 0.05);
+                }
+
+            /* Unread notification highlight */
+            .notification-unread {
+                background-color: rgba(249, 115, 22, 0.08);
+                border-left: 3px solid #F97316;
+            }
+
+            /* Delete button - hidden until hover */
+            .notification-delete-btn {
+                opacity: 0;
+                transition: opacity 0.2s ease;
+            }
+
+            .notification-item:hover .notification-delete-btn {
+                opacity: 1;
+            }
+
+            /* Smooth scrollbar for notifications container */
+            #notificationsContainer::-webkit-scrollbar {
+                width: 6px;
+            }
+
+            #notificationsContainer::-webkit-scrollbar-track {
+                background: transparent;
+            }
+
+            #notificationsContainer::-webkit-scrollbar-thumb {
+                background: #cbd5e0;
+                border-radius: 3px;
+            }
+
+                #notificationsContainer::-webkit-scrollbar-thumb:hover {
+                    background: #a0aec0;
+                }
+
+            /* Text truncation for long messages */
+            .truncate-2-lines {
+                display: -webkit-box;
+                -webkit-line-clamp: 2;
+                -webkit-box-orient: vertical;
+                overflow: hidden;
+            }
+        </style>
+    }
+
+    <style>
+        /* =========================================
+               SweetAlert2 Global Fixes
+               ========================================= */
+
+        /* Hide deny button globally unless explicitly shown */
+        .swal2-styled.swal2-deny {
+            display: none !important;
+        }
+
+        /* Ensure buttons are visible and styled */
+        .swal2-styled.swal2-confirm,
+        .swal2-styled.swal2-cancel {
+            display: inline-block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+            padding: 0.625rem 2rem !important;
+            font-weight: 700 !important;
+            font-size: 0.875rem !important;
+            line-height: 1.5 !important;
+            border-radius: 12px !important;
+            border: none !important;
+            cursor: pointer !important;
+            transition: all 0.3s ease !important;
+            font-family: 'Hind', sans-serif !important;
+        }
+
+        /* Confirm button (green) */
+        .swal2-styled.swal2-confirm {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
+            color: #ffffff !important;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3) !important;
+        }
+
+            .swal2-styled.swal2-confirm:hover {
+                transform: translateY(-2px) !important;
+                box-shadow: 0 8px 20px rgba(16, 185, 129, 0.4) !important;
+                filter: brightness(1.05) !important;
+            }
+
+        /* Cancel button (gray) */
+        .swal2-styled.swal2-cancel {
+            background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%) !important;
+            color: #ffffff !important;
+            box-shadow: 0 4px 12px rgba(107, 114, 128, 0.3) !important;
+        }
+
+            .swal2-styled.swal2-cancel:hover {
+                transform: translateY(-2px) !important;
+                box-shadow: 0 8px 20px rgba(107, 114, 128, 0.4) !important;
+                filter: brightness(1.05) !important;
+            }
+
+        /* Fix actions container */
+        .swal2-actions {
+            display: flex !important;
+            gap: 1rem !important;
+            margin: 1.5rem 0 0 0 !important;
+            padding: 0 !important;
+        }
+
+        /* Fix text colors */
+        .swal2-popup {
+            color: #1f2937 !important;
+            font-family: 'Inter', sans-serif !important;
+        }
+
+        .swal2-title {
+            color: #1f2937 !important;
+            font-family: 'Hind', sans-serif !important;
+            font-weight: 700 !important;
+        }
+
+        .swal2-html-container {
+            color: #4b5563 !important;
+            font-family: 'Inter', sans-serif !important;
+        }
+
+        /* Dark mode support */
+        .dark .swal2-popup {
+            background: #1f2937 !important;
+            color: #f3f4f6 !important;
+        }
+
+        .dark .swal2-title {
+            color: #ffffff !important;
+        }
+
+        .dark .swal2-html-container {
+            color: #d1d5db !important;
+        }
+    </style>    @await RenderSectionAsync("Styles", required: false)
+
+</head>
+<body class="relative font-inter font-normal text-base leading-[1.8] bg-bodyBg dark:bg-bodyBg-dark z-0">
+    <!-- preloader -->
+    <div class="preloader flex fixed top-0 left-0 h-screen w-full items-center justify-center z-xxl bg-whiteColor opacity-100 visible transition-all duration-700">
+        <!-- spinner -->
+        <div class="w-90px h-90px border-5px border-t-blue border-r-blue border-b-blue-light border-l-blue-light rounded-full animate-spin-infinit"></div>
+        <div class="absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2">
+            <img src="~/assets/images/pre.png" alt="Preloader" class="h-10 w-10 block">
+        </div>
+    </div>
+    <!-- theme fixed shadow -->
+    <div>
+        <div class="fixed-shadow left-[-250px]"></div>
+        <div class="fixed-shadow right-[-250px]"></div>
+    </div>
+
+    <!-- theme controller -->
+    <div class="fixed top-[100px] 2xl:top-[300px] transition-all duration-300 right-[-50px] hover:right-0 z-xl">
+        <button class="theme-controller w-90px h-10 bg-primaryColor dark:bg-whiteColor-dark rounded-l-lg2 text-whiteColor px-10px flex items-center dark:shadow-theme-controller">
+            <!-- dark -->
+            <svg xmlns="http://www.w3.org/2000/svg"
+                 class="mr-10px w-5 block dark:hidden"
+                 viewBox="0 0 512 512">
+                <path d="M160 136c0-30.62 4.51-61.61 16-88C99.57 81.27 48 159.32 48 248c0 119.29 96.71 216 216 216 88.68 0 166.73-51.57 200-128-26.39 11.49-57.38 16-88 16-119.29 0-216-96.71-216-216z"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="32"></path>
+            </svg>
+            <span class="text-base block dark:hidden">Dark</span>
+            <!-- light -->
+            <svg xmlns="http://www.w3.org/2000/svg"
+                 class="hidden mr-10px w-5 dark:block"
+                 viewBox="0 0 512 512">
+                <path fill="none"
+                      stroke="currentColor"
+                      stroke-linecap="round"
+                      stroke-miterlimit="10"
+                      stroke-width="32"
+                      d="M256 48v48M256 416v48M403.08 108.92l-33.94 33.94M142.86 369.14l-33.94 33.94M464 256h-48M96 256H48M403.08 403.08l-33.94-33.94M142.86 142.86l-33.94-33.94"></path>
+                <circle cx="256"
+                        cy="256"
+                        r="80"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-linecap="round"
+                        stroke-miterlimit="10"
+                        stroke-width="32"></circle>
+            </svg>
+            <span class="text-base hidden dark:block">Light</span>
+        </button>
+    </div>
+    <!-- scroll up button -->
+    <div>
+        <button class="scroll-up w-50px h-50px leading-50px text-center text-primaryColor bg-white hover:text-whiteColor hover:bg-primaryColor rounded-full fixed right-5 bottom-[60px] shadow-scroll-up z-medium text-xl dark:text-whiteColor dark:bg-primaryColor dark:hover:text-whiteColor-dark hidden">
+            <i class="icofont-rounded-up"></i>
+        </button>
+    </div>
+    <!--======= Header area start =======-->
+    <header>
+
+        <!-- navbar start -->
+        <div class="transition-all duration-500 sticky-header z-medium dark:bg-whiteColor-dark">
+            <nav>
+                <div class="py-15px lg:py-0 px-15px lg:container 3xl:container-secondary-lg 4xl:container mx-auto relative">
+                    <div class="grid grid-cols-2 lg:grid-cols-12 items-center gap-15px">
+                        <!-- navbar left -->
+                        <div class="lg:col-start-1 lg:col-span-2">
+                            <a asp-action="Index" asp-controller="Home" class="block">
+                                <img src="~/assets/images/logo/logo_1.png"
+                                     alt="Logo"
+                                     class="w-logo-sm lg:w-auto py-2">
+                            </a>
+                        </div>
+                        <!-- Main menu -->
+                        <div class="hidden lg:block lg:col-start-3 lg:col-span-7">
+                            <ul class="nav-list flex justify-center">
+                                <li class="nav-item group">
+                                    <a asp-action="Index" asp-controller="Home"
+                                       class="px-5 lg:px-10px 2xl:px-15px 3xl:px-5 py-10 lg:py-5 2xl:py-30px 3xl:py-10 leading-sm 2xl:leading-lg text-base lg:text-sm 2xl:text-base font-semibold block group-hover:text-primaryColor dark:text-whiteColor">
+                                        Home
+                                    </a>
+
+                                </li>
+                                <li class="nav-item group">
+                                    <a asp-action="About" asp-controller="Home"
+                                       class="px-5 lg:px-10px 2xl:px-15px 3xl:px-5 py-10 lg:py-5 2xl:py-30px 3xl:py-10 leading-sm 2xl:leading-lg text-base lg:text-sm 2xl:text-base font-semibold block group-hover:text-primaryColor dark:text-whiteColor">
+                                        About Us
+                                    </a>
+
+                                </li>
+                                <li class="nav-item group">
+                                    <a asp-action="Faq" asp-controller="Home"
+                                       class="px-5 lg:px-10px 2xl:px-15px 3xl:px-5 py-10 lg:py-5 2xl:py-30px 3xl:py-10 leading-sm 2xl:leading-lg text-base lg:text-sm 2xl:text-base font-semibold block group-hover:text-primaryColor dark:text-whiteColor">
+                                        FAQ
+                                    </a>
+
+                                </li>
+                                <li class="nav-item group relative">
+                                    <a asp-action="Universities" asp-controller="Home"
+                                       class="px-5 lg:px-10px 2xl:px-15px 3xl:px-5 py-10 lg:py-5 2xl:py-30px 3xl:py-10 leading-sm 2xl:leading-lg text-base lg:text-sm 2xl:text-base font-semibold block group-hover:text-primaryColor dark:text-whiteColor">
+                                        Universities
+                                    </a>
+
+                                </li>
+                                <li class="nav-item group relative">
+                                    @if (User.IsInRole("PlatformAdmin") && SignInManager.IsSignedIn(User))
+                                    {
+                                        <a asp-action="Dashboard" asp-controller="Admin"
+                                           class="px-5 lg:px-10px 2xl:px-15px 3xl:px-5 py-10 lg:py-5 2xl:py-30px 3xl:py-10 leading-sm 2xl:leading-lg text-base lg:text-sm 2xl:text-base font-semibold block group-hover:text-primaryColor dark:text-whiteColor">
+                                            Dashboard
+                                        </a>
+                                    }
+                                    else if (User.IsInRole("UniversityRep") && SignInManager.IsSignedIn(User))
+                                    {
+                                        <a asp-action="Dashboard" asp-controller="UniversityRep"
+                                           class="px-5 lg:px-10px 2xl:px-15px 3xl:px-5 py-10 lg:py-5 2xl:py-30px 3xl:py-10 leading-sm 2xl:leading-lg text-base lg:text-sm 2xl:text-base font-semibold block group-hover:text-primaryColor dark:text-whiteColor">
+                                            Dashboard
+                                        </a>
+                                    }
+                                    else if (User.IsInRole("BtecAuthority") && SignInManager.IsSignedIn(User))
+                                    {
+                                        <a asp-action="Dashboard" asp-controller="BTECAuthority"
+                                           class="px-5 lg:px-10px 2xl:px-15px 3xl:px-5 py-10 lg:py-5 2xl:py-30px 3xl:py-10 leading-sm 2xl:leading-lg text-base lg:text-sm 2xl:text-base font-semibold block group-hover:text-primaryColor dark:text-whiteColor">
+                                            Dashboard
+                                        </a>
+                                    }
+
+
+
+                                    <!-- dropdown menu -->
+                                </li>
+                            </ul>
+                        </div>
+                        <!-- navbar right -->
+                        <div class="lg:col-start-10 lg:col-span-3">
+                            <ul class="relative nav-list flex justify-end items-center">
+                                @if (SignInManager.IsSignedIn(User))
+                                {
+                                    <li class="px-5 lg:px-10px 2xl:px-5 lg:py-4 2xl:py-26px 3xl:py-9 group">
+                                        <a href="javascript:void(0)" class="relative block" id="notificationBell">
+                                            <i class="icofont-bell-alt text-2xl text-blackColor group-hover:text-secondaryColor transition-all duration-300 dark:text-blackColor-dark"></i>
+                                            <span class="absolute -top-1 2xl:-top-[5px] -right-[10px] lg:right-3/4 2xl:-right-[10px] text-[10px] font-medium text-white dark:text-whiteColor-dark bg-secondaryColor px-1 py-[2px] leading-1 rounded-full z-50 block"
+                                                  id="notificationBadge"
+                                                  style="display: none;">
+                                                0
+                                            </span>
+                                        </a>
+
+                                        <!-- dropdown menu -->
+                                        <div class="dropdown absolute top-full right-0 lg:right-8 z-medium hidden opacity-0"
+                                             id="notificationDropdown"
+                                             style="transition: 0.3s">
+                                            <div class="shadow-dropdown-secodary max-w-dropdown3 w-2000 rounded-standard p-5 bg-white dark:bg-whiteColor-dark">
+
+                                                <!-- Notifications List -->
+                                                <ul class="flex flex-col gap-y-5 pb-5 mb-30px border-b border-borderColor dark:border-borderColor-dark max-h-96 overflow-y-auto"
+                                                    id="notificationsContainer">
+                                                    <!-- Loading State -->
+                                                    <li class="text-center py-4" id="notificationLoading">
+                                                        <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-secondaryColor"></div>
+                                                        <p class="text-sm text-contentColor dark:text-contentColor-dark mt-2">Loading notifications...</p>
+                                                    </li>
+
+                                                    <!-- Notifications will be dynamically inserted here -->
+                                                    <!-- Example structure (generated by JavaScript):
+                                                    <li class="relative flex gap-x-15px items-center">
+                                                    <div class="flex-shrink-0">
+                                                    <div class="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center">
+                                                    <i class="icofont-check-circled text-2xl text-green-600"></i>
+                                                    </div>
+                                                    </div>
+                                                    <div>
+                                                    <a href="javascript:void(0)" class="text-sm text-darkblack hover:text-secondaryColor leading-5 block pb-2 capitalize dark:text-darkblack-dark dark:hover:text-secondaryColor">
+                                                    Application Approved
+                                                    </a>
+                                                    <p class="text-sm text-contentColor leading-5 block pb-5px dark:text-contentColor-dark">
+                                                    Your application has been approved
+                                                    </p>
+                                                    <p class="text-xs text-contentColor dark:text-contentColor-dark opacity-70">
+                                                    <i class="icofont-clock-time"></i> 2 hours ago
+                                                    </p>
+                                                    </div>
+                                                    <button class="absolute block top-0 right-0 text-base text-contentColor leading-1 hover:text-secondaryColor dark:text-contentColor-dark dark:hover:text-secondaryColor">
+                                                    <i class="icofont-close-line"></i>
+                                                    </button>
+                                                    </li>
+                                                    -->
+                                                </ul>
+
+                                                <!-- Total unread count -->
+                                                <div>
+                                                    <p class="text-size-17 text-contentColor dark:text-contentColor-dark pb-5 flex justify-between">
+                                                        Unread Notifications:
+                                                        <span class="font-bold text-secondaryColor" id="notificationUnreadCount">0</span>
+                                                    </p>
+                                                </div>
+
+                                                <!-- action buttons -->
+                                                <div class="flex flex-col gap-y-5">
+                                                    <button onclick="notificationSystem.markAllAsRead()"
+                                                            class="text-sm font-bold text-contentColor dark:text-contentColor-dark hover:text-whiteColor hover:bg-secondaryColor text-center py-10px border border-secondaryColor transition-all duration-300">
+                                                        Mark All as Read
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </li>
+
+                                    <li class="hidden lg:block">
+                                        <a asp-action="Me" asp-controller="Account"
+                                           class="text-size-12 2xl:text-size-15 px-15px py-2 text-blackColor hover:text-whiteColor bg-whiteColor block hover:bg-primaryColor border border-borderColor1 rounded-standard font-semibold mr-[7px] 2xl:mr-15px dark:text-blackColor-dark dark:bg-whiteColor-dark dark:hover:bg-primaryColor dark:hover:text-whiteColor dark:hover:border-primaryColor">
+                                            <i class="icofont-user-alt-5"></i>
+                                        </a>
+                                    </li>
+                                    <li class="hidden lg:block">
+                                        <form asp-controller="Account" asp-action="Logout" method="post" class="inline">
+                                            @Html.AntiForgeryToken()
+
+                                            <button type="submit"
+                                                    class="text-size-12 2xl:text-size-15 px-15px py-2 text-blackColor hover:text-whiteColor bg-whiteColor block hover:bg-primaryColor border border-borderColor1 rounded-standard font-semibold mr-[7px] 2xl:mr-15px dark:text-blackColor-dark dark:bg-whiteColor-dark dark:hover:bg-primaryColor dark:hover:text-whiteColor dark:hover:border-primaryColor">
+                                                <i class="icofont-logout"></i>
+                                            </button>
+                                        </form>
+                                    </li>
+                                }
+                                else
+                                {
+                                    <li class="px-5 lg:px-10px 2xl:px-5 lg:py-4 2xl:py-26px 3xl:py-9 group">
+                                        <a asp-action="Login" asp-controller="Account"
+                                           class="text-size-12 2xl:text-size-15 text-whiteColor bg-primaryColor block border-primaryColor border hover:text-primaryColor hover:bg-white px-15px py-2 rounded-standard dark:hover:bg-whiteColor-dark dark: dark:hover:text-whiteColor">
+                                           <i class="icofont-login"></i>
+                                           Login
+                                       </a>
+                                    </li>
+                                    <li class="px-5 lg:px-10px 2xl:px-5 lg:py-4 2xl:py-26px 3xl:py-9 group">
+                                        <a asp-action="Login" asp-controller="Account" asp-route-tab="register"
+                                           class="text-size-12 2xl:text-size-15 text-whiteColor bg-primaryColor block border-primaryColor border hover:text-primaryColor hover:bg-white px-15px py-2 rounded-standard dark:hover:bg-whiteColor-dark dark: dark:hover:text-whiteColor">
+                                           <i class="icofont-login"></i>
+                                            Get Started
+                                       </a>
+                                    </li>
+
+
+
+                                }
+
+                                <li class="block lg:hidden">
+                                    <button class="open-mobile-menu text-3xl text-darkdeep1 hover:text-secondaryColor dark:text-whiteColor dark:hover:text-secondaryColor">
+                                        <i class="icofont-navigation-menu"></i>
+                                    </button>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+        </div>
+        <!-- navbar end -->
+        <!-- mobile menu -->
+        <div class="mobile-menu w-mobile-menu-sm md:w-mobile-menu-lg fixed top-0 -right-[280px] md:-right-[330px] transition-all duration-500 w-mobile-menu h-full shadow-dropdown-secodary bg-whiteColor dark:bg-whiteColor-dark z-high block lg:hidden">
+            <button class="close-mobile-menu text-lg bg-darkdeep1 hover:bg-secondaryColor text-white px-[11px] py-[6px] absolute top-0 right-full hidden">
+                <i class="icofont icofont-close-line"></i>
+            </button>
+            <!-- mobile menu wrapper -->
+            <div class="px-5 md:px-30px pt-5 md:pt-10 pb-50px h-full overflow-y-auto">
+
+                <!-- mobile menu accordions -->
+                <div class="pt-8 pb-6 border-b border-borderColor dark:border-borderColor-dark">
+                    <ul class="accordion-container">
+                        <li class="accordion">
+                            <!-- accordion header -->
+                            <div class="flex items-center justify-between">
+                                <a class="leading-1 py-11px text-darkdeep1 font-medium hover:text-secondaryColor dark:text-whiteColor dark:hover:text-secondaryColor"
+                                   asp-action="Index" asp-controller="Home">Home</a>
+                            </div>
+
+                        <li class="accordion">
+                            <!-- accordion header -->
+                            <div class="flex items-center justify-between">
+                                <a class="leading-1 py-11px text-darkdeep1 font-medium hover:text-secondaryColor dark:text-whiteColor dark:hover:text-secondaryColor"
+                                   asp-action="About" asp-controller="Home">About</a>
+                            </div>
+
+                        </li>
+                        <li class="accordion">
+                            <!-- accordion header -->
+                            <div class="flex items-center justify-between">
+                                <a class="leading-1 py-11px text-darkdeep1 font-medium hover:text-secondaryColor dark:text-whiteColor dark:hover:text-secondaryColor"
+                                   asp-action="FAQ" asp-controller="Home">FAQ</a>
+                            </div>
+
+                        </li>
+                        <li class="accordion">
+                            <!-- accordion header -->
+                            <div class="flex items-center justify-between">
+                                <a class="leading-1 py-11px text-darkdeep1 font-medium hover:text-secondaryColor dark:text-whiteColor dark:hover:text-secondaryColor"
+                                   asp-action="Universities" asp-controller="Home">Universities</a>
+                            </div>
+
+                        </li>
+
+                        <li class="accordion">
+                            @if (User.IsInRole("PlatformAdmin") && SignInManager.IsSignedIn(User))
+                            {
+                                <!-- accordion header -->
+                                <div class="flex items-center justify-between">
+                                    <a class="leading-1 py-11px text-darkdeep1 font-medium hover:text-secondaryColor dark:text-whiteColor dark:hover:text-secondaryColor"
+                                       asp-action="Dashboard" asp-controller="Admin">Dahboard</a>
+                                </div>
+                            }
+                            else if (User.IsInRole("UniversityRep") && SignInManager.IsSignedIn(User))
+                            {
+
+                                <!-- accordion header -->
+                                <div class="flex items-center justify-between">
+                                    <a class="leading-1 py-11px text-darkdeep1 font-medium hover:text-secondaryColor dark:text-whiteColor dark:hover:text-secondaryColor"
+                                       asp-action="Dashboard" asp-controller="UniversityRep">Dahboard</a>
+                                </div>
+                            }
+                            else if (User.IsInRole("BtecAuthority") && SignInManager.IsSignedIn(User))
+                            {
+                                <div class="flex items-center justify-between">
+                                    <a class="leading-1 py-11px text-darkdeep1 font-medium hover:text-secondaryColor dark:text-whiteColor dark:hover:text-secondaryColor"
+                                       asp-action="Dashboard" asp-controller="BTECAuthority" >Dahboard</a>
+                                </div>
+
+                            }
+
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- my account accordion -->
+                <div>
+                    <ul class="accordion-container mt-9 mb-30px pb-9 border-b border-borderColor dark:border-borderColor-dark">
+                        <li class="accordion group">
+                            <!-- accordion header -->
+
+
+                            <div class="accordion-controller flex items-center justify-between">
+                                <a class="leading-1 text-darkdeep1 font-medium group-hover:text-secondaryColor dark:text-whiteColor dark:hover:text-secondaryColor"
+                                   href="#">My Account</a>
+                                <button class="px-3 py-1">
+                                    <i class="icofont-thin-down text-size-15 text-darkdeep1 group-hover:text-secondaryColor dark:text-whiteColor dark:hover:text-secondaryColor"></i>
+                                </button>
+                            </div>
+
+                            <!-- accordion content -->
+                            <div class="accordion-content h-0 overflow-hidden transition-all duration-500 shadow-standard">
+                                <div class="content-wrapper">
+                                    <ul>
+                                        @if (!SignInManager.IsSignedIn(User))
+                                        {
+                                            <li>
+                                                <!-- accordion header -->
+                                                <div class="flex items-center gap-1">
+                                                    <a asp-controller="Account" asp-action="Login" asp-route-tab="login"
+                                                       class="leading-1 text-darkdeep1 text-sm pl-30px pt-7 pb-3 font-medium hover:text-secondaryColor dark:text-whiteColor dark:hover:text-secondaryColor">
+                                                        Login
+                                                    </a>
+
+                                                    <a asp-controller="Account" asp-action="Login" asp-route-tab="register"
+                                                       class="leading-1 text-darkdeep1 text-sm pr-30px pt-7 pb-4 font-medium hover:text-secondaryColor dark:text-whiteColor dark:hover:text-secondaryColor">
+                                                        <span>/</span> Register
+                                                    </a>
+                                                </div>
+                                            </li>
+                                        }
+                                        else
+                                        {
+                                            <li>
+                                                <!-- accordion header -->
+                                                <div class="flex items-center justify-between">
+                                                    <a asp-action="Me" asp-controller="Account"
+                                                       class="leading-1 text-darkdeep1 text-sm pl-30px pt-3 pb-7 font-medium hover:text-secondaryColor dark:text-whiteColor dark:hover:text-secondaryColor">My Account</a>
+                                                </div>
+                                                <!-- accordion content -->
+                                            </li>
+
+
+                                            <li>
+                                                <form asp-controller="Account" asp-action="Logout" method="post" class="inline">
+                                                    @Html.AntiForgeryToken()
+
+                                                    <!-- accordion header -->
+                                                    <div class="flex items-center justify-between">
+                                                        <button type="submit"
+                                                                class="leading-1 text-darkdeep1 text-sm pl-30px pt-3 pb-7 font-medium hover:text-secondaryColor dark:text-whiteColor dark:hover:text-secondaryColor">
+                                                            Logout
+                                                        </button>
+                                                    </div>
+                                                    <!-- accordion content -->
+                                                </form>
+                                            </li>
+                                        }
+                                    </ul>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                <!-- Mobile menu social area -->
+            </div>
+        </div>
+    </header>
+
+    <!-- Main body -->
+    <main class="bg-transparent" role="main">
+        @RenderBody()
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-darkblack" role="contentinfo">
+        <div class="container-fluid-2 pt-65px pb-5 lg:pb-10">
+            <!-- Footer subscription -->
+            <section>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-y-30px md:gap-y-0 items-center pb-45px border-b border-darkcolor">
+                    <div data-aos="fade-up">
+                        <h4 class="text-4xl md:text-size-25 lg:text-size-40 font-bold text-whiteColor leading-50px md:leading-10 lg:leading-16">
+                            Find Your Perfect <span class="text-primaryColor">University</span>
+                        </h4>
+                        <p class="text-whiteColor text-opacity-65">
+                            Smart recommendations for Jordanian students to choose the right private university.
+                        </p>
+                    </div>
+                    <div data-aos="fade-up">
+                        @if (!SignInManager.IsSignedIn(User))
+                        {
+                            <div class="ml-auto max-w-form-xl md:max-w-form-md lg:max-w-form-lg xl:max-w-form-xl">
+                                <a asp-controller="Account" asp-action="Login" asp-route-tab="register" class="inline-block px-30px py-15px bg-primaryColor hover:bg-secondaryColor text-whiteColor font-semibold rounded text-lg transition-all duration-300">
+                                    <i class="icofont-user-alt-7 mr-2" aria-hidden="true"></i> Get Started Now
+                                </a>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </section>
+
+            <!-- Footer main -->
+            <section>
+                <div class="grid grid-cols-12 gap-30px md:gap-y-5 lg:gap-y-0 pt-60px pb-50px md:pt-30px md:pb-30px lg:pt-110px lg:pb-20">
+                    <!-- Left -->
+                    <div class="col-start-1 col-span-12 md:col-span-6 lg:col-span-4 mr-30px" data-aos="fade-up">
+                        <h4 class="text-size-22 font-bold text-whiteColor mb-3">About Uni Selector</h4>
+                        <p class="text-base lg:text-sm 2xl:text-base text-darkgray mb-30px leading-1.8 2xl:leading-1.8">
+                            Smart University Platform helps Jordanian students make informed decisions about their higher education by matching them with the most suitable private universities based on their academic profile and preferences.
+                        </p>
+                        <div class="flex items-center">
+                            <div>
+                                <i class="icofont-support text-3xl text-whiteColor h-78px w-78px bg-primaryColor leading-78px mr-22px block text-center rounded" aria-hidden="true"></i>
+                            </div>
+                            <div>
+                                <h6 class="text-lg text-whiteColor font-medium leading-29px">SUPPORT HOURS</h6>
+                                <p class="text-sm text-whiteColor text-opacity-60 mb-1">Sun - Thu (9.00 AM - 5.00 PM)</p>
+                                <p class="text-sm text-whiteColor text-opacity-60">Friday & Saturday - Closed</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Middle 1 -->
+                    <div class="col-start-1 col-span-12 md:col-start-7 lg:col-start-5 md:col-span-6 lg:col-span-2" data-aos="fade-up">
+                        <h4 class="text-size-22 font-bold text-whiteColor mb-3">Quick Links</h4>
+                        <ul class="flex flex-col gap-y-3">
+                            <li><a asp-controller="Home" asp-action="Index" class="text-darkgray relative hover:text-primaryColor"><i class="icofont-simple-right mr-1" aria-hidden="true"></i> Home</a></li>
+                            <li><a asp-controller="Home" asp-action="Universities" class="text-darkgray relative hover:text-primaryColor"><i class="icofont-simple-right mr-1" aria-hidden="true"></i> Universities</a></li>
+                            <li><a asp-controller="Home" asp-action="About" class="text-darkgray relative hover:text-primaryColor"><i class="icofont-simple-right mr-1" aria-hidden="true"></i> About Us</a></li>
+                            <li><a asp-controller="Home" asp-action="FAQ" class="text-darkgray relative hover:text-primaryColor"><i class="icofont-simple-right mr-1" aria-hidden="true"></i> FAQ</a></li>
+                        </ul>
+                    </div>
+                    <!-- Right -->
+                    <div class="col-start-1 col-span-12 md:col-start-7 lg:col-start-10 md:col-span-6 lg:col-span-3 pl-0 2xl:pl-50px" data-aos="fade-up">
+                        <h4 class="text-size-22 font-bold text-whiteColor mb-3">Contact Info</h4>
+                        <ul class="flex flex-col gap-y-4">
+                            <li class="flex items-start gap-3">
+                                <i class="icofont-location-pin text-primaryColor text-xl mt-1" aria-hidden="true"></i>
+                                <div>
+                                    <h6 class="text-size-15 text-whiteColor font-semibold">Address</h6>
+                                    <p class="text-sm text-darkgray">Amman, Jordan</p>
+                                </div>
+                            </li>
+                            <li class="flex items-start gap-3">
+                                <i class="icofont-phone text-primaryColor text-xl mt-1" aria-hidden="true"></i>
+                                <div>
+                                    <h6 class="text-size-15 text-whiteColor font-semibold">Phone</h6>
+                                    <p class="text-sm text-darkgray">+962 6 123 4567</p>
+                                </div>
+                            </li>
+                            <li class="flex items-start gap-3">
+                                <i class="icofont-email text-primaryColor text-xl mt-1" aria-hidden="true"></i>
+                                <div>
+                                    <h6 class="text-size-15 text-whiteColor font-semibold">Email</h6>
+                                    <p class="text-sm text-darkgray">support@@uniselector.jo</p>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Footer copyright -->
+            <div>
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 lg:gap-30px pt-10 items-center border-t border-darkcolor">
+                    <div class="lg:col-start-1 lg:col-span-3">
+                        <a asp-controller="Home" asp-action="Index"><img src="~/assets/images/logo/logo_2.png" alt="Uni Selector"></a>
+                    </div>
+                    <div class="lg:col-start-4 lg:col-span-6 text-center">
+                        <p class="text-whiteColor text-sm">
+                            Copyright © <span class="text-primaryColor">@DateTime.Now.Year</span> Smart University Platform. All Rights Reserved.
+                        </p>
+                    </div>
+                    <div class="lg:col-start-10 lg:col-span-3">
+                        <ul class="flex gap-3 lg:gap-2 2xl:gap-3 lg:justify-end">
+                            <li><a href="#" class="w-40.19px lg:w-35px 2xl:w-40.19px h-37px lg:h-35px 2xl:h-37px leading-37px lg:leading-35px 2xl:leading-37px text-whiteColor bg-whiteColor bg-opacity-10 hover:bg-primaryColor text-center rounded transition-all duration-300" aria-label="Facebook"><i class="icofont-facebook"></i></a></li>
+                            <li><a href="#" class="w-40.19px lg:w-35px 2xl:w-40.19px h-37px lg:h-35px 2xl:h-37px leading-37px lg:leading-35px 2xl:leading-37px text-whiteColor bg-whiteColor bg-opacity-10 hover:bg-primaryColor text-center rounded transition-all duration-300" aria-label="Twitter"><i class="icofont-twitter"></i></a></li>
+                            <li><a href="#" class="w-40.19px lg:w-35px 2xl:w-40.19px h-37px lg:h-35px 2xl:h-37px leading-37px lg:leading-35px 2xl:leading-37px text-whiteColor bg-whiteColor bg-opacity-10 hover:bg-primaryColor text-center rounded transition-all duration-300" aria-label="Instagram"><i class="icofont-instagram"></i></a></li>
+                            <li><a href="#" class="w-40.19px lg:w-35px 2xl:w-40.19px h-37px lg:h-35px 2xl:h-37px leading-37px lg:leading-35px 2xl:leading-37px text-whiteColor bg-whiteColor bg-opacity-10 hover:bg-primaryColor text-center rounded transition-all duration-300" aria-label="LinkedIn"><i class="icofont-linkedin"></i></a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="~/assets/js/swiper-bundle.min.js"></script>
+    <script src="~/assets/js/isotope.pkgd.min.js"></script>
+    <script src="~/assets/js/accordion.js"></script>
+    <script src="~/assets/js/chart.js"></script>
+    <script src="~/assets/js/count.js"></script>
+    <script src="~/assets/js/countdown.js"></script>
+    <script src="~/assets/js/counterup.js"></script>
+    <script src="~/assets/js/dropdown.js"></script>
+    <script src="~/assets/js/filter.js"></script>
+    <script src="~/assets/js/mobileMenu.js"></script>
+    <script src="~/assets/js/modal.js"></script>
+    <script src="~/assets/js/popup.js"></script>
+    <script src="~/assets/js/preloader.js"></script>
+    <script src="~/assets/js/scrollUp.js"></script>
+    <script src="~/assets/js/slider.js"></script>
+    <script src="~/assets/js/smoothScroll.js"></script>
+    <script src="~/assets/js/stickyHeader.js"></script>
+    <script src="~/assets/js/tabs.js"></script>
+    <script src="~/assets/js/theme.js"></script>
+    <script src="~/assets/js/videoModal.js"></script>
+    <script src="~/assets/js/vanilla-tilt.js"></script>
+    <script src="~/assets/js/aos.js"></script>
+    <script src="~/assets/js/main.js"></script>
+
+
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+    <!-- (optional but recommended) jQuery validation for asp-validation-for -->
+    <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.20.0/dist/jquery.validate.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jquery-validation-unobtrusive@4.0.0/dist/jquery.validate.unobtrusive.min.js"></script>
+
+
+    @if (SignInManager.IsSignedIn(User))
+    {
+        <!-- SignalR -->
+        <script src="https://cdn.jsdelivr.net/npm/@@microsoft/signalr@latest/dist/browser/signalr.min.js"></script>
+
+        <script src="~/assets/js/notifications-main.js"></script>
+    }
+
+
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>
+
+
+

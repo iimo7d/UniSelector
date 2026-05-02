@@ -1,0 +1,448 @@
+﻿@model Uni_Selector.ViewModels.BTECAuthority.BTECDashboardViewModel
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = "BTEC Authority Dashboard";
+}
+
+<div class="dashboard-main-body">
+    <!-- Breadcrumb -->
+    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-24">
+        <h6 class="fw-semibold mb-0">BTEC Authority Dashboard</h6>
+        <ul class="d-flex align-items-center gap-2">
+            <li class="fw-medium">
+                <a asp-controller="BTECAuthority" asp-action="Dashboard" class="d-flex align-items-center gap-1 hover-text-primary">
+                    <iconify-icon icon="solar:home-smile-angle-outline" class="icon text-lg"></iconify-icon>
+                    Dashboard
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <!-- Summary KPI Cards (8 Cards in 2 rows) -->
+    <div class="row row-cols-xxxl-4 row-cols-lg-2 row-cols-sm-2 row-cols-1 gy-4 mb-4">
+        <!-- Total BTEC Programs -->
+        <div class="col">
+            <div class="card shadow-none border bg-gradient-start-1 h-100">
+                <div class="card-body p-20">
+                    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
+                        <div>
+                            <p class="fw-medium text-primary-light mb-1">Total BTEC Programs</p>
+                            <h6 class="mb-0">@Model.TotalBtecPrograms</h6>
+                        </div>
+                        <div class="w-50-px h-50-px bg-cyan rounded-circle d-flex justify-content-center align-items-center">
+                            <iconify-icon icon="solar:document-text-outline" class="text-white text-2xl mb-0"></iconify-icon>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pending Approval -->
+        <div class="col">
+            <div class="card shadow-none border bg-gradient-start-2 h-100">
+                <div class="card-body p-20">
+                    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
+                        <div>
+                            <p class="fw-medium text-primary-light mb-1">Pending Approval</p>
+                            <h6 class="mb-0 text-warning-main">@Model.PendingApproval</h6>
+                        </div>
+                        <div class="w-50-px h-50-px bg-warning-main rounded-circle d-flex justify-content-center align-items-center">
+                            <iconify-icon icon="solar:clock-circle-outline" class="text-white text-2xl mb-0"></iconify-icon>
+                        </div>
+                    </div>
+                    <p class="fw-medium text-sm text-primary-light mt-12 mb-0">
+                        Awaiting BTEC Authority review
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Approved Programs -->
+        <div class="col">
+            <div class="card shadow-none border bg-gradient-start-3 h-100">
+                <div class="card-body p-20">
+                    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
+                        <div>
+                            <p class="fw-medium text-primary-light mb-1">Approved Programs</p>
+                            <h6 class="mb-0 text-success-main">@Model.ApprovedPrograms</h6>
+                        </div>
+                        <div class="w-50-px h-50-px bg-success-main rounded-circle d-flex justify-content-center align-items-center">
+                            <iconify-icon icon="solar:check-circle-outline" class="text-white text-2xl mb-0"></iconify-icon>
+                        </div>
+                    </div>
+                    <p class="fw-medium text-sm text-primary-light mt-12 mb-0">
+                        Active and visible to students
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Rejected Programs -->
+        <div class="col">
+            <div class="card shadow-none border bg-gradient-start-4 h-100">
+                <div class="card-body p-20">
+                    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
+                        <div>
+                            <p class="fw-medium text-primary-light mb-1">Rejected Programs</p>
+                            <h6 class="mb-0 text-danger-main">@Model.RejectedPrograms</h6>
+                        </div>
+                        <div class="w-50-px h-50-px bg-danger-main rounded-circle d-flex justify-content-center align-items-center">
+                            <iconify-icon icon="solar:close-circle-outline" class="text-white text-2xl mb-0"></iconify-icon>
+                        </div>
+                    </div>
+                    <p class="fw-medium text-sm text-primary-light mt-12 mb-0">
+                        Did not meet BTEC standards
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Total Universities -->
+        <div class="col">
+            <div class="card shadow-none border bg-gradient-start-5 h-100">
+                <div class="card-body p-20">
+                    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
+                        <div>
+                            <p class="fw-medium text-primary-light mb-1">Total Universities</p>
+                            <h6 class="mb-0">@Model.TotalUniversities</h6>
+                        </div>
+                        <div class="w-50-px h-50-px bg-purple rounded-circle d-flex justify-content-center align-items-center">
+                            <iconify-icon icon="solar:buildings-3-outline" class="text-white text-2xl mb-0"></iconify-icon>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Universities with BTEC -->
+        <div class="col">
+            <div class="card shadow-none border bg-gradient-start-1 h-100">
+                <div class="card-body p-20">
+                    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
+                        <div>
+                            <p class="fw-medium text-primary-light mb-1">Universities with BTEC</p>
+                            <h6 class="mb-0">@Model.UniversitiesWithBtec</h6>
+                        </div>
+                        <div class="w-50-px h-50-px bg-info rounded-circle d-flex justify-content-center align-items-center">
+                            <iconify-icon icon="solar:user-check-outline" class="text-white text-2xl mb-0"></iconify-icon>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Total Applications -->
+        <div class="col">
+            <div class="card shadow-none border bg-gradient-start-2 h-100">
+                <div class="card-body p-20">
+                    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
+                        <div>
+                            <p class="fw-medium text-primary-light mb-1">Total BTEC Applications</p>
+                            <h6 class="mb-0">@Model.TotalBtecApplications</h6>
+                        </div>
+                        <div class="w-50-px h-50-px bg-cyan rounded-circle d-flex justify-content-center align-items-center">
+                            <iconify-icon icon="solar:document-add-outline" class="text-white text-2xl mb-0"></iconify-icon>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Active Students -->
+        <div class="col">
+            <div class="card shadow-none border bg-gradient-start-3 h-100">
+                <div class="card-body p-20">
+                    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
+                        <div>
+                            <p class="fw-medium text-primary-light mb-1">Active Students</p>
+                            <h6 class="mb-0">@Model.ActiveStudents</h6>
+                        </div>
+                        <div class="w-50-px h-50-px bg-success-main rounded-circle d-flex justify-content-center align-items-center">
+                            <iconify-icon icon="solar:users-group-rounded-outline" class="text-white text-2xl mb-0"></iconify-icon>
+                        </div>
+                    </div>
+                    <p class="fw-medium text-sm text-primary-light mt-12 mb-0">
+                        Currently enrolled
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts Row -->
+    <div class="row gy-4 mt-1">
+        <!-- Monthly Approvals Line Chart -->
+        <div class="col-xxl-8 col-xl-12">
+            <div class="card h-100">
+                <div class="card-body">
+                    <div class="d-flex flex-wrap align-items-center justify-content-between mb-3">
+                        <h6 class="text-lg mb-0">Monthly Approval Trends</h6>
+                        <span class="text-sm text-secondary-light">Last 6 Months</span>
+                    </div>
+                    <div id="monthlyApprovalsChart" style="min-height: 350px;"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Programs by Level Pie Chart -->
+        <div class="col-xxl-4 col-xl-6">
+            <div class="card h-100 radius-8 border-0">
+                <div class="card-body p-24">
+                    <h6 class="mb-2 fw-bold text-lg mb-3">Programs by Level</h6>
+                    <div id="programsByLevelChart" style="min-height: 350px;"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Programs by Field Column Chart -->
+        <div class="col-xxl-8 col-xl-12">
+            <div class="card h-100">
+                <div class="card-body">
+                    <div class="d-flex flex-wrap align-items-center justify-content-between mb-3">
+                        <h6 class="text-lg mb-0">Programs by Technical Field</h6>
+                        <span class="text-sm text-secondary-light">Top 10 Fields</span>
+                    </div>
+                    <div id="programsByFieldChart" style="min-height: 350px;"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Top Universities Table -->
+        <div class="col-xxl-4 col-xl-12">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h6 class="text-lg mb-3">Top Universities</h6>
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>University</th>
+                                    <th class="text-center">Programs</th>
+                                    <th class="text-center">Approved</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var uni in Model.TopUniversities.Take(10))
+                                {
+                                    <tr>
+                                        <td class="text-sm">@uni.UniversityName</td>
+                                        <td class="text-center">
+                                            <span class="badge bg-primary-600">@uni.ProgramCount</span>
+                                        </td>
+                                        <td class="text-center">
+                                            <span class="badge bg-success-main">@uni.ApprovedCount</span>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Programs -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h6 class="mb-0">Recent BTEC Programs</h6>
+                    <a asp-controller="BTECProgramReview" asp-action="Index" class="btn btn-sm btn-primary">
+                        View All Programs
+                    </a>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Program Name</th>
+                                    <th>University</th>
+                                    <th>Level</th>
+                                    <th>Field</th>
+                                    <th>Status</th>
+                                    <th>Created</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var program in Model.RecentPrograms)
+                                {
+                                    <tr>
+                                        <td class="fw-medium">@program.NameEnglish</td>
+                                        <td>@program.UniversityName</td>
+                                        <td>Level @((int)program.Level)</td>
+                                        <td><span class="badge bg-info-focus text-info-main">@program.TechnicalField</span></td>
+                                        <td>
+                                            @if (program.IsApprovedByBtecAuthority)
+                                            {
+                                                <span class="badge bg-success-focus text-success-main">
+                                                    <iconify-icon icon="solar:check-circle-outline"></iconify-icon> Approved
+                                                </span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-warning-focus text-warning-main">
+                                                    <iconify-icon icon="solar:clock-circle-outline"></iconify-icon> Pending
+                                                </span>
+                                            }
+                                        </td>
+                                        <td>@program.CreatedAt.ToString("MMM dd, yyyy")</td>
+                                        <td>
+                                            <a asp-controller="BTECProgramReview" asp-action="Details" asp-route-id="@program.Id"
+                                               class="btn btn-sm btn-outline-primary">
+                                                View
+                                            </a>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <!-- ApexCharts -->
+
+    <script>
+        // Programs by Level (Pie Chart)
+        var programsByLevelOptions = {
+            series: [@string.Join(",", Model.ProgramsByLevel.Select(p => p.Count))],
+            labels: [@Html.Raw(string.Join(",", Model.ProgramsByLevel.Select(p => $"'Level {(int)p.Level}'")))],
+            chart: {
+                type: 'donut',
+                height: 350
+            },
+            colors: ['#667eea', '#764ba2', '#f093fb', '#4facfe', '#00f2fe', '#43e97b', '#38f9d7', '#fa709a'],
+            legend: {
+                position: 'bottom'
+            },
+            responsive: [{
+                breakpoint: 480,
+                options: {
+                    chart: {
+                        width: 300
+                    },
+                    legend: {
+                        position: 'bottom'
+                    }
+                }
+            }]
+        };
+        var programsByLevelChart = new ApexCharts(document.querySelector("#programsByLevelChart"), programsByLevelOptions);
+        programsByLevelChart.render();
+
+        // Programs by Field (Column Chart)
+        var programsByFieldOptions = {
+            series: [{
+                name: 'Programs',
+                data: [@string.Join(",", Model.ProgramsByField.Select(p => p.Count))]
+            }],
+            chart: {
+                type: 'bar',
+                height: 350,
+                toolbar: {
+                    show: false
+                }
+            },
+            plotOptions: {
+                bar: {
+                    borderRadius: 8,
+                    dataLabels: {
+                        position: 'top'
+                    }
+                }
+            },
+            dataLabels: {
+                enabled: true,
+                offsetY: -20,
+                style: {
+                    fontSize: '12px',
+                    colors: ["#304758"]
+                }
+            },
+            xaxis: {
+                categories: [@Html.Raw(string.Join(",", Model.ProgramsByField.Select(p => $"'{p.TechnicalField}'")))],
+                labels: {
+                    rotate: -45
+                }
+            },
+            yaxis: {
+                title: {
+                    text: 'Number of Programs'
+                }
+            },
+            colors: ['#667eea'],
+            fill: {
+                type: 'gradient',
+                gradient: {
+                    shade: 'light',
+                    type: "vertical",
+                    shadeIntensity: 0.5,
+                    gradientToColors: ['#764ba2'],
+                    opacityFrom: 1,
+                    opacityTo: 1
+                }
+            }
+        };
+        var programsByFieldChart = new ApexCharts(document.querySelector("#programsByFieldChart"), programsByFieldOptions);
+        programsByFieldChart.render();
+
+        // Monthly Approvals (Line Chart)
+        var monthlyApprovalsOptions = {
+            series: [
+                {
+                    name: 'Approved',
+                    data: [@string.Join(",", Model.MonthlyApprovals.Select(m => m.Approved))]
+                },
+                {
+                    name: 'Rejected',
+                    data: [@string.Join(",", Model.MonthlyApprovals.Select(m => m.Rejected))]
+                },
+                {
+                    name: 'Pending',
+                    data: [@string.Join(",", Model.MonthlyApprovals.Select(m => m.Pending))]
+                }
+            ],
+            chart: {
+                type: 'line',
+                height: 350,
+                toolbar: {
+                    show: false
+                }
+            },
+            colors: ['#28a745', '#dc3545', '#ffc107'],
+            dataLabels: {
+                enabled: false
+            },
+            stroke: {
+                curve: 'smooth',
+                width: 3
+            },
+            xaxis: {
+                categories: [@Html.Raw(string.Join(",", Model.MonthlyApprovals.Select(m => $"'{m.MonthName}'")))]
+            },
+            yaxis: {
+                title: {
+                    text: 'Number of Programs'
+                }
+            },
+            legend: {
+                position: 'top'
+            },
+            markers: {
+                size: 5,
+                hover: {
+                    size: 7
+                }
+            }
+        };
+        var monthlyApprovalsChart = new ApexCharts(document.querySelector("#monthlyApprovalsChart"), monthlyApprovalsOptions);
+        monthlyApprovalsChart.render();
+    </script>
+}

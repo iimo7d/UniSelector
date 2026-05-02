@@ -1,0 +1,301 @@
+@model Uni_Selector.ViewModels.BTECAuthority.BTECStudentStatisticsViewModel
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = "BTEC Student Statistics";
+}
+
+<!-- Page Header -->
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h4 class="mb-1">👥 BTEC Student Statistics</h4>
+        <p class="text-muted mb-0">Comprehensive analysis of BTEC student demographics and performance</p>
+    </div>
+    <div>
+        <a asp-action="Index" class="btn btn-outline-secondary me-2">
+            <iconify-icon icon="solar:arrow-left-outline" width="20"></iconify-icon>
+            Back to Dashboard
+        </a>
+        <a asp-action="Export" asp-route-reportType="StudentStatistics" asp-route-exportType="Excel" class="btn btn-primary">
+            <iconify-icon icon="solar:download-outline" width="20"></iconify-icon>
+            Export Report
+        </a>
+    </div>
+</div>
+
+<!-- Summary Cards -->
+<div class="row row-cols-xxxl-5 row-cols-lg-3 row-cols-sm-2 row-cols-1 gy-4 mb-4">
+    <!-- Total Students -->
+    <div class="col">
+        <div class="card shadow-none border bg-gradient-start-1">
+            <div class="card-body">
+                <div class="d-flex align-items-center justify-content-between gap-3">
+                    <div>
+                        <h6 class="fw-semibold mb-1">Total BTEC Students</h6>
+                        <h4 class="mb-0">@Model.TotalStudents</h4>
+                    </div>
+                    <div class="flex-shrink-0">
+                        <div class="avatar-icon bg-primary-600 text-white rounded-circle" style="width: 50px; height: 50px; display: flex; align-items: center; justify-content: center;">
+                            <iconify-icon icon="solar:users-group-rounded-outline" width="24"></iconify-icon>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Active Students -->
+    <div class="col">
+        <div class="card shadow-none border bg-gradient-start-2">
+            <div class="card-body">
+                <div class="d-flex align-items-center justify-content-between gap-3">
+                    <div>
+                        <h6 class="fw-semibold mb-1">Active Students</h6>
+                        <h4 class="mb-0">@Model.ActiveStudents</h4>
+                        <span class="badge bg-success-focus text-success-main">Active</span>
+                    </div>
+                    <div class="flex-shrink-0">
+                        <div class="avatar-icon bg-success-main text-white rounded-circle" style="width: 50px; height: 50px; display: flex; align-items: center; justify-content: center;">
+                            <iconify-icon icon="solar:user-check-outline" width="24"></iconify-icon>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Level 2 Completed -->
+    <div class="col">
+        <div class="card shadow-none border bg-gradient-start-3">
+            <div class="card-body">
+                <div class="d-flex align-items-center justify-content-between gap-3">
+                    <div>
+                        <h6 class="fw-semibold mb-1">Level 2 Completed</h6>
+                        <h4 class="mb-0">@Model.StudentsWithLevel2</h4>
+                    </div>
+                    <div class="flex-shrink-0">
+                        <div class="avatar-icon bg-info-main text-white rounded-circle" style="width: 50px; height: 50px; display: flex; align-items: center; justify-content: center;">
+                            <iconify-icon icon="solar:diploma-outline" width="24"></iconify-icon>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Level 3 Completed -->
+    <div class="col">
+        <div class="card shadow-none border bg-gradient-start-4">
+            <div class="card-body">
+                <div class="d-flex align-items-center justify-content-between gap-3">
+                    <div>
+                        <h6 class="fw-semibold mb-1">Level 3 Completed</h6>
+                        <h4 class="mb-0">@Model.StudentsWithLevel3</h4>
+                    </div>
+                    <div class="flex-shrink-0">
+                        <div class="avatar-icon bg-warning-main text-white rounded-circle" style="width: 50px; height: 50px; display: flex; align-items: center; justify-content: center;">
+                            <iconify-icon icon="solar:diploma-verified-outline" width="24"></iconify-icon>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Enrolled Students -->
+    <div class="col">
+        <div class="card shadow-none border bg-gradient-start-5">
+            <div class="card-body">
+                <div class="d-flex align-items-center justify-content-between gap-3">
+                    <div>
+                        <h6 class="fw-semibold mb-1">Currently Enrolled</h6>
+                        <h4 class="mb-0">@Model.EnrolledStudents</h4>
+                    </div>
+                    <div class="flex-shrink-0">
+                        <div class="avatar-icon bg-purple text-white rounded-circle" style="width: 50px; height: 50px; display: flex; align-items: center; justify-content: center;">
+                            <iconify-icon icon="solar:book-2-outline" width="24"></iconify-icon>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Charts Row -->
+<div class="row gy-4 mb-4">
+    <!-- Gender Distribution -->
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Gender Distribution</h5>
+            </div>
+            <div class="card-body">
+                <div id="genderChart"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- GPA Distribution -->
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">GPA Distribution</h5>
+            </div>
+            <div class="card-body">
+                <div id="gpaChart"></div>
+                <div class="mt-3 text-center">
+                    <p class="mb-0 text-muted">Average GPA</p>
+                    <h4 class="mb-0 text-primary">@Model.AverageGPA.ToString("F2")</h4>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Province Distribution & Enrollment by Level -->
+<div class="row gy-4 mb-4">
+    <!-- Province Distribution -->
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Students by Province</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Province</th>
+                                <th class="text-center">Students</th>
+                                <th class="text-end">Percentage</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var province in Model.ProvinceDistribution)
+                            {
+                                <tr>
+                                    <td>
+                                        <iconify-icon icon="solar:map-point-outline" width="18" class="text-primary me-2"></iconify-icon>
+                                        @province.Province
+                                    </td>
+                                    <td class="text-center">
+                                        <span class="badge bg-primary-focus text-primary">@province.Count</span>
+                                    </td>
+                                    <td class="text-end">
+                                        <div class="progress" style="height: 8px; width: 100px; float: right;">
+                                            <div class="progress-bar bg-primary" role="progressbar" style="width: @province.Percentage.ToString("F0")%"></div>
+                                        </div>
+                                        <small class="text-muted ms-2">@province.Percentage.ToString("F1")%</small>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Enrollment by Level -->
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Enrollment by BTEC Level</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Level</th>
+                                <th class="text-center">Enrolled</th>
+                                <th class="text-center">Completed</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var level in Model.EnrollmentByLevel)
+                            {
+                                <tr>
+                                    <td>
+                                        <span class="badge bg-primary-focus text-primary">@level.Level</span>
+                                    </td>
+                                    <td class="text-center">
+                                        <span class="badge bg-info-focus text-info-main">@level.EnrolledCount</span>
+                                    </td>
+                                    <td class="text-center">
+                                        <span class="badge bg-success-focus text-success-main">@level.CompletedCount</span>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+@section Scripts {
+    <script>
+        // Gender Distribution Chart
+        var genderOptions = {
+            series: @Json.Serialize(Model.GenderDistribution.Select(g => g.Count)),
+            chart: {
+                type: "pie",
+                height: 300
+            },
+            labels: @Json.Serialize(Model.GenderDistribution.Select(g => g.Gender)),
+            colors: ["#667eea", "#f093fb"],
+            legend: {
+                position: "bottom"
+            },
+            dataLabels: {
+                enabled: true,
+                formatter: function (val, opts) {
+                    return opts.w.config.series[opts.seriesIndex]
+                }
+            }
+        };
+        var genderChart = new ApexCharts(document.querySelector("#genderChart"), genderOptions);
+        genderChart.render();
+
+        // GPA Distribution Chart
+        var gpaOptions = {
+            series: [{
+                name: "Students",
+                data: @Json.Serialize(Model.GPADistribution.Select(g => g.Count))
+            }],
+            chart: {
+                type: "bar",
+                height: 280,
+                toolbar: { show: false }
+            },
+            colors: ["#667eea"],
+            plotOptions: {
+                bar: {
+                    borderRadius: 4,
+                    dataLabels: { position: "top" }
+                }
+            },
+            dataLabels: {
+                enabled: true,
+                offsetY: -20,
+                style: { fontSize: "12px", colors: ["#304758"] }
+            },
+            xaxis: {
+                categories: @Json.Serialize(Model.GPADistribution.Select(g => g.Range)),
+                labels: { style: { fontSize: "11px" } }
+            },
+            fill: {
+                type: "gradient",
+                gradient: {
+                    shade: "light",
+                    type: "vertical",
+                    shadeIntensity: 0.5,
+                    opacityFrom: 0.9,
+                    opacityTo: 0.7
+                }
+            }
+        };
+        var gpaChart = new ApexCharts(document.querySelector("#gpaChart"), gpaOptions);
+        gpaChart.render();
+    </script>
+}

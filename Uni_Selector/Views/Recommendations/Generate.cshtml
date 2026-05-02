@@ -1,0 +1,703 @@
+﻿@using Uni_Selector.ViewModels.Recommendations
+@model GenerateRecommendationsViewModel
+@{
+    ViewData["Title"] = "Generate University Recommendations";
+}
+
+@section Styles {
+    <style>
+        /* Custom styles for Generate Recommendations page */
+        .recommendation-card {
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+            .recommendation-card::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: -100%;
+                width: 100%;
+                height: 100%;
+                background: linear-gradient(90deg, transparent, rgba(95, 45, 237, 0.1), transparent);
+                transition: left 0.5s;
+            }
+
+            .recommendation-card:hover::before {
+                left: 100%;
+            }
+
+            .recommendation-card:hover {
+                transform: translateY(-8px);
+                box-shadow: 0 20px 40px rgba(95, 45, 237, 0.15);
+            }
+
+        .icon-wrapper {
+            background: linear-gradient(135deg, #5f2ded 0%, #f2277e 100%);
+            animation: pulse-slow 3s ease-in-out infinite;
+        }
+
+        @@keyframes pulse-slow {
+            0%, 100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.05);
+            }
+        }
+
+        .feature-item {
+            transition: all 0.3s ease;
+        }
+
+            .feature-item:hover {
+                transform: translateX(8px);
+            }
+
+                .feature-item:hover .feature-icon {
+                    background: #5f2ded;
+                    color: white;
+                }
+
+        .status-badge {
+            animation: slideInRight 0.5s ease-out;
+        }
+
+        @@keyframes slideInRight {
+            from {
+                transform: translateX(20px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .gradient-text {
+            background: linear-gradient(135deg, #5f2ded 0%, #f2277e 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .btn-generate {
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+            .btn-generate::before {
+                content: '';
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                width: 0;
+                height: 0;
+                border-radius: 50%;
+                background: rgba(255, 255, 255, 0.2);
+                transform: translate(-50%, -50%);
+                transition: width 0.6s, height 0.6s;
+                z-index: -1;
+            }
+
+            .btn-generate:hover::before {
+                width: 300px;
+                height: 300px;
+            }
+
+        .loading-spinner {
+            border: 3px solid rgba(95, 45, 237, 0.1);
+            border-top: 3px solid #5f2ded;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+
+        @@keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .info-card {
+            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.95);
+        }
+
+        .dark .info-card {
+            background: rgba(23, 15, 47, 0.95);
+        }
+
+        /* Progress bar animation */
+        .progress-bar {
+            height: 4px;
+            background: linear-gradient(90deg, #5f2ded, #f2277e, #5f2ded);
+            background-size: 200% 100%;
+            animation: shimmer 2s linear infinite;
+        }
+
+        @@keyframes shimmer {
+            0% {
+                background-position: -200% 0;
+            }
+
+            100% {
+                background-position: 200% 0;
+            }
+        }
+
+        /* Floating animation for illustration */
+        .float-animation {
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @@keyframes float {
+            0%, 100% {
+                transform: translateY(0px);
+            }
+
+            50% {
+                transform: translateY(-20px);
+            }
+        }
+    </style>
+}
+
+<!-- Breadcrumb -->
+<section class="bg-lightGrey10 dark:bg-lightGrey10-dark relative z-0 overflow-y-visible py-50px md:py-20 lg:py-100px 2xl:pb-150px 2xl:pt-40.5">
+    <!-- Animated background elements -->
+    <div class="absolute top-0 left-0 w-full h-full overflow-hidden -z-1">
+        <div class="absolute top-20 left-10 w-72 h-72 bg-primaryColor opacity-5 rounded-full blur-3xl"></div>
+        <div class="absolute bottom-20 right-10 w-96 h-96 bg-secondaryColor opacity-5 rounded-full blur-3xl"></div>
+    </div>
+
+    <div class="container 2xl:container-secondary-md mx-auto">
+        <div class="text-center">
+            <h1 class="text-3xl md:text-4xl lg:text-5xl font-bold text-blackColor dark:text-blackColor-dark mb-4" data-aos="fade-up">
+                <i class="icofont-graduate-alt text-primaryColor mr-3"></i>
+                Generate Your <span class="gradient-text">Recommendations</span>
+            </h1>
+            <p class="text-lg text-contentColor dark:text-contentColor-dark mb-6" data-aos="fade-up" data-aos-delay="100">
+                Discover the perfect university programs tailored to your profile
+            </p>
+
+            <!-- Breadcrumb -->
+            <ul class="flex gap-1 text-sm lg:text-size-15 text-contentColor dark:text-contentColor-dark justify-center" data-aos="fade-up" data-aos-delay="200">
+                <li>
+                    <a asp-controller="Home" asp-action="Index" class="hover:text-primaryColor dark:hover:text-primaryColor">
+                        <i class="icofont-home mr-1"></i>Home
+                    </a>
+                </li>
+                <li>
+                    <i class="icofont-simple-right"></i>
+                </li>
+
+                <li>
+                    <i class="icofont-simple-right"></i>
+                </li>
+                <li class="text-primaryColor">Generate Recommendations</li>
+            </ul>
+        </div>
+    </div>
+</section>
+
+<!-- Main Content -->
+<section class="py-50px md:py-70px lg:py-20 2xl:py-100px bg-whiteColor dark:bg-whiteColor-dark">
+    <div class="container 2xl:container-secondary-md mx-auto">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-30px">
+
+            <!-- Left Column - Information & Features -->
+            <div class="lg:col-span-5" data-aos="fade-right">
+                <!-- Status Card -->
+                @if (Model.HasExistingRecommendations)
+                {
+                    <div class="info-card rounded-lg shadow-lg p-6 mb-6 border-l-4 border-secondaryColor">
+                        <div class="flex items-start gap-4">
+                            <div class="flex-shrink-0">
+                                <div class="w-12 h-12 rounded-full bg-secondaryColor bg-opacity-10 flex items-center justify-center">
+                                    <i class="icofont-info-circle text-2xl text-secondaryColor"></i>
+                                </div>
+                            </div>
+                            <div class="flex-1">
+                                <h3 class="text-lg font-bold text-blackColor dark:text-blackColor-dark mb-2">
+                                    Existing Recommendations Found
+                                </h3>
+                                <p class="text-contentColor dark:text-contentColor-dark mb-3">
+                                    You currently have <span class="font-bold text-primaryColor">@Model.ExistingRecommendationsCount</span>
+                                    recommendation@(Model.ExistingRecommendationsCount != 1 ? "s" : "") in your profile.
+                                </p>
+                                <div  class="flex items-center gap-2 text-sm text-contentColor dark:text-contentColor-dark">
+                                    <i class="icofont-lightbulb text-primaryColor"></i>
+                                    <span>Regenerating will replace your current recommendations</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+
+                <!-- How it Works Card -->
+                <div class="recommendation-card bg-lightGrey10 dark:bg-lightGrey10-dark rounded-lg shadow-lg p-8 mb-6">
+                    <div class="text-center mb-6">
+                        <div class="icon-wrapper w-20 h-20 rounded-full mx-auto mb-4 flex items-center justify-center">
+                            <i class="icofont-brain-alt text-4xl text-whiteColor"></i>
+                        </div>
+                        <h2 class="text-2xl font-bold text-blackColor dark:text-blackColor-dark mb-2">
+                            Smart Matching Algorithm
+                        </h2>
+                        <p class="text-contentColor dark:text-contentColor-dark">
+                            Our AI-powered system analyzes your profile to find the best matches
+                        </p>
+                    </div>
+
+                    <div class="space-y-4">
+                        <div class="feature-item flex items-start gap-4">
+                            <div class="feature-icon flex-shrink-0 w-10 h-10 rounded-lg bg-primaryColor bg-opacity-10 flex items-center justify-center transition-all duration-300">
+                                <i class="icofont-check-circled text-xl text-primaryColor"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-blackColor dark:text-blackColor-dark mb-1">GPA Matching</h4>
+                                <p class="text-sm text-contentColor dark:text-contentColor-dark">
+                                    Programs that match your academic qualifications
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="feature-item flex items-start gap-4">
+                            <div class="feature-icon flex-shrink-0 w-10 h-10 rounded-lg bg-primaryColor bg-opacity-10 flex items-center justify-center transition-all duration-300">
+                                <i class="icofont-location-pin text-xl text-primaryColor"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-blackColor dark:text-blackColor-dark mb-1">Location Preference</h4>
+                                <p class="text-sm text-contentColor dark:text-contentColor-dark">
+                                    Universities within your preferred distance
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="feature-item flex items-start gap-4">
+                            <div class="feature-icon flex-shrink-0 w-10 h-10 rounded-lg bg-primaryColor bg-opacity-10 flex items-center justify-center transition-all duration-300">
+                                <i class="icofont-money text-xl text-primaryColor"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-blackColor dark:text-blackColor-dark mb-1">Budget Alignment</h4>
+                                <p class="text-sm text-contentColor dark:text-contentColor-dark">
+                                    Programs that fit your registration budget
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="feature-item flex items-start gap-4">
+                            <div class="feature-icon flex-shrink-0 w-10 h-10 rounded-lg bg-primaryColor bg-opacity-10 flex items-center justify-center transition-all duration-300">
+                                <i class="icofont-book-alt text-xl text-primaryColor"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-blackColor dark:text-blackColor-dark mb-1">Major Preferences</h4>
+                                <p class="text-sm text-contentColor dark:text-contentColor-dark">
+                                    Based on your desired fields of study
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="feature-item flex items-start gap-4">
+                            <div class="feature-icon flex-shrink-0 w-10 h-10 rounded-lg bg-primaryColor bg-opacity-10 flex items-center justify-center transition-all duration-300">
+                                <i class="icofont-star text-xl text-primaryColor"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-blackColor dark:text-blackColor-dark mb-1">Personalized Ranking</h4>
+                                <p class="text-sm text-contentColor dark:text-contentColor-dark">
+                                    Scored and sorted based on overall compatibility
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Stats -->
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="recommendation-card bg-gradient-to-br from-primaryColor to-primaryColor/80 rounded-lg shadow-lg p-6 text-center" data-aos="fade-up" data-aos-delay="100">
+                        <i class="icofont-university text-4xl mb-2"></i>
+                        <h3 class="text-3xl font-bold  mb-1">11+</h3>
+                        <p class="text-sm text-opacity-90">Universities</p>
+                    </div>
+                    <div class="recommendation-card bg-gradient-to-br from-secondaryColor to-secondaryColor/80 rounded-lg shadow-lg p-6 text-center" data-aos="fade-up" data-aos-delay="200">
+                        <i class="icofont-graduate text-4xl  mb-2"></i>
+                        <h3 class="text-3xl font-bold mb-1">100+</h3>
+                        <p class="text-sm text-opacity-90">Programs</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column - Action Card -->
+            <div class="lg:col-span-7" data-aos="fade-left">
+                <div class="recommendation-card bg-whiteColor dark:bg-whiteColor-dark rounded-xl shadow-2xl p-8 lg:p-12">
+
+                    <!-- Main Illustration Area -->
+                    <div class="text-center mb-10">
+                        <div class="float-animation inline-block mb-6">
+                            <svg class="w-64 h-64 mx-auto" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+                                <!-- University Building -->
+                                <rect x="60" y="80" width="80" height="100" fill="#5f2ded" opacity="0.1" rx="4" />
+                                <rect x="70" y="90" width="15" height="15" fill="#5f2ded" opacity="0.3" />
+                                <rect x="93" y="90" width="15" height="15" fill="#5f2ded" opacity="0.3" />
+                                <rect x="115" y="90" width="15" height="15" fill="#5f2ded" opacity="0.3" />
+                                <rect x="70" y="115" width="15" height="15" fill="#5f2ded" opacity="0.3" />
+                                <rect x="93" y="115" width="15" height="15" fill="#5f2ded" opacity="0.3" />
+                                <rect x="115" y="115" width="15" height="15" fill="#5f2ded" opacity="0.3" />
+                                <rect x="85" y="150" width="30" height="30" fill="#f2277e" />
+
+                                <!-- Graduation Cap -->
+                                <path d="M100,40 L140,50 L100,60 L60,50 Z" fill="#5f2ded" />
+                                <rect x="98" y="60" width="4" height="20" fill="#5f2ded" />
+                                <circle cx="100" cy="82" r="3" fill="#f2277e" />
+
+                                <!-- Stars/Sparkles -->
+                                <circle cx="40" cy="60" r="2" fill="#f2277e" opacity="0.6" />
+                                <circle cx="160" cy="70" r="2" fill="#f2277e" opacity="0.6" />
+                                <circle cx="50" cy="140" r="2" fill="#5f2ded" opacity="0.6" />
+                                <circle cx="150" cy="130" r="2" fill="#5f2ded" opacity="0.6" />
+                            </svg>
+                        </div>
+
+                        <h2 class="text-3xl lg:text-4xl font-bold text-blackColor dark:text-blackColor-dark mb-4">
+                            Ready to Find Your Perfect Match?
+                        </h2>
+                        <p class="text-lg text-contentColor dark:text-contentColor-dark mb-6 max-w-2xl mx-auto">
+                            Our advanced algorithm will analyze your academic profile, preferences, and goals to recommend
+                            the best university programs that match your needs.
+                        </p>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <form id="generateForm" asp-action="Generate" method="post" class="space-y-6">
+                        @Html.AntiForgeryToken()
+
+                        @if (Model.HasExistingRecommendations)
+                        {
+                            <input type="hidden" name="regenerate" value="true" />
+
+                            <!-- Warning Notice -->
+                            <div class="bg-yellow-50 dark:bg-yellow-900/20 border-l-4 border-yellow-400 p-4 rounded-lg">
+                                <div class="flex items-start gap-3">
+                                    <i class="icofont-warning text-2xl text-yellow-600 mt-1"></i>
+                                    <div>
+                                        <h4 class="font-semibold text-yellow-800 dark:text-yellow-200 mb-1">
+                                            Regenerating Recommendations
+                                        </h4>
+                                        <p class="text-sm text-yellow-700 dark:text-yellow-300">
+                                            This will replace your existing @Model.ExistingRecommendationsCount recommendation@(Model.ExistingRecommendationsCount != 1 ? "s" : "")
+                                            with new ones based on your current profile.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+
+                        <!-- Generate Button -->
+                        <div class="space-y-4"  >
+                            <button type="submit" style="background-color:darkorchid"  id="generateBtn"
+                                    class="btn-generate w-full bg-gradient-to-r from-primaryColor to-secondaryColor hover:from-primaryColor/90 hover:to-secondaryColor/90 text-whiteColor text-lg font-bold py-4 px-8 rounded-lg shadow-lg transition-all duration-300 flex items-center justify-center gap-3">
+                                <i class="icofont-rocket text-2xl"></i>
+                                <span id="btnText">
+                                    @if (Model.HasExistingRecommendations)
+                                    {
+                                        <text>Regenerate My Recommendations</text>
+                                    }
+                                    else
+                                    {
+                                        <text>Generate My Recommendations</text>
+                                    }
+                                </span>
+                                <i class="icofont-rounded-right text-xl"></i>
+                            </button>
+
+                            <!-- View Existing Button (if applicable) -->
+                            @if (Model.HasExistingRecommendations)
+                            {
+                                <a href="@Url.Action("Index", "Recommendations")"
+                                   class="block w-full text-center bg-whiteColor dark:bg-darkdeep1 border-2 border-primaryColor text-primaryColor hover:bg-primaryColor hover:text-whiteColor text-lg font-semibold py-4 px-8 rounded-lg transition-all duration-300">
+                                    <i class="icofont-eye text-xl mr-2"></i>
+                                    View Existing Recommendations
+                                </a>
+                            }
+                        </div>
+
+                        <!-- Additional Info -->
+                        <div class="bg-blueLight1 dark:bg-darkdeep1 rounded-lg p-6">
+                            <div class="flex items-start gap-4">
+                                <i class="icofont-info-circle text-2xl text-primaryColor flex-shrink-0 mt-1"></i>
+                                <div class="text-sm text-contentColor dark:text-contentColor-dark space-y-2">
+                                    <p class="font-semibold text-blackColor dark:text-blackColor-dark">
+                                        What happens next?
+                                    </p>
+                                    <ul class="space-y-1 list-disc list-inside">
+                                        <li>Our system analyzes your complete profile</li>
+                                        <li>We match you with eligible programs</li>
+                                        <li>Recommendations are ranked by compatibility score</li>
+                                        <li>You can review and apply to programs you like</li>
+                                    </ul>
+                                    <p class="text-xs mt-3 text-contentColor/70 dark:text-contentColor-dark/70">
+                                        <i class="icofont-clock-time mr-1"></i>
+                                        This usually takes just a few seconds
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bottom Info Section -->
+        <div class="mt-16 grid grid-cols-1 md:grid-cols-3 gap-6" data-aos="fade-up">
+            <div class="text-center p-6">
+                <div class="w-16 h-16 rounded-full bg-primaryColor bg-opacity-10 flex items-center justify-center mx-auto mb-4">
+                    <i class="icofont-chart-histogram text-3xl text-primaryColor"></i>
+                </div>
+                <h3 class="text-lg font-bold text-blackColor dark:text-blackColor-dark mb-2">
+                    Data-Driven Results
+                </h3>
+                <p class="text-sm text-contentColor dark:text-contentColor-dark">
+                    Recommendations based on comprehensive data analysis and historical success rates
+                </p>
+            </div>
+
+            <div class="text-center p-6">
+                <div class="w-16 h-16 rounded-full bg-primaryColor bg-opacity-10 flex items-center justify-center mx-auto mb-4">
+                    <i class="icofont-refresh text-3xl text-primaryColor"></i>
+                </div>
+                <h3 class="text-lg font-bold text-blackColor dark:text-blackColor-dark mb-2">
+                    Update Anytime
+                </h3>
+                <p class="text-sm text-contentColor dark:text-contentColor-dark">
+                    Update your profile and regenerate recommendations as many times as you need
+                </p>
+            </div>
+
+            <div class="text-center p-6">
+                <div class="w-16 h-16 rounded-full bg-primaryColor bg-opacity-10 flex items-center justify-center mx-auto mb-4">
+                    <i class="icofont-shield text-3xl text-primaryColor"></i>
+                </div>
+                <h3 class="text-lg font-bold text-blackColor dark:text-blackColor-dark mb-2">
+                    100% Free Service
+                </h3>
+                <p class="text-sm text-contentColor dark:text-contentColor-dark">
+                    Generate unlimited recommendations at no cost, completely free of charge
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    <script>
+        // Initialize AOS
+        AOS.init({
+            duration: 800,
+            easing: 'ease-in-out',
+            once: true,
+            offset: 100
+        });
+
+        // Handle form submission with SweetAlert
+        document.getElementById('generateForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const form = this;
+            const generateBtn = document.getElementById('generateBtn');
+            const btnText = document.getElementById('btnText');
+            const originalText = btnText.innerHTML;
+            const hasExisting = @Model.HasExistingRecommendations.ToString().ToLower();
+
+            // Show confirmation if regenerating
+            if (hasExisting) {
+                Swal.fire({
+                    title: 'Regenerate Recommendations?',
+                    html: `
+                        <div class="text-left">
+                            <p class="mb-3">You currently have <strong>@Model.ExistingRecommendationsCount</strong> recommendation(s).</p>
+                            <p class="mb-3">Regenerating will:</p>
+                            <ul class="list-disc list-inside space-y-1 text-sm text-gray-600">
+                                <li>Remove your current recommendations</li>
+                                <li>Create new recommendations based on your updated profile</li>
+                                <li>Analyze all available programs again</li>
+                            </ul>
+                            <p class="mt-3 text-sm"><strong>This action cannot be undone.</strong></p>
+                        </div>
+                    `,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#5f2ded',
+                    cancelButtonColor: '#6c757d',
+                    confirmButtonText: '<i class="icofont-check-circled mr-2"></i>Yes, Regenerate',
+                    cancelButtonText: '<i class="icofont-close-circled mr-2"></i>Cancel',
+                    reverseButtons: true,
+                    customClass: {
+                        confirmButton: 'px-6 py-3 rounded-lg font-semibold',
+                        cancelButton: 'px-6 py-3 rounded-lg font-semibold'
+                    }
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        submitForm();
+                    }
+                });
+            } else {
+                submitForm();
+            }
+
+            function submitForm() {
+                // Show loading state
+                generateBtn.disabled = true;
+                btnText.innerHTML = `
+                    <div class="flex items-center gap-3">
+                        <div class="loading-spinner"></div>
+                        <span>Generating Recommendations...</span>
+                    </div>
+                `;
+
+                // Show progress notification
+                let timerInterval;
+                Swal.fire({
+                    title: 'Analyzing Your Profile',
+                    html: `
+                        <div class="space-y-4">
+                            <div class="loading-spinner mx-auto"></div>
+                            <p class="text-sm text-gray-600">Please wait while we find the best programs for you...</p>
+                            <div class="progress-bar rounded-full"></div>
+                        </div>
+                    `,
+                    timer: null,
+                    timerProgressBar: false,
+                    showConfirmButton: false,
+                    allowOutsideClick: false,
+                    allowEscapeKey: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    }
+                });
+
+                // Submit the form
+                fetch(form.action, {
+                    method: 'POST',
+                    body: new FormData(form),
+                    headers: {
+                        'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+                    }
+                })
+                .then(response => {
+                    if (response.redirected) {
+                        // Success - redirect to recommendations page
+                        Swal.fire({
+                            title: 'Success!',
+                            html: `
+                                <div class="space-y-3">
+                                    <i class="icofont-check-circled text-6xl text-green-500"></i>
+                                    <p>Your recommendations have been generated successfully!</p>
+                                </div>
+                            `,
+                            icon: 'success',
+                            timer: 2000,
+                            showConfirmButton: false,
+                            willClose: () => {
+                                window.location.href = response.url;
+                            }
+                        });
+                    } else {
+                        throw new Error('Request failed');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+
+                    // Reset button
+                    generateBtn.disabled = false;
+                    btnText.innerHTML = originalText;
+
+                    // Show error message
+                    Swal.fire({
+                        title: 'Oops!',
+                        text: 'An error occurred while generating recommendations. Please try again.',
+                        icon: 'error',
+                        confirmButtonColor: '#5f2ded',
+                        confirmButtonText: '<i class="icofont-refresh mr-2"></i>Try Again'
+                    });
+                });
+            }
+        });
+
+        // Add smooth scroll behavior
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Display TempData messages with SweetAlert
+        @if (TempData["Success"] != null)
+        {
+                <text>
+                Swal.fire({
+                    title: 'Success!',
+                    text: '@TempData["Success"]',
+                    icon: 'success',
+                    confirmButtonColor: '#5f2ded',
+                    confirmButtonText: 'Great!'
+                });
+                </text>
+        }
+
+        @if (TempData["Error"] != null)
+        {
+                <text>
+                Swal.fire({
+                    title: 'Error!',
+                    text: '@TempData["Error"]',
+                    icon: 'error',
+                    confirmButtonColor: '#5f2ded',
+                    confirmButtonText: 'OK'
+                });
+                </text>
+        }
+
+        @if (TempData["Warning"] != null)
+        {
+                <text>
+                Swal.fire({
+                    title: 'Notice',
+                    text: '@TempData["Warning"]',
+                    icon: 'warning',
+                    confirmButtonColor: '#5f2ded',
+                    confirmButtonText: 'Understood'
+                });
+                </text>
+        }
+
+        @if (TempData["Info"] != null)
+        {
+                <text>
+                Swal.fire({
+                    title: 'Information',
+                    text: '@TempData["Info"]',
+                    icon: 'info',
+                    confirmButtonColor: '#5f2ded',
+                    confirmButtonText: 'Got it'
+                });
+                </text>
+        }
+    </script>
+}
