@@ -40,6 +40,7 @@ namespace Uni_Selector.ViewModels.BTECAuthority
         public bool IsApprovedByBtecAuthority { get; set; }
         public DateTime? ApprovalDate { get; set; }
         public string? ApprovalNotes { get; set; }
+        public string? RejectionReason { get; set; }
 
         // Entry Requirements
         public List<BtecEntryRequirementDto> EntryRequirements { get; set; } = new();

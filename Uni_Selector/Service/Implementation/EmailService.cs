@@ -1,7 +1,9 @@
+using MailKit.Net.Smtp;
+using MailKit.Security;
 using Microsoft.AspNetCore.Identity;
+using MimeKit;
 using SendGrid;
 using SendGrid.Helpers.Mail;
-using System.Net.Mail;
 using Uni_Selector.Models;
 using Uni_Selector.Models.Enums;
 using Uni_Selector.Service.Interface;
@@ -27,57 +29,104 @@ namespace Uni_Selector.Service.Implementation
 
         public async Task SendEmailAsync(string to, string subject, string body, bool isHtml)
         {
-            try
+            var sendGridKey = _configuration["EmailSettings:SendGridApiKey"];
+            var isSendGridConfigured = !string.IsNullOrWhiteSpace(sendGridKey)
+                                       && sendGridKey != "Send Grid API Key";
+
+            if (isSendGridConfigured)
             {
-                // Retrieve SendGrid settings from configuration
-                var apiKey = _configuration["EmailSettings:SendGridApiKey"];
-                var senderEmail = _configuration["EmailSettings:SenderEmail"];
-                var senderName = _configuration["EmailSettings:SenderName"];
-
-                // Initialize SendGrid Client
-                var client = new SendGridClient(apiKey);
-                var from = new EmailAddress(senderEmail, senderName);
-                var toAddress = new EmailAddress(to);
-
-                // Create the message
-                var msg = new SendGridMessage
+                try
                 {
-                    From = from,
-                    Subject = subject
-                };
-                msg.AddTo(toAddress);
-
-                // Set content based on isHtml flag
-                if (isHtml)
-                {
-                    msg.HtmlContent = body;
+                    await SendViaSendGridAsync(to, subject, body, isHtml);
+                    return;
                 }
-                else
+                catch (Exception ex)
                 {
-                    msg.PlainTextContent = body;
-                }
-
-                // Send the email
-                var response = await client.SendEmailAsync(msg);
-
-                // Check for success status codes (Accepted or OK)
-                if (response.IsSuccessStatusCode)
-                {
-                    _logger.LogInformation($"Email sent successfully to {to}. Status: {response.StatusCode}");
-                }
-                else
-                {
-                    // Read the error body if available for debugging
-                    var errorBody = await response.Body.ReadAsStringAsync();
-                    _logger.LogError($"Failed to send email to {to}. Status: {response.StatusCode}, Body: {errorBody}");
-                    throw new Exception($"SendGrid API Error: {response.StatusCode}");
+                    _logger.LogWarning(ex,
+                        "[SendGrid] Failed to send email to {To}. Falling back to Gmail SMTP.", to);
                 }
             }
-            catch (Exception ex)
+            else
             {
-                _logger.LogError(ex, $"Exception occurred while sending email to {to}");
-                throw;
+                _logger.LogInformation(
+                    "[EmailService] SendGrid API key not configured. Sending via Gmail SMTP directly.");
             }
+
+            await SendViaGmailAsync(to, subject, body, isHtml);
+        }
+
+        // ── Provider: SendGrid ──────────────────────────────────────────────────────
+        private async Task SendViaSendGridAsync(string to, string subject, string body, bool isHtml)
+        {
+            var apiKey      = _configuration["EmailSettings:SendGridApiKey"];
+            var senderEmail = _configuration["EmailSettings:SenderEmail"];
+            var senderName  = _configuration["EmailSettings:SenderName"];
+
+            var client     = new SendGridClient(apiKey);
+            var from       = new EmailAddress(senderEmail, senderName);
+            var toAddress  = new EmailAddress(to);
+
+            var msg = new SendGridMessage { From = from, Subject = subject };
+            msg.AddTo(toAddress);
+
+            if (isHtml)
+                msg.HtmlContent = body;
+            else
+                msg.PlainTextContent = body;
+
+            var response = await client.SendEmailAsync(msg);
+
+            if (response.IsSuccessStatusCode)
+            {
+                _logger.LogInformation(
+                    "[SendGrid] Email sent successfully to {To}. Status: {Status}", to, response.StatusCode);
+            }
+            else
+            {
+                var errorBody = await response.Body.ReadAsStringAsync();
+                _logger.LogError(
+                    "[SendGrid] Failed to send to {To}. Status: {Status}, Body: {ErrorBody}",
+                    to, response.StatusCode, errorBody);
+                throw new Exception($"SendGrid API Error: {response.StatusCode}");
+            }
+        }
+
+        // ── Provider: Gmail SMTP (MailKit) ──────────────────────────────────────────
+        private async Task SendViaGmailAsync(string to, string subject, string body, bool isHtml)
+        {
+            var smtpServer  = _configuration["EmailSettings:SmtpServer"] ?? "smtp.gmail.com";
+            var smtpPort    = int.TryParse(_configuration["EmailSettings:SmtpPort"], out var p) ? p : 587;
+            var senderEmail = _configuration["EmailSettings:SenderEmail"];
+            var senderName  = _configuration["EmailSettings:SenderName"] ?? "Smart University Platform";
+            var username    = _configuration["EmailSettings:Username"];
+            var password    = _configuration["EmailSettings:Password"];
+
+            if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(password))
+                throw new InvalidOperationException(
+                    "Gmail SMTP credentials (EmailSettings:Username / EmailSettings:Password) are not configured.");
+
+            var message = new MimeMessage();
+            message.From.Add(new MailboxAddress(senderName, senderEmail ?? username));
+            message.To.Add(new MailboxAddress(string.Empty, to));
+            message.Subject = subject;
+
+            var bodyBuilder = new BodyBuilder();
+            if (isHtml)
+                bodyBuilder.HtmlBody = body;
+            else
+                bodyBuilder.TextBody = body;
+
+            message.Body = bodyBuilder.ToMessageBody();
+
+            using var smtpClient = new SmtpClient();
+            await smtpClient.ConnectAsync(smtpServer, smtpPort, SecureSocketOptions.StartTls);
+            await smtpClient.AuthenticateAsync(username, password);
+            await smtpClient.SendAsync(message);
+            await smtpClient.DisconnectAsync(true);
+
+            _logger.LogInformation(
+                "[Gmail SMTP] Email sent successfully to {To} via {SmtpServer}:{SmtpPort}",
+                to, smtpServer, smtpPort);
         }
 
         public async Task SendBulkEmailAsync(List<string> recipients, string subject, string body)

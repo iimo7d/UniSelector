@@ -40,6 +40,8 @@ namespace Uni_Selector.Models
         public DateTime? ApprovalDate { get; set; }
         [StringLength(500)]
         public string? ApprovalNotes { get; set; }
+        [StringLength(500)]
+        public string? RejectionReason { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public DateTime? UpdatedAt { get; set; }
         public ICollection<BtecEntryRequirement> EntryRequirements { get; set; }

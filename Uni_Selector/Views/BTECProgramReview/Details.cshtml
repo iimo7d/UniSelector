@@ -253,24 +253,36 @@
             </div>
 
             <!-- Approval Notes Card -->
-            @if (!string.IsNullOrEmpty(Model.ApprovalNotes))
+            @if (Model.IsApprovedByBtecAuthority && !string.IsNullOrEmpty(Model.ApprovalNotes))
             {
                 <div class="card mb-4">
                     <div class="card-header">
                         <h6 class="mb-0">
-                            @if (Model.IsApprovedByBtecAuthority)
-                            {
-                                <text>Approval Notes</text>
-                            }
-                            else
-                            {
-                                <text>Rejection Reason</text>
-                            }
+                            <iconify-icon icon="solar:check-circle-outline" class="text-success-main"></iconify-icon>
+                            Approval Notes
                         </h6>
                     </div>
                     <div class="card-body">
-                        <div class="alert @(Model.IsApprovedByBtecAuthority ? "alert-success" : "alert-danger") mb-0">
+                        <div class="alert alert-success mb-0">
                             <p class="mb-0">@Model.ApprovalNotes</p>
+                        </div>
+                    </div>
+                </div>
+            }
+
+            <!-- Rejection Reason Card -->
+            @if (!Model.IsApprovedByBtecAuthority && !string.IsNullOrEmpty(Model.RejectionReason))
+            {
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h6 class="mb-0">
+                            <iconify-icon icon="solar:close-circle-outline" class="text-danger-main"></iconify-icon>
+                            Rejection Reason
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="alert alert-danger mb-0">
+                            <p class="mb-0">@Model.RejectionReason</p>
                         </div>
                     </div>
                 </div>

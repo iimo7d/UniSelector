@@ -17,14 +17,17 @@ namespace Uni_Selector.Controllers
         private readonly AppDbContext _context;
         private readonly INotificationService _notificationService;
         private readonly IEmailService _emailService;
+        private readonly ILogger<ApplicationReviewController> _logger;
 
         public ApplicationReviewController(
             AppDbContext context,
             INotificationService notificationService,
-            IEmailService emailService)
+            IEmailService emailService,
+            ILogger<ApplicationReviewController> logger)
         {
             _context = context;
             _notificationService = notificationService;
+            _logger = logger;
             _emailService = emailService;
         }
 

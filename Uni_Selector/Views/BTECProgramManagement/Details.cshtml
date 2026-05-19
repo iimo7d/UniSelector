@@ -174,6 +174,22 @@
                             }
                         </div>
                     }
+                    else if (!Model.IsActive && !string.IsNullOrEmpty(Model.RejectionReason))
+                    {
+                        <div class="text-center py-16">
+                            <iconify-icon icon="mdi:close-circle" class="text-danger-main" style="font-size: 48px;"></iconify-icon>
+                            <h6 class="mt-12 mb-8 text-danger-main">Rejected</h6>
+                            @if (Model.ApprovalDate.HasValue)
+                            {
+                                <p class="text-sm text-secondary-light mb-8">
+                                    Rejected on @Model.ApprovalDate.Value.ToString("MMM dd, yyyy")
+                                </p>
+                            }
+                            <div class="mt-4 p-12 bg-danger-focus radius-8 text-start">
+                                <p class="text-sm mb-0"><strong>Reason:</strong> @Model.RejectionReason</p>
+                            </div>
+                        </div>
+                    }
                     else
                     {
                         <div class="text-center py-16">

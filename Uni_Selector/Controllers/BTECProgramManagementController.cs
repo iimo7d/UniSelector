@@ -148,6 +148,7 @@ namespace Uni_Selector.Controllers
                 IsApprovedByBtecAuthority = program.IsApprovedByBtecAuthority,
                 ApprovalDate = program.ApprovalDate,
                 ApprovalNotes = program.ApprovalNotes,
+                RejectionReason = program.RejectionReason,
                 CreatedAt = program.CreatedAt,
                 UpdatedAt = program.UpdatedAt,
                 UniversityNameArabic = program.University.NameArabic,

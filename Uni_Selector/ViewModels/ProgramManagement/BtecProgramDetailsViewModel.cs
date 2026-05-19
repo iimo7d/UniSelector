@@ -22,6 +22,7 @@ namespace Uni_Selector.ViewModels.ProgramManagement
         public bool IsApprovedByBtecAuthority { get; set; }
         public DateTime? ApprovalDate { get; set; }
         public string? ApprovalNotes { get; set; }
+        public string? RejectionReason { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
         public string UniversityNameArabic { get; set; }

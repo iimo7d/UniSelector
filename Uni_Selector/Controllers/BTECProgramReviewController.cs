@@ -212,6 +212,7 @@ namespace Uni_Selector.Controllers
                 IsApprovedByBtecAuthority = program.IsApprovedByBtecAuthority,
                 ApprovalDate = program.ApprovalDate,
                 ApprovalNotes = program.ApprovalNotes,
+                RejectionReason = program.RejectionReason,
 
                 // Entry Requirements
                 EntryRequirements = program.EntryRequirements.Select(er => new BtecEntryRequirementDto
@@ -269,6 +270,7 @@ namespace Uni_Selector.Controllers
             program.IsActive = true;
             program.ApprovalDate = DateTime.UtcNow;
             program.ApprovalNotes = model.ApprovalNotes;
+            program.RejectionReason = null;
             program.UpdatedAt = DateTime.UtcNow;
 
             await _context.SaveChangesAsync();
@@ -350,7 +352,9 @@ namespace Uni_Selector.Controllers
             // Update program status
             program.IsApprovedByBtecAuthority = false;
             program.IsActive = false;
-            program.ApprovalNotes = model.RejectionReason;
+            program.RejectionReason = model.RejectionReason;
+            program.ApprovalNotes = null;
+            program.ApprovalDate = DateTime.UtcNow;
             program.UpdatedAt = DateTime.UtcNow;
 
             await _context.SaveChangesAsync();
